@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS customer (
+id SERIAL PRIMARY KEY,
+first_name VARCHAR(30) NOT NULL,
+last_name VARCHAR(30) NOT NULL,
+email VARCHAR(30) NOT NULL,
+last_update TIMESTAMP,
+createDate TIMESTAMP,
+active boolean
+);
+
+CREATE TABLE IF NOT EXISTS category (
+id SERIAL PRIMARY KEY,
+name VARCHAR(30) NOT NULL,
+last_update TIMESTAMP
+);
+
