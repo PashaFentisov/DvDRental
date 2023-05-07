@@ -1,17 +1,13 @@
 package controller;
 
 import entity.Category;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import service.CategoryService;
 
-import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
     private CategoryService categoryService;
 
@@ -19,28 +15,34 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/get")
-    public Category getCategory(@RequestParam("id") Long id){
+    @GetMapping("/{id}")
+    public Category getCategory(@PathVariable("id") Long id){
         return categoryService.getCategory(id);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping
     public Iterable<Category> getCategories(){
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("/delete")
-    public RedirectView deleteCategory(@RequestParam("id") Long id){
+    @DeleteMapping("/{id}")
+    public RedirectView deleteCategory(@PathVariable("id") Long id){
          categoryService.deleteCategory(id);
-        return new RedirectView("getAll");
+        return new RedirectView("categories");
     }
 
-    @GetMapping("/add")
-    public RedirectView addCategory(@RequestParam("name") String name){
-        Category category = new Category(name, LocalDate.now());
+    @PostMapping
+    public RedirectView addCategory(@RequestBody Category category){
         categoryService.addCategory(category);
-        return new RedirectView("getAll");
+        return new RedirectView("categories");
 //        return "redirect:/getAll";
+    }
+
+    @PutMapping("/{id}")
+    public RedirectView updateCategory(@PathVariable("id") Long id, @RequestBody Category category){
+        category.setId(id);
+        categoryService.addCategory(category);
+        return new RedirectView("categories");
     }
 
 }
