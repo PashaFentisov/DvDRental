@@ -1,9 +1,9 @@
-package service;
+package com.pashonokk.dvdrental.service;
 
-import entity.Customer;
+import com.pashonokk.dvdrental.entity.Customer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repository.CustomerRepository;
+import com.pashonokk.dvdrental.repository.CustomerRepository;
 
 @Service
 public class CustomerService {

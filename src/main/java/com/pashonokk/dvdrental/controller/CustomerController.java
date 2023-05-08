@@ -1,24 +1,24 @@
-package controller;
+package com.pashonokk.dvdrental.controller;
 
-import entity.Customer;
-import org.springframework.http.MediaType;
+import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import service.CustomerService;
-
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping(value = "/customers")
 public class CustomerController {
-    private CustomerService customerService;
+    private final CustomerService customerService;
+
+    public static final String REDIRECT_TO_ALL = "customers";
+
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
     @GetMapping("/{id}")
-    public Customer getCustomer(@PathVariable("id") Long id) {
+    public Customer getCustomer(@PathVariable Long id) {
         return customerService.getCustomer(id);
     }
 
@@ -28,21 +28,21 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    public RedirectView deleteCustomer(@PathVariable("id") Long id) {
+    public RedirectView deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
-        return new RedirectView("getAll");
+        return new RedirectView(REDIRECT_TO_ALL);
     }
 
     @PostMapping
     public RedirectView addCustomer(@RequestBody Customer customer) {
         customerService.addCustomer(customer);
-        return new RedirectView("getAll");
+        return new RedirectView(REDIRECT_TO_ALL);
     }
 
     @PutMapping("/{id}")
-    public RedirectView updateCustomer(@PathVariable("id") Long id, @RequestBody Customer customer) {
+    public RedirectView updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         customer.setId(id);
         customerService.addCustomer(customer);
-        return new RedirectView("getAll");
+        return new RedirectView(REDIRECT_TO_ALL);
     }
 }
