@@ -1,27 +1,34 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.dto.CustomerDto;
+import com.pashonokk.dvdrental.mapper.CustomerMapper;
+import com.pashonokk.dvdrental.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.pashonokk.dvdrental.repository.CustomerRepository;
+
+import java.util.List;
 
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
+        this.customerMapper = customerMapper;
     }
 
     @Transactional(readOnly = true)
-    public Customer getCustomer(Long id) {
-        return customerRepository.findById(id).orElse(null);
+    public CustomerDto getCustomer(Long id) {
+        return customerRepository.findById(id).map(customerMapper::toDto).orElse(null);
     }
 
     @Transactional(readOnly = true)
-    public Iterable<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerDto> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(customerMapper::toDto)
+                .toList();
     }
 
     @Transactional
@@ -30,7 +37,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public void addCustomer(Customer category) {
-        customerRepository.save(category);
+    public void addCustomer(CustomerDto customerDto) {
+        customerRepository.save(customerMapper.toEntity(customerDto));
     }
 }

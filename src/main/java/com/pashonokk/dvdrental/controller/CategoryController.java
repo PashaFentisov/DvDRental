@@ -1,9 +1,11 @@
 package com.pashonokk.dvdrental.controller;
 
-import com.pashonokk.dvdrental.entity.Category;
+import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.List;
 
 
 @RestController
@@ -18,12 +20,12 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public Category getCategory(@PathVariable Long id) {
+    public CategoryDto getCategory(@PathVariable Long id) {
         return categoryService.getCategory(id);
     }
 
     @GetMapping
-    public Iterable<Category> getCategories() {
+    public List<CategoryDto> getCategories() {
         return categoryService.getAllCategories();
     }
 
@@ -34,15 +36,15 @@ public class CategoryController {
     }
 
     @PostMapping
-    public RedirectView addCategory(@RequestBody Category category) {
-        categoryService.addCategory(category);
+    public RedirectView addCategory(@RequestBody CategoryDto categoryDto) {
+        categoryService.addCategory(categoryDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
     @PutMapping("/{id}")
-    public RedirectView updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        category.setId(id);
-        categoryService.addCategory(category);
+    public RedirectView updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+        categoryDto.setId(id);
+        categoryService.addCategory(categoryDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 

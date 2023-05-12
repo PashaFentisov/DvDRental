@@ -1,9 +1,11 @@
 package com.pashonokk.dvdrental.controller;
 
-import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/customers")
@@ -18,12 +20,12 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public Customer getCustomer(@PathVariable Long id) {
+    public CustomerDto getCustomer(@PathVariable Long id) {
         return customerService.getCustomer(id);
     }
 
     @GetMapping
-    public Iterable<Customer> getCustomers() {
+    public List<CustomerDto> getCustomers() {
         return customerService.getAllCustomers();
     }
 
@@ -34,15 +36,15 @@ public class CustomerController {
     }
 
     @PostMapping
-    public RedirectView addCustomer(@RequestBody Customer customer) {
-        customerService.addCustomer(customer);
+    public RedirectView addCustomer(@RequestBody CustomerDto customerDto) {
+        customerService.addCustomer(customerDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
     @PutMapping("/{id}")
-    public RedirectView updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        customer.setId(id);
-        customerService.addCustomer(customer);
+    public RedirectView updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+        customerDto.setId(id);
+        customerService.addCustomer(customerDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 }
