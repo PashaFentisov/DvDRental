@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +25,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryDto> getAllCategories() {
-        return categoryRepository.findAll().stream()
+    public List<CategoryDto> getAllCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable).get()
                 .map(categoryMapper::toDto)
                 .toList();
     }

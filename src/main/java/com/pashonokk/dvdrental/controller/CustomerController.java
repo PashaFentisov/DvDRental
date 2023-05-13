@@ -2,6 +2,8 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.service.CustomerService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -25,8 +27,10 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerDto> getCustomers() {
-        return customerService.getAllCustomers();
+    public List<CustomerDto> getCustomers(@RequestParam(required = false, defaultValue = "0") int page,
+                                          @RequestParam(required = false, defaultValue = "10") int size,
+                                          @RequestParam(required = false, defaultValue = "firstName") String sort) {
+        return customerService.getAllCustomers(PageRequest.of(page, size, Sort.by(sort)));
     }
 
     @DeleteMapping("/{id}")

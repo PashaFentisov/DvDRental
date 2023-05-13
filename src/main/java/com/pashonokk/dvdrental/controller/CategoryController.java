@@ -2,6 +2,8 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.service.CategoryService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -25,8 +27,10 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<CategoryDto> getCategories() {
-        return categoryService.getAllCategories();
+    public List<CategoryDto> getCategories(@RequestParam(required = false, defaultValue = "0") int page,
+                                           @RequestParam(required = false, defaultValue = "10") int size,
+                                           @RequestParam(required = false, defaultValue = "id") String sort) {
+        return categoryService.getAllCategories(PageRequest.of(page, size, Sort.by(sort)));
     }
 
     @DeleteMapping("/{id}")
