@@ -1,13 +1,13 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
+import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class CategoryService {
@@ -25,10 +25,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryDto> getAllCategories(Pageable pageable) {
-        return categoryRepository.findAll(pageable).get()
-                .map(categoryMapper::toDto)
-                .toList();
+    public Page<CategoryDto> getAllCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable).map(categoryMapper::toDto);
     }
 
     @Transactional
@@ -39,6 +37,20 @@ public class CategoryService {
     @Transactional
     public void addCategory(CategoryDto categoryDto) {
         categoryRepository.save(categoryMapper.toEntity(categoryDto));
+    }
+
+    @Transactional
+    public void partialUpdateCategory(CategoryDto categoryDto) {
+        Category category = categoryRepository.findById(categoryDto.getId()).orElse(null);
+        if (category == null) {
+            return;
+        }
+        if (categoryDto.getName() != null) {
+            category.setName(categoryDto.getName());
+        }
+        if (categoryDto.getLastUpdate() != null) {
+            category.setLastUpdate(categoryDto.getLastUpdate());
+        }
     }
 
 }

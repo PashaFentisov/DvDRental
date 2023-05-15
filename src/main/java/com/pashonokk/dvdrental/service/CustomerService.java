@@ -1,13 +1,13 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
+import com.pashonokk.dvdrental.entity.Customer;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class CustomerService {
@@ -26,10 +26,8 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public List<CustomerDto> getAllCustomers(Pageable pageable) {
-        return customerRepository.findAll(pageable).get()
-                .map(customerMapper::toDto)
-                .toList();
+    public Page<CustomerDto> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable).map(customerMapper::toDto);
     }
 
     @Transactional
@@ -40,5 +38,28 @@ public class CustomerService {
     @Transactional
     public void addCustomer(CustomerDto customerDto) {
         customerRepository.save(customerMapper.toEntity(customerDto));
+    }
+
+    @Transactional
+    public void partialUpdateCustomer(CustomerDto customerDto) {
+        Customer customer = customerRepository.findById(customerDto.getId()).orElse(null);
+        if (customer == null) {
+            return;
+        }
+        if (customerDto.getFirstName() != null) {
+            customer.setFirstName(customerDto.getFirstName());
+        }
+        if (customerDto.getLastName() != null) {
+            customer.setLastName(customerDto.getLastName());
+        }
+        if (customerDto.getEmail() != null) {
+            customer.setEmail(customerDto.getEmail());
+        }
+        if (customerDto.getLastUpdate() != null) {
+            customer.setLastUpdate(customerDto.getLastUpdate());
+        }
+        if (customerDto.getCreateDate() != null) {
+            customer.setCreateDate(customerDto.getCreateDate());
+        }
     }
 }
