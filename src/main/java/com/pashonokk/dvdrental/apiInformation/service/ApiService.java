@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.apiInformation.service;
 import com.pashonokk.dvdrental.apiInformation.entity.ControllerRecord;
 import com.pashonokk.dvdrental.apiInformation.entity.EndpointRecord;
 import com.pashonokk.dvdrental.apiInformation.entity.MyApi;
+import com.pashonokk.dvdrental.apiInformation.entity.Param;
 import org.reflections.Reflections;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +68,7 @@ public class ApiService {
 //        return (Method[]) Arrays.stream(clazz.getDeclaredMethods())
 //                .filter(method -> method.isAnnotationPresent(RequestMapping.class) ||
 //                        method.isAnnotationPresent(GetMapping.class) || method.isAnnotationPresent(PostMapping.class)
-//                        || method.isAnnotationPresent(PutMapping.class) || method.isAnnotationPresent(PatchMapping.class)
+//                        || method.isAnnotationPresent(PutMapping.class) || method.isAnnotationPresent(PatchMapping.class)  //TODO finish
 //                        || method.isAnnotationPresent(DeleteMapping.class)).toArray();
 //    }
 
@@ -94,10 +96,38 @@ public class ApiService {
             }
             endpointRecord.setPath(getPathOfEndpoint(method, clazz));
             endpointRecord.setRoles(getRolesOfEndpoint(method, clazz));
+            endpointRecord.setParams(getAllEndpointParams(method));
             endpointRecords.add(endpointRecord);
             endpointRecord = new EndpointRecord();
         }
         return endpointRecords;
+    }
+
+    private List<Param> getAllEndpointParams(Method method) {
+        Parameter[] parameters = method.getParameters();
+        List<Param> params = new ArrayList<>();
+        for (Parameter parameter : parameters) {
+            if (parameter.isAnnotationPresent(RequestParam.class)) {
+                params.add(constructParam(parameter));
+            }
+        }
+        return params;
+    }
+
+    private Param constructParam(Parameter parameter) {
+        Param param = new Param();
+        String name;
+        RequestParam requestParam = parameter.getAnnotation(RequestParam.class);
+        if (!requestParam.name().equals("")) {
+            name = requestParam.name();
+        } else if (!requestParam.value().equals("")) {
+            name = requestParam.value();
+        } else {
+            name = parameter.getName();
+        }
+        param.setRequired(requestParam.required());
+        param.setName(name);
+        return param;
     }
 
     private String getHttpMethodOfEndpoint(Method method) {

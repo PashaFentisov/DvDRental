@@ -4,14 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EndpointRecord {
-    private String httpMethod;
-    private String path;
-    private List<String> roles;
-
-    private List<Param> params;
+public class Param {
+    private String name;
+    private boolean isRequired;
 }

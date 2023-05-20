@@ -7,14 +7,12 @@ import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 
 @RestController
 @RequestMapping("/categories")
-@Secured("USER")
 public class CategoryController {
     private final CategoryService categoryService;
 
