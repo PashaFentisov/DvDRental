@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,6 +19,7 @@ public class User {
     private Long id;
     private String username;
     private String password;
-    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    @ManyToMany(mappedBy = "users", cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private List<Role> roles;
+
 }
