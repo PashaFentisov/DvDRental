@@ -17,16 +17,16 @@ public class RegisterController {
     private final UserService userService;
 
     @GetMapping("/register")
-    public ModelAndView register(Model model){
+    public ModelAndView register(Model model) {
         model.addAttribute("user", new User());
         return new ModelAndView("register");
     }
 
     @PostMapping("/register")
     @ResponseBody
-    public String register(@ModelAttribute User user){
+    public String register(@ModelAttribute User user) {
         User savedUser = userService.save(user);
-        return "http://localhost:10000/confirmEmail/" + userService.generateTokenForUser(savedUser);
+        return "http://localhost:10000/confirmEmail/" + savedUser.getToken().getUuid();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.entity.Role;
+import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
@@ -18,16 +19,25 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     @Transactional
-    public User save(User user){
+    public User save(User user) {
+        var token = generateTokenForUser(user);
         Role roleUser = roleRepository.findRoleByName("ROLE_USER");
+        user.setToken(token);
+        token.setUser(user);
         roleUser.getUsers().add(user);
-//        user.getRoles().add(roleUser);
-//        roleUser.setUsers(List.of(user));
         user.setRoles(List.of(roleUser));
         return userRepository.save(user);
     }
 
-    public String generateTokenForUser(User user){
-        return UUID.nameUUIDFromBytes(user.toString().getBytes()).toString();
-    }   //цей викликати в сейв зробити нову міграцію доадати нове поле до юзера і в емайл так звіряти
+    private Token generateTokenForUser(User user) {
+        Token token = new Token();
+        token.setUuid(UUID.nameUUIDFromBytes(user.toString().getBytes()).toString());
+        return token;
+    }
+
+    @Transactional
+    public void setUserAsVerified(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setVerified(true);
+    }
 }
