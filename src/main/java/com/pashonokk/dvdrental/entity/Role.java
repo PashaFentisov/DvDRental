@@ -8,7 +8,6 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -20,9 +19,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @ManyToMany
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "role_id"),
-               inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @OneToMany(mappedBy = "role")
     private List<User> users = new ArrayList<>();
     @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Authority> authorities = new ArrayList<>();

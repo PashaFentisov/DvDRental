@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,10 +17,11 @@ public class User {
     private String username;
     private String password;
     @Column(name = "is_verified")
-    private boolean isVerified = false;
-    @ManyToMany(mappedBy = "users", cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<Role> roles;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Boolean isVerified = false;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Token token;
 
 }

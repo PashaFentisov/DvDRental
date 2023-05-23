@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,7 +24,7 @@ public class UserService {
         user.setToken(token);
         token.setUser(user);
         roleUser.getUsers().add(user);
-        user.setRoles(List.of(roleUser));
+        user.setRole(roleUser);
         return userRepository.save(user);
     }
 
@@ -38,6 +37,6 @@ public class UserService {
     @Transactional
     public void setUserAsVerified(Long id) {
         User user = userRepository.findById(id).orElseThrow();
-        user.setVerified(true);
+        user.setIsVerified(true);
     }
 }
