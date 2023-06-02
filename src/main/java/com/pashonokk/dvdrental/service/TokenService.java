@@ -14,6 +14,8 @@ public class TokenService {
 
     @Transactional
     public User findUserByUuid(String uuid) {
-        return tokenRepository.getTokenByUuid(uuid).map(Token::getUser).orElse(null);
+        return tokenRepository.getTokenByUuid(uuid)
+                .map(Token::getUser)
+                .orElse(null);
     }
 }

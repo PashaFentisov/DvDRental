@@ -21,7 +21,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryDto getCategory(Long id) {
-        return categoryRepository.findById(id).map(categoryMapper::toDto).orElse(null);
+        return categoryRepository.findById(id).map(categoryMapper::toDto).orElseThrow();
     }
 
     @Transactional(readOnly = true)
@@ -30,7 +30,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Long id) {
+    public void deleteCategoryById(Long id) {
         categoryRepository.deleteById(id);
     }
 

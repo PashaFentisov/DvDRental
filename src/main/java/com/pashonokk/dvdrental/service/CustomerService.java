@@ -21,8 +21,8 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public CustomerDto getCustomer(Long id) {
-        return customerRepository.findById(id).map(customerMapper::toDto).orElse(null);
+    public CustomerDto getCustomeById(Long id) {
+        return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow();
     }
 
     @Transactional(readOnly = true)

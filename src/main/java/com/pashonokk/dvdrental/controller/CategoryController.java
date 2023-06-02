@@ -40,7 +40,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public RedirectView deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategoryById(id);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
@@ -63,6 +63,4 @@ public class CategoryController {
         categoryService.partialUpdateCategory(categoryDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
-
-
 }

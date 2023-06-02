@@ -17,5 +17,4 @@ public class CustomerDto {
     private LocalDate lastUpdate;
     private LocalDate createDate;
     private boolean active;
-
 }

@@ -27,5 +27,4 @@ public class RegisterController {
         User savedUser = userService.save(user);
         return "http://localhost:10000/confirmEmail/" + savedUser.getToken().getUuid();
     }
-
 }

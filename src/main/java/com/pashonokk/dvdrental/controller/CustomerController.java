@@ -25,7 +25,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public CustomerDto getCustomer(@PathVariable Long id) {
-        return customerService.getCustomer(id);
+        return customerService.getCustomeById(id);
     }
 
     @SneakyThrows
