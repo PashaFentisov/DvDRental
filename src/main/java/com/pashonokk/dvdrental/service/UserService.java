@@ -4,7 +4,6 @@ import com.pashonokk.dvdrental.dto.UserDto;
 import com.pashonokk.dvdrental.entity.Role;
 import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
-import com.pashonokk.dvdrental.exception.UserNotFoundException;
 import com.pashonokk.dvdrental.exception.UserWithSuchEmailExists;
 import com.pashonokk.dvdrental.mapper.UserMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -26,6 +24,7 @@ public class UserService {
 
 
     @SneakyThrows
+    @Transactional
     public Token saveRegisteredUser(UserDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
             throw new UserWithSuchEmailExists("User with email " + userDto.getEmail() + " already exists");
@@ -38,13 +37,9 @@ public class UserService {
         userRepository.save(user);
         return token;
     }
-
-    @SneakyThrows
+    @Transactional(readOnly = true)
     public void confirmUserEmail(String token) {
         User userByTokenValue = tokenService.findUserByTokenValue(token);
-        if (userByTokenValue == null) {
-            throw new UserNotFoundException("There isn`t user with such token " + token);
-        }
         userByTokenValue.setIsVerified(true);
     }
 

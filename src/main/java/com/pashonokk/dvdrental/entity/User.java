@@ -16,7 +16,6 @@ public class User {
     private Long id;
     private String email;
     private String password;
-    @Column(name = "isVerified")
     private Boolean isVerified = false;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "roleId")

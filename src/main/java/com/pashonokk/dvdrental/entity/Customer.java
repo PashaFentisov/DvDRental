@@ -15,14 +15,10 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "firstName")
     private String firstName;
-    @Column(name = "lastName")
     private String lastName;
     private String email;
-    @Column(name = "lastUpdate")
     private LocalDate lastUpdate;
-    @Column(name = "createDate")
     private LocalDate createDate;
     private boolean active;
 }
