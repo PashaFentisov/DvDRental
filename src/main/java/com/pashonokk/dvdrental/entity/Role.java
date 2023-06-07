@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -20,7 +20,7 @@ public class Role {
     private Long id;
     private String name;
     @OneToMany(mappedBy = "role")
-    private List<User> users = new ArrayList<>();
-    @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    private List<Authority> authorities = new ArrayList<>();
+    private Set<User> users = new HashSet<>();
+    @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Authority> authorities = new HashSet<>();
 }

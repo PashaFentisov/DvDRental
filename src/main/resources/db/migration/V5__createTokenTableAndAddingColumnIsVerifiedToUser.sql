@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS token
 (
     user_id  BIGINT,
-    uuid VARCHAR(300) NOT NULL,
+    value VARCHAR(300) NOT NULL,
     FOREIGN KEY (user_id) references users (id),
     PRIMARY KEY (user_id)
 );

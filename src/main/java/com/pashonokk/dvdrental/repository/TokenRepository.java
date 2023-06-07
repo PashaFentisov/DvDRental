@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Long> {
-    Optional<Token> getTokenByUuid(String uuid);
+    Optional<Token> getTokenByValue(String value);
 }

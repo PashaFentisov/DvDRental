@@ -1,22 +1,27 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.UUID;
+
 @Entity
-@Data
+@Getter
 @ToString(exclude = "user")
 @NoArgsConstructor
-@AllArgsConstructor
 public class Token {
     @Id
-    private Long id;
-    private String uuid;
+    private Long userId;
+    private String value = UUID.randomUUID().toString();
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
+
+    public void addUser(User user) {
+        this.user = user;
+        user.setToken(this);
+    }
 }

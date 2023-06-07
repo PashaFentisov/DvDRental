@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -15,11 +16,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @Column(name = "last_update")
+    @Column(name = "lastUpdate")
     private LocalDate lastUpdate;
-
-    public Category(String name, LocalDate lastUpdate) {
-        this.name = name;
-        this.lastUpdate = lastUpdate;
-    }
 }

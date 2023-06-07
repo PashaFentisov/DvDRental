@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.exception.UserNotFoundException;
+import com.pashonokk.dvdrental.exception.UserWithSuchEmailExists;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,5 +17,10 @@ public class MyControllerAdvice {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleBigSizeExceptions(UserNotFoundException userNotFoundException) {
         return ResponseEntity.badRequest().body(userNotFoundException.getMessage());
+    }
+
+    @ExceptionHandler(UserWithSuchEmailExists.class)
+    public ResponseEntity<String> handleBigSizeExceptions(UserWithSuchEmailExists userWithSuchEmailExists) {
+        return ResponseEntity.badRequest().body(userWithSuchEmailExists.getMessage());
     }
 }

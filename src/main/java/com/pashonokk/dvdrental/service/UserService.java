@@ -1,42 +1,51 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.UserDto;
 import com.pashonokk.dvdrental.entity.Role;
 import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
+import com.pashonokk.dvdrental.exception.UserNotFoundException;
+import com.pashonokk.dvdrental.exception.UserWithSuchEmailExists;
+import com.pashonokk.dvdrental.mapper.UserMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final TokenService tokenService;
+    private final UserMapper userMapper;
 
-    @Transactional
-    public User save(User user) {
-        var token = generateTokenForUser(user);
+
+    @SneakyThrows
+    public Token saveRegisteredUser(UserDto userDto) {
+        if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
+            throw new UserWithSuchEmailExists("User with email " + userDto.getEmail() + " already exists");
+        }
+        User user = userMapper.toEntity(userDto);
+        var token = new Token();
         Role roleUser = roleRepository.findRoleByName("ROLE_USER");
-        user.setToken(token);
-        token.setUser(user);
-        roleUser.getUsers().add(user);
         user.setRole(roleUser);
-        return userRepository.save(user);
-    }
-
-    private Token generateTokenForUser(User user) {
-        Token token = new Token();
-        token.setUuid(UUID.nameUUIDFromBytes(user.toString().getBytes()).toString());
+        token.addUser(user);
+        userRepository.save(user);
         return token;
     }
 
-    @Transactional
-    public void setUserAsVerified(Long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        user.setIsVerified(true);
+    @SneakyThrows
+    public void confirmUserEmail(String token) {
+        User userByTokenValue = tokenService.findUserByTokenValue(token);
+        if (userByTokenValue == null) {
+            throw new UserNotFoundException("There isn`t user with such token " + token);
+        }
+        userByTokenValue.setIsVerified(true);
     }
+
 }

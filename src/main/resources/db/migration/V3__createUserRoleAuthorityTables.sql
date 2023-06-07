@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS role
 CREATE TABLE IF NOT EXISTS users
 (
     id       SERIAL PRIMARY KEY,
-    username VARCHAR(50)  NOT NULL,
+    email VARCHAR(50)  NOT NULL UNIQUE,
     password VARCHAR(256) NOT NULL,
     role_id  BIGINT,
     FOREIGN KEY (role_id) references role (id)

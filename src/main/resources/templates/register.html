@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Taco Cloud</title>
+    <title>Registration</title>
 </head>
 <body>
 <h1>Register</h1>
-<form method="POST" th:action="@{/register}" id="user">
-    <label for="username">Username: </label>
-    <input type="text" name="username"/><br/>
+<form th:method="POST" th:action="@{/register}" th:object="${userDto}">
+    <label for="email">Email: </label>
+    <input type="text" th:field="*{email}" id="email"/>
+    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</div>
+    <br/>
     <label for="password">Password: </label>
-    <input type="password" name="password"/><br/>
-    <input type="submit" value="Register"/>
+    <input type="password" th:field="*{password}" id="password"/>
+    <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>
+    <br/>
+    <input type="submit" value="Register!"/>
 </form>
 </body>
 </html>

@@ -14,14 +14,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
+    private String email;
     private String password;
-    @Column(name = "is_verified")
+    @Column(name = "isVerified")
     private Boolean isVerified = false;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "roleId")
     private Role role;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Token token;
-
 }

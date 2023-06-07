@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class TokenService {
     private final TokenRepository tokenRepository;
 
-    @Transactional
-    public User findUserByUuid(String uuid) {
-        return tokenRepository.getTokenByUuid(uuid)
+    @Transactional(readOnly = true)
+    public User findUserByTokenValue(String value) {
+        return tokenRepository.getTokenByValue(value)
                 .map(Token::getUser)
                 .orElse(null);
     }
