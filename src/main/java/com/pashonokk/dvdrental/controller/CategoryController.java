@@ -3,7 +3,6 @@ package com.pashonokk.dvdrental.controller;
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CategoryService;
-import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,7 +26,6 @@ public class CategoryController {
         return categoryService.getCategory(id);
     }
 
-    @SneakyThrows
     @GetMapping
     public Page<CategoryDto> getCategories(@RequestParam(required = false, defaultValue = "0") int page,
                                            @RequestParam(required = false, defaultValue = "10") int size,

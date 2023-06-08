@@ -5,7 +5,6 @@ import com.pashonokk.dvdrental.apiInformation.entity.ControllerRecord;
 import com.pashonokk.dvdrental.apiInformation.entity.EndpointParamRecord;
 import com.pashonokk.dvdrental.apiInformation.entity.EndpointRecord;
 import org.reflections.Reflections;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -63,11 +61,11 @@ public class ApiService {
     }
 
     private Method[] getEndpointsOfClass(Class<?> clazz) {
-        return (Method[]) Arrays.stream(clazz.getDeclaredMethods())
+        return Arrays.stream(clazz.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(RequestMapping.class) ||
                         method.isAnnotationPresent(GetMapping.class) || method.isAnnotationPresent(PostMapping.class)
                         || method.isAnnotationPresent(PutMapping.class) || method.isAnnotationPresent(PatchMapping.class)
-                        || method.isAnnotationPresent(DeleteMapping.class)).toArray();
+                        || method.isAnnotationPresent(DeleteMapping.class)).toArray(Method[]::new);
     }
 
     private int countEndpoints(Method[] method) {
@@ -81,7 +79,6 @@ public class ApiService {
         for (Method method : methods) {
             endpointRecord.setHttpMethod(getHttpMethodOfEndpoint(method));
             endpointRecord.setPath(getPathOfEndpoint(method, clazz));
-            endpointRecord.setRoles(getRolesOfEndpoint(method, clazz));
             endpointRecord.setEndpointParamRecords(getAllEndpointParams(method));
             endpointRecords.add(endpointRecord);
             endpointRecord = new EndpointRecord();
@@ -154,14 +151,5 @@ public class ApiService {
         return path;
     }
 
-    private List<String> getRolesOfEndpoint(Method method, Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Secured.class)) {
-            return List.of(clazz.getAnnotation(Secured.class).value());
-        }
-        if (method.isAnnotationPresent(Secured.class)) {
-            return List.of(method.getAnnotation(Secured.class).value());
-        }
-        return Collections.emptyList();
-    }
 
 }

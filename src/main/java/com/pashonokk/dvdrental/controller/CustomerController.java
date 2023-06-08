@@ -3,7 +3,6 @@ package com.pashonokk.dvdrental.controller;
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CustomerService;
-import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,7 +27,6 @@ public class CustomerController {
         return customerService.getCustomeById(id);
     }
 
-    @SneakyThrows
     @GetMapping
     public Page<CustomerDto> getCustomers(@RequestParam(required = false, defaultValue = "0") int page,
                                           @RequestParam(required = false, defaultValue = "10") int size,

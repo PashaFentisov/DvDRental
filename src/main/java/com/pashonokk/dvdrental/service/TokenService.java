@@ -7,11 +7,10 @@ import com.pashonokk.dvdrental.exception.UserNotFoundException;
 import com.pashonokk.dvdrental.repository.TokenRepository;
 import com.pashonokk.dvdrental.util.TokenProperties;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -20,13 +19,12 @@ public class TokenService {
     private final TokenRepository tokenRepository;
     private final TokenProperties tokenProperties;
 
-    @SneakyThrows
     @Transactional(readOnly = true)
     public User findUserByTokenValue(String value) {
         Token tokenByValue = tokenRepository.getTokenByValue(value)
-                .orElseThrow(()->new UserNotFoundException("There isn`t user with such token " + value));
-        LocalTime tokenExpiredTime = tokenByValue.getCreateTime().plusSeconds(tokenProperties.getDuration().getSeconds());
-        if(tokenExpiredTime.isBefore(LocalTime.now())){
+                .orElseThrow(() -> new UserNotFoundException("There isn`t user with such token " + value));
+        LocalDateTime tokenExpiredTime = tokenByValue.getCreateTime().plusSeconds(tokenProperties.getDuration().getSeconds());
+        if (tokenExpiredTime.isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException("Token " + value + " is no longer valid");
         }
         return tokenByValue.getUser();

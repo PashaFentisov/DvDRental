@@ -11,6 +11,5 @@ import java.util.List;
 public class EndpointRecord {
     private String httpMethod;
     private String path;
-    private List<String> roles;
     private List<EndpointParamRecord> endpointParamRecords;
 }

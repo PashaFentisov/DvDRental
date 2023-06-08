@@ -9,7 +9,6 @@ import com.pashonokk.dvdrental.mapper.UserMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ public class UserService {
     private final UserMapper userMapper;
 
 
-    @SneakyThrows
     @Transactional
     public Token saveRegisteredUser(UserDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
@@ -37,6 +35,7 @@ public class UserService {
         userRepository.save(user);
         return token;
     }
+
     @Transactional(readOnly = true)
     public void confirmUserEmail(String token) {
         User userByTokenValue = tokenService.findUserByTokenValue(token);
