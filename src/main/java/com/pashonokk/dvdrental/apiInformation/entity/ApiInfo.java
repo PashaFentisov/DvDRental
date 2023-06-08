@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyApi {
+public class ApiInfo {
     private int totalNumberOfAPIs;
     private List<ControllerRecord> records;
 }

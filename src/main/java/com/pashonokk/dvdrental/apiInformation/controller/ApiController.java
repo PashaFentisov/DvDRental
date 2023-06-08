@@ -1,6 +1,6 @@
 package com.pashonokk.dvdrental.apiInformation.controller;
 
-import com.pashonokk.dvdrental.apiInformation.entity.MyApi;
+import com.pashonokk.dvdrental.apiInformation.entity.ApiInfo;
 import com.pashonokk.dvdrental.apiInformation.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +12,7 @@ public class ApiController {
     private final ApiService apiService;
 
     @GetMapping("/api")
-    public MyApi getApiInf() {
-        return apiService.getMyApi();
-    }
-
-    public MyApi method() {
-        return apiService.getMyApi();
+    public ApiInfo getApiInf() {
+        return apiService.getApiInfo();
     }
 }

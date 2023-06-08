@@ -12,6 +12,5 @@ public class EndpointRecord {
     private String httpMethod;
     private String path;
     private List<String> roles;
-
-    private List<Param> params;
+    private List<EndpointParamRecord> endpointParamRecords;
 }

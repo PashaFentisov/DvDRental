@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Param {
+public class EndpointParamRecord {
     private String name;
     private boolean isRequired;
 }

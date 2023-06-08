@@ -1,9 +1,9 @@
 package com.pashonokk.dvdrental.apiInformation.service;
 
+import com.pashonokk.dvdrental.apiInformation.entity.ApiInfo;
 import com.pashonokk.dvdrental.apiInformation.entity.ControllerRecord;
+import com.pashonokk.dvdrental.apiInformation.entity.EndpointParamRecord;
 import com.pashonokk.dvdrental.apiInformation.entity.EndpointRecord;
-import com.pashonokk.dvdrental.apiInformation.entity.MyApi;
-import com.pashonokk.dvdrental.apiInformation.entity.Param;
 import org.reflections.Reflections;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -21,14 +21,14 @@ import java.util.List;
 public class ApiService {
     private static final String PATH = "com.pashonokk.dvdrental";
 
-    private MyApi myApi;
+    private ApiInfo apiInfo;
 
-    public MyApi getMyApi() {
-        if (myApi != null) {
-            return myApi;
+    public ApiInfo getApiInfo() {
+        if (apiInfo != null) {
+            return apiInfo;
         }
-        myApi = constructMyApi();
-        return myApi;
+        apiInfo = constructMyApi();
+        return apiInfo;
     }
 
     private List<Class<?>> getClassesAnnotatedWithRestController() {
@@ -36,8 +36,8 @@ public class ApiService {
         return new ArrayList<>(reflections.getTypesAnnotatedWith(RestController.class));
     }
 
-    private MyApi constructMyApi() {
-        MyApi api = new MyApi();
+    private ApiInfo constructMyApi() {
+        ApiInfo api = new ApiInfo();
         List<ControllerRecord> controllerRecords = constructControllerRecords();
         api.setRecords(controllerRecords);
         int countOfAllEndpoints = 0;
@@ -52,70 +52,56 @@ public class ApiService {
         List<ControllerRecord> records = new ArrayList<>();
         var classes = getClassesAnnotatedWithRestController();
         ControllerRecord controllerRecord = new ControllerRecord();
-
         for (Class<?> clazz : classes) {
             controllerRecord.setName(clazz.getSimpleName().replace("Controller", ""));
-            controllerRecord.setNumberOfAPIs(countEndpoints(clazz.getDeclaredMethods()));
+            controllerRecord.setNumberOfAPIs(countEndpoints(getEndpointsOfClass(clazz)));
             controllerRecord.setRecords(getAllEndpointsByClass(clazz));
-
             records.add(controllerRecord);
             controllerRecord = new ControllerRecord();
         }
         return records;
     }
 
-//    private Method[] getEndpointsOfClass(Class<?> clazz) {
-//        return (Method[]) Arrays.stream(clazz.getDeclaredMethods())
-//                .filter(method -> method.isAnnotationPresent(RequestMapping.class) ||
-//                        method.isAnnotationPresent(GetMapping.class) || method.isAnnotationPresent(PostMapping.class)
-//                        || method.isAnnotationPresent(PutMapping.class) || method.isAnnotationPresent(PatchMapping.class)  //TODO finish
-//                        || method.isAnnotationPresent(DeleteMapping.class)).toArray();
-//    }
+    private Method[] getEndpointsOfClass(Class<?> clazz) {
+        return (Method[]) Arrays.stream(clazz.getDeclaredMethods())
+                .filter(method -> method.isAnnotationPresent(RequestMapping.class) ||
+                        method.isAnnotationPresent(GetMapping.class) || method.isAnnotationPresent(PostMapping.class)
+                        || method.isAnnotationPresent(PutMapping.class) || method.isAnnotationPresent(PatchMapping.class)
+                        || method.isAnnotationPresent(DeleteMapping.class)).toArray();
+    }
 
     private int countEndpoints(Method[] method) {
-        int count = 0;
-        for (Method value : method) {
-            if (value.isAnnotationPresent(RequestMapping.class) || value.isAnnotationPresent(GetMapping.class)
-                    || value.isAnnotationPresent(PostMapping.class) || value.isAnnotationPresent(PatchMapping.class)
-                    || value.isAnnotationPresent(DeleteMapping.class) || value.isAnnotationPresent(PutMapping.class)) {
-                count++;
-            }
-        }
-        return count;
+        return method.length;
     }
 
     private List<EndpointRecord> getAllEndpointsByClass(Class<?> clazz) {
         EndpointRecord endpointRecord = new EndpointRecord();
         List<EndpointRecord> endpointRecords = new ArrayList<>();
-        Method[] methods = clazz.getDeclaredMethods();
-
+        Method[] methods = getEndpointsOfClass(clazz);
         for (Method method : methods) {
             endpointRecord.setHttpMethod(getHttpMethodOfEndpoint(method));
-            if (endpointRecord.getHttpMethod().equals("")) {
-                continue;
-            }
             endpointRecord.setPath(getPathOfEndpoint(method, clazz));
             endpointRecord.setRoles(getRolesOfEndpoint(method, clazz));
-            endpointRecord.setParams(getAllEndpointParams(method));
+            endpointRecord.setEndpointParamRecords(getAllEndpointParams(method));
             endpointRecords.add(endpointRecord);
             endpointRecord = new EndpointRecord();
         }
         return endpointRecords;
     }
 
-    private List<Param> getAllEndpointParams(Method method) {
+    private List<EndpointParamRecord> getAllEndpointParams(Method method) {
         Parameter[] parameters = method.getParameters();
-        List<Param> params = new ArrayList<>();
+        List<EndpointParamRecord> endpointParamRecords = new ArrayList<>();
         for (Parameter parameter : parameters) {
             if (parameter.isAnnotationPresent(RequestParam.class)) {
-                params.add(constructParam(parameter));
+                endpointParamRecords.add(constructParam(parameter));
             }
         }
-        return params;
+        return endpointParamRecords;
     }
 
-    private Param constructParam(Parameter parameter) {
-        Param param = new Param();
+    private EndpointParamRecord constructParam(Parameter parameter) {
+        EndpointParamRecord endpointParamRecord = new EndpointParamRecord();
         String name;
         RequestParam requestParam = parameter.getAnnotation(RequestParam.class);
         if (!requestParam.name().equals("")) {
@@ -125,23 +111,24 @@ public class ApiService {
         } else {
             name = parameter.getName();
         }
-        param.setRequired(requestParam.required());
-        param.setName(name);
-        return param;
+        endpointParamRecord.setRequired(requestParam.required());
+        endpointParamRecord.setName(name);
+        return endpointParamRecord;
     }
 
     private String getHttpMethodOfEndpoint(Method method) {
+        String httpMethodOfEndpoint = "";
         Annotation[] annotations = method.getAnnotations();
         for (Annotation annotation : annotations) {
-            if (annotation instanceof RequestMapping ann) {
-                return Arrays.stream(ann.method()).findFirst().orElseThrow().toString();
+            if (annotation.annotationType() == RequestMapping.class) {
+                httpMethodOfEndpoint = Arrays.stream(((RequestMapping) annotation).method()).findFirst().orElseThrow().toString();
             } else if (annotation instanceof GetMapping || annotation instanceof PostMapping
                     || annotation instanceof PutMapping || annotation instanceof PatchMapping
                     || annotation instanceof DeleteMapping) {
-                return annotation.annotationType().getSimpleName().replace("Mapping", "");
+                httpMethodOfEndpoint = annotation.annotationType().getSimpleName().replace("Mapping", "");
             }
         }
-        return "";
+        return httpMethodOfEndpoint.toUpperCase();
     }
 
 
