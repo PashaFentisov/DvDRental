@@ -20,7 +20,7 @@ public class TokenService {
     private final TokenProperties tokenProperties;
 
     @Transactional(readOnly = true)
-    public User findUserByTokenValue(String value) {
+    public User validateToken(String value) {
         Token tokenByValue = tokenRepository.getTokenByValue(value)
                 .orElseThrow(() -> new UserNotFoundException("There isn`t user with such token " + value));
         LocalDateTime tokenExpiredTime = tokenByValue.getCreateTime().plusSeconds(tokenProperties.getDuration().getSeconds());
