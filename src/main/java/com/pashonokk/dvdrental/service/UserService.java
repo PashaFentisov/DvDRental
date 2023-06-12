@@ -1,14 +1,17 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.UserDto;
+import com.pashonokk.dvdrental.dto.UserTokenDto;
 import com.pashonokk.dvdrental.entity.Role;
 import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
+import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
 import com.pashonokk.dvdrental.exception.UserExistsException;
 import com.pashonokk.dvdrental.mapper.UserMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +24,10 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
 
-    public String saveRegisteredUser(UserDto userDto) {
+    public void saveRegisteredUser(UserDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
             throw new UserExistsException("User with email " + userDto.getEmail() + " already exists");
         }
@@ -33,7 +37,8 @@ public class UserService {
         user.setRole(roleUser);
         token.addUser(user);
         userRepository.save(user);
-        return user.getEmail();
+        UserTokenDto userTokenDto = new UserTokenDto(token.getValue(), user.getEmail());
+        applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(userTokenDto));
     }
 
     public void confirmUserEmail(String token) {

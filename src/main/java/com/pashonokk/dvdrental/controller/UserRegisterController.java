@@ -27,7 +27,13 @@ public class UserRegisterController {
         if (errors.hasErrors()) {
             return "register";
         }
-        String email = userService.saveRegisteredUser(userDto);
-        return "redirect:/sendConfirmingLetter/" + email;
+        userService.saveRegisteredUser(userDto);
+        return "redirect:/register/showSuccessfulMessage";
+    }
+
+    @GetMapping("showSuccessfulMessage")
+    @ResponseBody
+    public String showSuccessfulMessage() {
+        return "Confirming letter was sent to you";
     }
 }

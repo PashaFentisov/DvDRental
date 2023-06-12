@@ -1,6 +1,6 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.repository.TokenRepository;
+import com.pashonokk.dvdrental.dto.UserTokenDto;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
@@ -10,7 +10,6 @@ import com.sendgrid.helpers.mail.objects.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +17,9 @@ public class EmailService implements NotificationService {
 
     private final SendGrid sendGrid;
 
-    private final TokenRepository tokenRepository;
-
-    @Transactional(readOnly = true)
     @SneakyThrows
-    public void send(String email) {
-        Mail mail = prepareMail(email);
+    public void send(UserTokenDto userTokenDto) {
+        Mail mail = prepareMail(userTokenDto.getUserEmail(), userTokenDto.getTokenValue());
         Request request = new Request();
         request.setMethod(Method.POST);
         request.setEndpoint("mail/send");
@@ -32,9 +28,7 @@ public class EmailService implements NotificationService {
         sendGrid.api(request);
     }
 
-    private Mail prepareMail(String email) {
-        String tokenValue = tokenRepository.findTokenByUserEmail(email);
-
+    private Mail prepareMail(String email, String tokenValue) {
         Email fromEmail = new Email("pasha16.ua@gmail.com");
 
         Email toEmail = new Email(email);
