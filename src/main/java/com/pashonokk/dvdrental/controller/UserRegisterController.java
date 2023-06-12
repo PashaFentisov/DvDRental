@@ -1,7 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.UserDto;
-import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +27,7 @@ public class UserRegisterController {
         if (errors.hasErrors()) {
             return "register";
         }
-        Token token = userService.saveRegisteredUser(userDto);
-        return "redirect:/register/linkForConfirming/" + token.getValue();
-    }
-
-    @GetMapping("/linkForConfirming/{token}")
-    @ResponseBody
-    public String showLinkForConfirming(@PathVariable String token) {     //temporary action
-        return "http://localhost:10000/confirmEmail/" + token;
+        String email = userService.saveRegisteredUser(userDto);
+        return "redirect:/sendConfirmingLetter/" + email;
     }
 }

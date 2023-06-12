@@ -23,7 +23,7 @@ public class UserService {
     private final UserMapper userMapper;
 
 
-    public Token saveRegisteredUser(UserDto userDto) {
+    public String saveRegisteredUser(UserDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
             throw new UserExistsException("User with email " + userDto.getEmail() + " already exists");
         }
@@ -33,7 +33,7 @@ public class UserService {
         user.setRole(roleUser);
         token.addUser(user);
         userRepository.save(user);
-        return token;
+        return user.getEmail();
     }
 
     public void confirmUserEmail(String token) {
