@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    @Email(message = "You entered bad email")
+    @Email(message = "You entered wrong email")
     private String email;
     @NotEmpty(message = "Enter password")
     @Size(min = 10, message = "Size of password must be more than 10 characters")
