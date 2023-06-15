@@ -13,22 +13,22 @@ public class DvDRentalControllerAdvice {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleBigSizeExceptions(UserNotFoundException userNotFoundException) {
+    public ResponseEntity<String> handleUserNotFoundExceptions(UserNotFoundException userNotFoundException) {
         return ResponseEntity.badRequest().body(userNotFoundException.getMessage());
     }
 
     @ExceptionHandler(UserExistsException.class)
-    public ResponseEntity<String> handleBigSizeExceptions(UserExistsException userExistsException) {
+    public ResponseEntity<String> handleUserExistsExceptions(UserExistsException userExistsException) {
         return ResponseEntity.badRequest().body(userExistsException.getMessage());
     }
 
     @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<String> handleBigSizeExceptions(TokenExpiredException tokenExpiredException) {
+    public ResponseEntity<String> handleTokenExpiredExceptions(TokenExpiredException tokenExpiredException) {
         return ResponseEntity.badRequest().body(tokenExpiredException.getMessage());
     }
 
     @ExceptionHandler(EmailDtoValidationException.class)
-    public ResponseEntity<String> handleBigSizeExceptions(EmailDtoValidationException emailDtoValidationException) {
+    public ResponseEntity<String> handleEmailValidationExceptions(EmailDtoValidationException emailDtoValidationException) {
         return ResponseEntity.badRequest().body(emailDtoValidationException.getMessage());
     }
 }

@@ -4,20 +4,17 @@ import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-
-    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
-        this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
-    }
 
     @Transactional(readOnly = true)
     public CategoryDto getCategory(Long id) {

@@ -4,24 +4,21 @@ import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.entity.Customer;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
-        this.customerRepository = customerRepository;
-        this.customerMapper = customerMapper;
-    }
-
     @Transactional(readOnly = true)
-    public CustomerDto getCustomeById(Long id) {
+    public CustomerDto getCustomerById(Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow();
     }
 

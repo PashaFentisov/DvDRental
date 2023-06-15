@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.controller;
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -12,19 +13,15 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping(value = "/customers")
+@RequiredArgsConstructor
 public class CustomerController {
     private final CustomerService customerService;
 
     public static final String REDIRECT_TO_ALL = "customers";
 
-
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
-
     @GetMapping("/{id}")
     public CustomerDto getCustomer(@PathVariable Long id) {
-        return customerService.getCustomeById(id);
+        return customerService.getCustomerById(id);
     }
 
     @GetMapping
