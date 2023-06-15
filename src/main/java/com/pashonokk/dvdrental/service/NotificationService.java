@@ -1,7 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.dto.UserTokenDto;
+import com.pashonokk.dvdrental.dto.EmailDto;
 
 public interface NotificationService {
-    void send(UserTokenDto userTokenDto);
+    void send(EmailDto emailDto);
 }

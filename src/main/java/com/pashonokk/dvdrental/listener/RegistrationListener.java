@@ -1,4 +1,4 @@
-package com.pashonokk.dvdrental.eventListener;
+package com.pashonokk.dvdrental.listener;
 
 import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
 import com.pashonokk.dvdrental.service.NotificationService;
@@ -15,6 +15,6 @@ public class RegistrationListener {
     @EventListener
     @Async
     public void sendNotification(UserRegistrationCompletedEvent event) {
-        notificationService.send(event.getUserTokenDto());
+        notificationService.send(event.getEmailDto());
     }
 }

@@ -2,14 +2,13 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.exception.TokenExpiredException;
-import com.pashonokk.dvdrental.exception.UserNotFoundException;
 import com.pashonokk.dvdrental.exception.UserExistsException;
+import com.pashonokk.dvdrental.exception.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice
-public class GeneralControllerAdvice {
+@org.springframework.web.bind.annotation.ControllerAdvice
+public class ControllerAdvice {
     @ExceptionHandler(BigSizeException.class)
     public ResponseEntity<String> handleBigSizeExceptions(BigSizeException bigSizeException) {
         return ResponseEntity.badRequest().body(bigSizeException.getMessage());

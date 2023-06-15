@@ -1,7 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.EmailDto;
 import com.pashonokk.dvdrental.dto.UserDto;
-import com.pashonokk.dvdrental.dto.UserTokenDto;
 import com.pashonokk.dvdrental.entity.Role;
 import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
@@ -37,12 +37,20 @@ public class UserService {
         user.setRole(roleUser);
         token.addUser(user);
         userRepository.save(user);
-        UserTokenDto userTokenDto = new UserTokenDto(token.getValue(), user.getEmail());
-        applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(userTokenDto));
+        EmailDto emailDto = createEmailDto(user.getEmail(), token.getValue());
+        applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
     }
 
     public void confirmUserEmail(String token) {
         User userByTokenValue = tokenService.validateToken(token);
         userByTokenValue.setIsVerified(true);
+    }
+
+    private EmailDto createEmailDto(String userEmail, String tokenValue) {
+        EmailDto emailDto = new EmailDto();
+        emailDto.setTo(userEmail);
+        emailDto.setBody(tokenValue);
+        emailDto.setSubject("Follow this link to confirm your email");
+        return emailDto;
     }
 }
