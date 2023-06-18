@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/countries")
-public class CountryController {
+public class CountryRestController {
     private static final String REDIRECT_TO_ALL = "countries";
     private final CountryService countryService;
 
@@ -47,7 +47,7 @@ public class CountryController {
     @PutMapping("/{id}")
     public RedirectView updateCountry(@PathVariable Long id, @RequestParam CountryDto countryDto) {
         countryDto.setId(id);
-        countryService.addCountry(countryDto);
+        countryService.addCountry(countryDto);    //todo може прийти країна без міст тоді і інші видаляться або з іншими і тоді інші перезатруться
         return new RedirectView(REDIRECT_TO_ALL);
     }
 

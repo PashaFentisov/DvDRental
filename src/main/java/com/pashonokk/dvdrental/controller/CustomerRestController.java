@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 @RequestMapping(value = "/customers")
 @RequiredArgsConstructor
-public class CustomerController {
+public class CustomerRestController {
     private final CustomerService customerService;
 
     public static final String REDIRECT_TO_ALL = "customers";

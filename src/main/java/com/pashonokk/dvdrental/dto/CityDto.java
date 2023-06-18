@@ -1,19 +1,17 @@
 package com.pashonokk.dvdrental.dto;
 
-import com.pashonokk.dvdrental.entity.City;
+import com.pashonokk.dvdrental.entity.Country;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CountryDto {
+public class CityDto {
     private Long id;
-    private String country;
+    private String city;
     private LocalDate lastUpdate;
-    private Set<City> cities;
+    private Country country;
 }

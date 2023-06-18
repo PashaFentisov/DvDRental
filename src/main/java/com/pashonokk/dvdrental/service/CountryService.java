@@ -48,5 +48,8 @@ public class CountryService {
         if (countryDto.getCountry()!= null) {
             country.setCountry(countryDto.getCountry());
         }
+        if (countryDto.getCities()!= null) {
+            country.setCities(countryDto.getCities());  //todo те саме міста можуть просто зникнути
+        }
     }
 }
