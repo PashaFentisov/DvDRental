@@ -26,9 +26,4 @@ public class DvDRentalControllerAdvice {
     public ResponseEntity<String> handleTokenExpiredExceptions(TokenExpiredException tokenExpiredException) {
         return ResponseEntity.badRequest().body(tokenExpiredException.getMessage());
     }
-
-    @ExceptionHandler(EmailDtoValidationException.class)
-    public ResponseEntity<String> handleEmailValidationExceptions(EmailDtoValidationException emailDtoValidationException) {
-        return ResponseEntity.badRequest().body(emailDtoValidationException.getMessage());
-    }
 }
