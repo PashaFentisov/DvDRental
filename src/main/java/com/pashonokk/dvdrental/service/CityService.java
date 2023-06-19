@@ -28,13 +28,10 @@ public class CityService {
 
     @Transactional
     public void saveCity(CityDto cityDto) {
-//        Country country = cityDto.getCountry();
-//        country.setCities(Set.of(cityMapper.toEntity(cityDto)));  //todo how to do fix this relationships
-        cityRepository.save(cityMapper.toEntity(cityDto));   //todo add check if city has country
+        cityRepository.save(cityMapper.toEntity(cityDto));
     }
 
     @Transactional
-
     public void deleteById(Long id) {
         cityRepository.deleteById(id);
     }
@@ -45,8 +42,8 @@ public class CityService {
         if (city == null) {
             return;
         }
-        if (cityDto.getCity() != null) {
-            city.setCity(cityDto.getCity());
+        if (cityDto.getName() != null) {
+            city.setName(cityDto.getName());
         }
         if (cityDto.getLastUpdate() != null) {
             city.setLastUpdate(cityDto.getLastUpdate());

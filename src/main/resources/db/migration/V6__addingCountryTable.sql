@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS country(
     id          SERIAL PRIMARY KEY,
-    country     VARCHAR(50) NOT NULL,
+    name     VARCHAR(50) NOT NULL,
     last_update DATE
 );

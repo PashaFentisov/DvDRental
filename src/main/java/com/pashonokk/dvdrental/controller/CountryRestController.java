@@ -24,9 +24,9 @@ public class CountryRestController {
 
     @GetMapping
     public Page<CountryDto> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
-                                         @RequestParam(required = false ,defaultValue = "10") int size,
+                                         @RequestParam(required = false, defaultValue = "10") int size,
                                          @RequestParam(required = false, defaultValue = "id") String sort) {
-        if(size>100){
+        if (size > 100) {
             throw new BigSizeException("You can get maximum 100 elements");
         }
         return countryService.getCountries(PageRequest.of(page, size, Sort.by(sort)));
@@ -45,9 +45,8 @@ public class CountryRestController {
     }
 
     @PutMapping("/{id}")
-    public RedirectView updateCountry(@PathVariable Long id, @RequestParam CountryDto countryDto) {
-        countryDto.setId(id);
-        countryService.addCountry(countryDto);    //todo може прийти країна без міст тоді і інші видаляться або з іншими і тоді інші перезатруться
+    public RedirectView updateCountryName(@PathVariable Long id, @RequestParam String name) {
+        countryService.updateCountryName(name, id);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 

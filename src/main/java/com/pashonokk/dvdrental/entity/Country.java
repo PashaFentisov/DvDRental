@@ -1,10 +1,7 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -19,8 +16,14 @@ public class Country {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String country;
+    private String name;
     private LocalDate lastUpdate;
-    @OneToMany(mappedBy = "country", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL})
+    @Setter(AccessLevel.PRIVATE)
     private Set<City> cities = new HashSet<>();
+
+    public void addCity(City city){
+        this.cities.add(city);
+        city.setCountry(this);
+    }
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CityDto {
     private Long id;
-    private String city;
+    private String name;
     private LocalDate lastUpdate;
     private Country country;
 }
