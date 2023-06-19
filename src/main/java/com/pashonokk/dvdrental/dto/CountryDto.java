@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class CountryDto {
     private Long id;
-    private String country;
+    private String name;
     private LocalDate lastUpdate;
     private Set<City> cities;
 }

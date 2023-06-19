@@ -45,11 +45,16 @@ public class CountryService {
         if (countryDto.getLastUpdate() != null) {
             country.setLastUpdate(countryDto.getLastUpdate());
         }
-        if (countryDto.getCountry()!= null) {
-            country.setCountry(countryDto.getCountry());
+        if (countryDto.getName()!= null) {
+            country.setName(countryDto.getName());
         }
-        if (countryDto.getCities()!= null) {
-            country.setCities(countryDto.getCities());  //todo те саме міста можуть просто зникнути
+    }
+
+    public void updateCountryName(String name, Long id) {
+        Country country = countryRepository.findById(id).orElse(null);
+        if(country==null){
+            return;
         }
+        country.setName(name);
     }
 }
