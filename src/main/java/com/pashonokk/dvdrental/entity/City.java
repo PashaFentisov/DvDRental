@@ -15,7 +15,7 @@ public class City {
     private Long id;
     private String name;
     private LocalDate lastUpdate;
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "countryId")
     private Country country;
 }

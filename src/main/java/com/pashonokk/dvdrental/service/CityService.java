@@ -1,8 +1,10 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CityDto;
+import com.pashonokk.dvdrental.dto.CitySavingDto;
 import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.mapper.CityMapper;
+import com.pashonokk.dvdrental.mapper.CitySavingMapper;
 import com.pashonokk.dvdrental.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CityService {
     private final CityRepository cityRepository;
     private final CityMapper cityMapper;
+    private final CitySavingMapper citySavingMapper;
+    private final CountryService countryService;
 
     @Transactional(readOnly = true)
     public CityDto getCityById(Long id) {
@@ -27,8 +31,9 @@ public class CityService {
     }
 
     @Transactional
-    public void saveCity(CityDto cityDto) {
-        cityRepository.save(cityMapper.toEntity(cityDto));
+    public void saveCity(CitySavingDto citySavingDto) {
+        City city = citySavingMapper.toEntity(citySavingDto);
+        countryService.addCityForCountry(city, citySavingDto.getCountryId());
     }
 
     @Transactional
@@ -47,9 +52,6 @@ public class CityService {
         }
         if (cityDto.getLastUpdate() != null) {
             city.setLastUpdate(cityDto.getLastUpdate());
-        }
-        if (cityDto.getCountry() != null) {
-            city.setCountry(cityDto.getCountry());
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CityDto;
+import com.pashonokk.dvdrental.dto.CitySavingDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CityService;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,8 @@ public class CityRestController {
     }
 
     @PostMapping()
-    public RedirectView getCityById(@RequestBody CityDto cityDto) {
-        cityService.saveCity(cityDto);
+    public RedirectView addCity(@RequestBody CitySavingDto citySavingDto) {
+        cityService.saveCity(citySavingDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
@@ -44,12 +45,6 @@ public class CityRestController {
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
-    @PutMapping("/{id}")
-    public RedirectView updateCity(@PathVariable Long id, @RequestBody CityDto cityDto){
-        cityDto.setId(id);
-        cityService.saveCity(cityDto);
-        return new RedirectView(REDIRECT_TO_ALL);
-    }
 
     @PatchMapping("/{id}")
     public RedirectView partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto){

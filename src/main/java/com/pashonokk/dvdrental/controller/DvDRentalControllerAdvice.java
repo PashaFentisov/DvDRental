@@ -26,4 +26,8 @@ public class DvDRentalControllerAdvice {
     public ResponseEntity<String> handleTokenExpiredExceptions(TokenExpiredException tokenExpiredException) {
         return ResponseEntity.badRequest().body(tokenExpiredException.getMessage());
     }
+    @ExceptionHandler(CountryNotFoundException.class)
+    public ResponseEntity<String> handleCountryNotFoundExceptions(CountryNotFoundException countryNotFoundException) {
+        return ResponseEntity.badRequest().body(countryNotFoundException.getMessage());
+    }
 }
