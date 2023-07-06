@@ -1,9 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CountryDto;
-import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Country;
-import com.pashonokk.dvdrental.exception.CountryNotFoundException;
 import com.pashonokk.dvdrental.mapper.CountryMapper;
 import com.pashonokk.dvdrental.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class CountryService {
 
     @Transactional(readOnly = true)
     public CountryDto getCountry(Long id) {
-        return countryRepository.findById(id).map(countryMapper::toDto).orElseThrow();
+        return countryRepository.findByIdWithCities(id).map(countryMapper::toDto).orElseThrow();
     }
 
     @Transactional
@@ -59,11 +57,5 @@ public class CountryService {
             return;
         }
         country.setName(name);
-    }
-    @Transactional
-    public void addCityForCountry(City city, Long countryId) {
-        Country country = countryRepository.findById(countryId)
-                .orElseThrow(() -> new CountryNotFoundException("Such country does not exist"));
-        country.addCity(city);
     }
 }
