@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @RequestMapping("/cities")
 public class CityRestController {
-    private static final String REDIRECT_TO_ALL = "cities";
+    private static final String REDIRECT_TO_ALL = "/cities";
     private final CityService cityService;
 
     @GetMapping("/{id}")

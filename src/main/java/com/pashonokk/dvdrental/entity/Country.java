@@ -19,7 +19,7 @@ public class Country {
     private Long id;
     private String name;
     private LocalDate lastUpdate;
-    @OneToMany(mappedBy = "country")
+    @OneToMany(mappedBy = "country", orphanRemoval = true)
     @Setter(AccessLevel.PRIVATE)
     @JsonIgnore
     private Set<City> cities = new HashSet<>();
@@ -27,5 +27,10 @@ public class Country {
     public void addCity(City city) {
         this.cities.add(city);
         city.setCountry(this);
+    }
+
+    public void removeCity(City city) {
+        this.cities.remove(city);
+        city.setCountry(null);
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @RequestMapping("/countries")
 public class CountryRestController {
-    private static final String REDIRECT_TO_ALL = "countries";
+    private static final String REDIRECT_TO_ALL = "/countries";
     private final CountryService countryService;
 
     @GetMapping("{id}")
