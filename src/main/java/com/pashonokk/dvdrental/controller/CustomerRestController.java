@@ -17,7 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class CustomerRestController {
     private final CustomerService customerService;
 
-    public static final String REDIRECT_TO_ALL = "customers";
+    public static final String REDIRECT_TO_ALL = "/customers";
 
     @GetMapping("/{id}")
     public CustomerDto getCustomer(@PathVariable Long id) {
@@ -56,7 +56,7 @@ public class CustomerRestController {
     @PatchMapping("/{id}")
     public RedirectView updateSomeFieldsOfCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         customerDto.setId(id);
-        customerService.partialUpdateCustomer(customerDto);
+        customerService.partialUpdateCustomer(customerDto);   //todo чимаю я тут міняти адресу?
         return new RedirectView(REDIRECT_TO_ALL);
     }
 }

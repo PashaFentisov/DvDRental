@@ -21,4 +21,11 @@ public class Customer {
     private LocalDate lastUpdate;
     private LocalDate createDate;
     private boolean active;
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Address address;
+
+    public void addAddress(Address address){
+        address.setCustomer(this);
+        this.setAddress(address);
+    }
 }

@@ -19,7 +19,7 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public CustomerDto getCustomerById(Long id) {
-        return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow();
+        return customerRepository.findByIdWithAddress(id).map(customerMapper::toDto).orElseThrow();
     }
 
     @Transactional(readOnly = true)
@@ -34,7 +34,9 @@ public class CustomerService {
 
     @Transactional
     public void addCustomer(CustomerDto customerDto) {
-        customerRepository.save(customerMapper.toEntity(customerDto));
+        Customer customer = customerMapper.toEntity(customerDto);
+        customer.addAddress(customerDto.getAddress());
+        customerRepository.save(customer);
     }
 
     @Transactional
