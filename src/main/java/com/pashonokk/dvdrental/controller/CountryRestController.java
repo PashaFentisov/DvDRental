@@ -51,7 +51,7 @@ public class CountryRestController {
     }
 
     @PatchMapping("/{id}")
-    public RedirectView partiallyUpdateCountry(@PathVariable Long id, @RequestParam CountryDto countryDto) {
+    public RedirectView partiallyUpdateCountry(@PathVariable Long id, @RequestBody CountryDto countryDto) {
         countryDto.setId(id);
         countryService.updateCountry(countryDto);
         return new RedirectView(REDIRECT_TO_ALL);

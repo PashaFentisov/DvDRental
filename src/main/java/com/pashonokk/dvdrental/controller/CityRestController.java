@@ -40,14 +40,14 @@ public class CityRestController {
     }
 
     @DeleteMapping("/{id}")
-    public RedirectView deleteCityById(@PathVariable Long id){
+    public RedirectView deleteCityById(@PathVariable Long id) {
         cityService.deleteById(id);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
 
     @PatchMapping("/{id}")
-    public RedirectView partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto){
+    public RedirectView partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
         cityDto.setId(id);
         cityService.partiallyUpdateCity(cityDto);
         return new RedirectView(REDIRECT_TO_ALL);

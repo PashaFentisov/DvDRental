@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface CityRepository extends JpaRepository<City, Long> {
     @EntityGraph(attributePaths = "country")
     Page<City> findAll(Pageable pageable);
+
     @Query("SELECT c FROM City c JOIN FETCH c.country WHERE c.id = :id")
     Optional<City> findByIdWithCountry(@Param("id") Long id);
 }

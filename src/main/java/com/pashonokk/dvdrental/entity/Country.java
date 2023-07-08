@@ -19,9 +19,9 @@ public class Country {
     private Long id;
     private String name;
     private LocalDate lastUpdate;
-    @OneToMany(mappedBy = "country", orphanRemoval = true)
+    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = {CascadeType.ALL})
     @Setter(AccessLevel.PRIVATE)
-    @JsonIgnore
+    @JsonIgnore                                                  //todo без цього не можу отримати міста
     private Set<City> cities = new HashSet<>();
 
     public void addCity(City city) {
