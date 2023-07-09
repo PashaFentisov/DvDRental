@@ -28,4 +28,9 @@ public class Customer {
         address.setCustomer(this);
         this.setAddress(address);
     }
+
+    public void removeAddress(Address address) {
+        this.setAddress(null);
+        address.setCustomer(null);
+    }
 }

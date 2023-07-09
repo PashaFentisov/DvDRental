@@ -49,14 +49,14 @@ public class CustomerRestController {
     @PutMapping("/{id}")
     public RedirectView updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         customerDto.setId(id);
-        customerService.addCustomer(customerDto);
+        customerService.addCustomer(customerDto);    //todo чи маю я перевіряти чи міняє ця штука адресу бо воно не має її міняти
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
     @PatchMapping("/{id}")
     public RedirectView updateSomeFieldsOfCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         customerDto.setId(id);
-        customerService.partialUpdateCustomer(customerDto);   //todo чимаю я тут міняти адресу?
+        customerService.partialUpdateCustomer(customerDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }
 }

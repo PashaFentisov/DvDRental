@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
+import com.pashonokk.dvdrental.dto.AddressDto;
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.service.AddressService;
 import lombok.RequiredArgsConstructor;
@@ -11,37 +12,39 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 public class AddressRestController {
     private final AddressService addressService;
+    public static final String REDIRECT_TO_ALL_CUSTOMERS = "/customers";
+
+
+    @GetMapping("/{id}")
+    public AddressDto getAddressByCustomerId(@PathVariable Long id) {
+        return addressService.getAddressByCustomerId(id);
+    }
 
     @PostMapping("{id}")
     public RedirectView addAddressToCustomer(@PathVariable Long id, @RequestBody AddressSavingDto addressSavingDto) {
         addressSavingDto.setCustomerId(id);
-        addressService.addAddressToCustomer(addressSavingDto);  //todo перевіряти якщо адреса вже є то не робим нічо есле сетим
-        return new RedirectView("/customers");
+        addressService.addAddressToCustomer(addressSavingDto);
+        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
     }
 
 
-//    @DeleteMapping("/{id}")
-//    public RedirectView deleteCustomersAddress(@PathVariable Long id) {
-//        categoryService.deleteCategoryById(id);
-//        return new RedirectView(REDIRECT_TO_ALL);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public RedirectView updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
-//        categoryDto.setId(id);
-//        categoryService.addCategory(categoryDto);
-//        return new RedirectView(REDIRECT_TO_ALL);
-//    }
-//
-//    @PatchMapping("/{id}")
-//    public RedirectView updateSomeFieldsOfCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
-//        categoryDto.setId(id);
-//        categoryService.partialUpdateCategory(categoryDto);
-//        return new RedirectView(REDIRECT_TO_ALL);
-//    }
+    @DeleteMapping("/{id}")
+    public RedirectView deleteCustomersAddress(@PathVariable Long id) {
+        addressService.deleteCustomersAddress(id);
+        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+    }
 
-    //delete
-    //put
-    //patch
-    //get address by customer id  in customer controller
+    @PutMapping("/{id}")
+    public RedirectView updateCategory(@PathVariable Long id, @RequestBody AddressDto addressDto) {
+        addressDto.setId(id);
+        addressService.updateAddress(addressDto);
+        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+    }
+
+    @PatchMapping("/{id}")
+    public RedirectView updateSomeFieldsOfAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
+        addressDto.setId(id);
+        addressService.updateSomeFieldsOfAddress(addressDto);
+        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+    }
 }
