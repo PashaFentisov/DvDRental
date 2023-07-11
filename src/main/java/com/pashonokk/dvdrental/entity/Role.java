@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
-@ToString(exclude = "users")
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role {
@@ -20,10 +21,16 @@ public class Role {
     @Setter(AccessLevel.PRIVATE)
     private Set<User> users = new HashSet<>();
     @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Setter(AccessLevel.PRIVATE)
     private Set<Authority> authorities = new HashSet<>();
 
     public void addUser(User user) {
         this.users.add(user);
         user.setRole(this);
+    }
+
+    public void removeUser(User user) {
+        this.users.remove(user);
+        user.setRole(null);
     }
 }

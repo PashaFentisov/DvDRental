@@ -1,14 +1,18 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Entity
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

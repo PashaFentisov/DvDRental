@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
+import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CountryService;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +33,11 @@ public class CountryRestController {
             throw new BigSizeException("You can get maximum 100 elements");
         }
         return countryService.getCountries(PageRequest.of(page, size, Sort.by(sort)));
+    }
+
+    @GetMapping("{id}/cities")
+    public List<CityDto> getCountryCities(@PathVariable Long id) {
+        return countryService.getCountryCities(id);
     }
 
     @PostMapping

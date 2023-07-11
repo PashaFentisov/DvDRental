@@ -1,10 +1,12 @@
 package com.pashonokk.dvdrental.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class EmailDto {
     private String to;
     public static final String FROM = System.getenv("EMAIL_FROM");

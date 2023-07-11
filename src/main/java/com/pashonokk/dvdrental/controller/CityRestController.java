@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 @RequestMapping("/cities")
 public class CityRestController {
-    private static final String REDIRECT_TO_ALL = "/cities";
+    private static final String REDIRECT_TO_ALL = "/countries";
     private final CityService cityService;
 
     @GetMapping("/{id}")
@@ -24,17 +24,18 @@ public class CityRestController {
     }
 
     @GetMapping
-    public Page<CityDto> getAllCities(@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-                                      @RequestParam(name = "size", required = false, defaultValue = "10") int size,
-                                      @RequestParam(name = "sort", required = false, defaultValue = "id") String sort) {
+    public Page<CityDto> getCities(@RequestParam(required = false, defaultValue = "0") int page,
+                                   @RequestParam(required = false, defaultValue = "10") int size,
+                                   @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
-            throw new BigSizeException("You can get only 100 elements");
+            throw new BigSizeException("You can get maximum 100 elements");
         }
         return cityService.getCities(PageRequest.of(page, size, Sort.by(sort)));
     }
 
-    @PostMapping()
-    public RedirectView addCity(@RequestBody CitySavingDto citySavingDto) {
+    @PostMapping("{id}")
+    public RedirectView addCity(@PathVariable Long id, @RequestBody CitySavingDto citySavingDto) {
+        citySavingDto.setCountryId(id);
         cityService.saveCity(citySavingDto);
         return new RedirectView(REDIRECT_TO_ALL);
     }

@@ -1,28 +1,26 @@
 package com.pashonokk.dvdrental.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString(exclude = "cities")
+@Getter
+@Setter
+@ToString
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private LocalDate lastUpdate;
-    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.ALL)
     @Setter(AccessLevel.PRIVATE)
-    @JsonIgnore                                                  //todo без цього не можу отримати міста
-    private Set<City> cities = new HashSet<>();
+    private List<City> cities = new ArrayList<>();
 
     public void addCity(City city) {
         this.cities.add(city);
@@ -33,4 +31,6 @@ public class Country {
         this.cities.remove(city);
         city.setCountry(null);
     }
+//todo зробити equals i hashcode тут і в сіті
+    //todo переробити тут і в дто ліст на сет
 }

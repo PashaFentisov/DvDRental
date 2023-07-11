@@ -25,7 +25,7 @@ public class CityService {
 
     @Transactional(readOnly = true)
     public CityDto getCityById(Long id) {
-        return cityRepository.findByIdWithCountry(id).map(cityMapper::toDto).orElseThrow();
+        return cityRepository.findById(id).map(cityMapper::toDto).orElseThrow();
     }
 
     @Transactional(readOnly = true)
@@ -35,11 +35,9 @@ public class CityService {
 
     @Transactional
     public void saveCity(CitySavingDto citySavingDto) {
-        City city = citySavingMapper.toEntity(citySavingDto);
-        Country country = countryRepository.findById(citySavingDto.getCountryId())
+        Country country = countryRepository.findByIdWithCities(citySavingDto.getCountryId())
                 .orElseThrow(() -> new CountryNotFoundException("Such country does not exist"));
-        city.setCountry(country);
-        cityRepository.save(city);
+        country.addCity(citySavingMapper.toEntity(citySavingDto));
     }
 
     @Transactional

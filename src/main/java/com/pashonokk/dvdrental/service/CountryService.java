@@ -1,7 +1,10 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
 import com.pashonokk.dvdrental.entity.Country;
+import com.pashonokk.dvdrental.exception.CountryNotFoundException;
+import com.pashonokk.dvdrental.mapper.CityMapper;
 import com.pashonokk.dvdrental.mapper.CountryMapper;
 import com.pashonokk.dvdrental.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,15 +13,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CountryService {
     private final CountryRepository countryRepository;
     private final CountryMapper countryMapper;
+    private final CityMapper cityMapper;
 
     @Transactional(readOnly = true)
     public CountryDto getCountry(Long id) {
-        return countryRepository.findByIdWithCities(id).map(countryMapper::toDto).orElseThrow();
+        return countryRepository.findById(id)
+                .map(countryMapper::toDto)
+                .orElseThrow(() -> new CountryNotFoundException("Country with id " + id + " doesn't exist"));
     }
 
     @Transactional
@@ -57,5 +65,12 @@ public class CountryService {
             return;
         }
         country.setName(name);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CityDto> getCountryCities(Long id) {
+        Country country = countryRepository.findByIdWithCities(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country with id " + " does`nt exist"));
+        return country.getCities().stream().map(cityMapper::toDto).toList();
     }
 }

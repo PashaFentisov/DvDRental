@@ -46,13 +46,6 @@ public class CustomerRestController {
         return new RedirectView(REDIRECT_TO_ALL);
     }
 
-    @PutMapping("/{id}")
-    public RedirectView updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
-        customerDto.setId(id);
-        customerService.addCustomer(customerDto);    //todo чи маю я перевіряти чи міняє ця штука адресу бо воно не має її міняти
-        return new RedirectView(REDIRECT_TO_ALL);
-    }
-
     @PatchMapping("/{id}")
     public RedirectView updateSomeFieldsOfCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         customerDto.setId(id);

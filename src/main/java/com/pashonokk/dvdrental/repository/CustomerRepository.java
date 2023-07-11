@@ -16,6 +16,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @EntityGraph(attributePaths = "address")
     Page<Customer> findAll(Pageable pageable);
 
-    @Query("select c from Customer c join fetch c.address where c.id=:id")
+    @Query("select c from Customer c left join fetch c.address where c.id=:id")
     Optional<Customer> findByIdWithAddress(@Param("id") Long id);
 }

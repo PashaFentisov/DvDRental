@@ -2,16 +2,18 @@ package com.pashonokk.dvdrental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Entity
-@Data
 @NoArgsConstructor
-@ToString(exclude = "customer")
+@Getter
+@Setter
+@ToString
 public class Address {
     @Id
     private Long id;

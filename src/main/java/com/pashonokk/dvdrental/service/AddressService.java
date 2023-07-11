@@ -34,8 +34,7 @@ public class AddressService {
             return;
         }
         Address address = addressSavingMapper.toEntity(addressSavingDto);
-        address.setCustomer(customer);
-        addressRepository.save(address);
+        customer.addAddress(address);
     }
 
     @Transactional
@@ -56,16 +55,12 @@ public class AddressService {
 
     @Transactional
     public void updateAddress(AddressDto addressDto) {
-        Customer customer = customerRepository.findById(addressDto.getId())
-                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + addressDto.getId() + " doesn`t exist"));
-        Address address = addressMapper.toEntity(addressDto);
-        address.setId(null);
-        if (customer.getAddress() == null) {
-            address.setCustomer(customer);
-            addressRepository.save(address);
+        Address address = addressRepository.findById(addressDto.getId()).orElse(null);
+        if (address == null) {
+            log.warn("There isn`t address with id {}", addressDto.getId());
             return;
         }
-        addressRepository.save(address);
+        addressRepository.save(addressMapper.toEntity(addressDto));
     }
 
     @Transactional
