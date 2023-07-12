@@ -34,10 +34,13 @@ public class CityService {
     }
 
     @Transactional
-    public void saveCity(CitySavingDto citySavingDto) {
+    public CityDto saveCity(CitySavingDto citySavingDto) {
         Country country = countryRepository.findByIdWithCities(citySavingDto.getCountryId())
                 .orElseThrow(() -> new CountryNotFoundException("Such country does not exist"));
-        country.addCity(citySavingMapper.toEntity(citySavingDto));
+        City city = citySavingMapper.toEntity(citySavingDto);
+        country.addCity(city);
+        City savedCity = cityRepository.save(city);
+        return cityMapper.toDto(savedCity);
     }
 
     @Transactional
@@ -46,10 +49,10 @@ public class CityService {
     }
 
     @Transactional
-    public void partiallyUpdateCity(CityDto cityDto) {
+    public boolean partiallyUpdateCity(CityDto cityDto) {
         City city = cityRepository.findById(cityDto.getId()).orElse(null);
         if (city == null) {
-            return;
+            return false;
         }
         if (cityDto.getName() != null) {
             city.setName(cityDto.getName());
@@ -57,5 +60,6 @@ public class CityService {
         if (cityDto.getLastUpdate() != null) {
             city.setLastUpdate(cityDto.getLastUpdate());
         }
+        return true;
     }
 }

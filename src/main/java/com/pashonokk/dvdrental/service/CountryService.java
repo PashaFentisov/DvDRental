@@ -30,8 +30,9 @@ public class CountryService {
     }
 
     @Transactional
-    public void addCountry(CountryDto countryDto) {
-        countryRepository.save(countryMapper.toEntity(countryDto));
+    public CountryDto addCountry(CountryDto countryDto) {
+        Country savedCountry = countryRepository.save(countryMapper.toEntity(countryDto));
+        return countryMapper.toDto(savedCountry);
     }
 
     @Transactional(readOnly = true)
@@ -46,10 +47,8 @@ public class CountryService {
 
     @Transactional
     public void updateCountry(CountryDto countryDto) {
-        Country country = countryRepository.findById(countryDto.getId()).orElse(null);
-        if (country == null) {
-            return;
-        }
+        Country country = countryRepository.findById(countryDto.getId())
+                .orElseThrow(()->new CountryNotFoundException("Country with id " + countryDto.getId() + " doesn't exist"));
         if (countryDto.getLastUpdate() != null) {
             country.setLastUpdate(countryDto.getLastUpdate());
         }
@@ -60,10 +59,8 @@ public class CountryService {
 
     @Transactional
     public void updateCountryName(String name, Long id) {
-        Country country = countryRepository.findById(id).orElse(null);
-        if (country == null) {
-            return;
-        }
+        Country country = countryRepository.findById(id)
+                .orElseThrow(()->new CountryNotFoundException("Country with id " + id + " doesn't exist"));
         country.setName(name);
     }
 
