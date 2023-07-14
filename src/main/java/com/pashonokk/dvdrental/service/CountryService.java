@@ -1,9 +1,10 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
-import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Country;
 import com.pashonokk.dvdrental.exception.CountryNotFoundException;
+import com.pashonokk.dvdrental.mapper.CityMapper;
 import com.pashonokk.dvdrental.mapper.CountryMapper;
 import com.pashonokk.dvdrental.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,20 +13,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CountryService {
     private final CountryRepository countryRepository;
     private final CountryMapper countryMapper;
+    private final CityMapper cityMapper;
 
     @Transactional(readOnly = true)
     public CountryDto getCountry(Long id) {
-        return countryRepository.findById(id).map(countryMapper::toDto).orElseThrow();
+        return countryRepository.findById(id)
+                .map(countryMapper::toDto)
+                .orElseThrow(() -> new CountryNotFoundException("Country with id " + id + " doesn't exist"));
     }
 
     @Transactional
-    public void addCountry(CountryDto countryDto) {
-        countryRepository.save(countryMapper.toEntity(countryDto));
+    public CountryDto addCountry(CountryDto countryDto) {
+        Country savedCountry = countryRepository.save(countryMapper.toEntity(countryDto));
+        return countryMapper.toDto(savedCountry);
     }
 
     @Transactional(readOnly = true)
@@ -39,31 +47,25 @@ public class CountryService {
     }
 
     @Transactional
-    public void updateCountry(CountryDto countryDto) {
-        Country country = countryRepository.findById(countryDto.getId()).orElse(null);
-        if (country == null) {
-            return;
-        }
-        if (countryDto.getLastUpdate() != null) {
-            country.setLastUpdate(countryDto.getLastUpdate());
-        }
-        if (countryDto.getName() != null) {
-            country.setName(countryDto.getName());
-        }
+    public CountryDto updateCountry(CountryDto countryDto) {
+        Country country = countryRepository.findById(countryDto.getId())
+                .orElseThrow(()->new CountryNotFoundException("Country with id " + countryDto.getId() + " doesn't exist"));
+        Optional.ofNullable(countryDto.getName()).ifPresent(country::setName);
+        Optional.ofNullable(countryDto.getLastUpdate()).ifPresent(country::setLastUpdate);
+        return countryMapper.toDto(country);
     }
 
     @Transactional
     public void updateCountryName(String name, Long id) {
-        Country country = countryRepository.findById(id).orElse(null);
-        if (country == null) {
-            return;
-        }
+        Country country = countryRepository.findById(id)
+                .orElseThrow(()->new CountryNotFoundException("Country with id " + id + " doesn't exist"));
         country.setName(name);
     }
-    @Transactional
-    public void addCityForCountry(City city, Long countryId) {
-        Country country = countryRepository.findById(countryId)
-                .orElseThrow(() -> new CountryNotFoundException("Such country does not exist"));
-        country.addCity(city);
+
+    @Transactional(readOnly = true)
+    public List<CityDto> getCountryCities(Long id) {
+        Country country = countryRepository.findByIdWithCities(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country with id " + " does`nt exist"));
+        return country.getCities().stream().map(cityMapper::toDto).toList();
     }
 }

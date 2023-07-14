@@ -1,12 +1,13 @@
 package com.pashonokk.dvdrental.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.pashonokk.dvdrental.entity.Address;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDto {
@@ -16,5 +17,6 @@ public class CustomerDto {
     private String email;
     private LocalDate lastUpdate;
     private LocalDate createDate;
+    private Address address;
     private boolean active;
 }

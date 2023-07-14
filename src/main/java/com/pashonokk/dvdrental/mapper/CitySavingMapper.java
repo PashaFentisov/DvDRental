@@ -7,13 +7,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CitySavingMapper {
-    @Mapping(source = "lastUpdate", target = "lastUpdate")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "id", target = "id")
+    @Mapping(target = "countryId", ignore = true)
     CitySavingDto toDto(City city);
 
-    @Mapping(source = "lastUpdate", target = "lastUpdate")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "id", target = "id")
+    @Mapping(target = "country", ignore = true)
     City toEntity(CitySavingDto citySavingDto);
 }

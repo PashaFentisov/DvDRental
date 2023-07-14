@@ -1,14 +1,17 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
+import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+
+import java.net.URI;
 
 
 @RestController
@@ -17,46 +20,40 @@ import org.springframework.web.servlet.view.RedirectView;
 public class CategoryRestController {
     private final CategoryService categoryService;
 
-    public static final String REDIRECT_TO_ALL = "categories";
 
     @GetMapping("/{id}")
-    public CategoryDto getCategory(@PathVariable Long id) {
-        return categoryService.getCategory(id);
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.getCategory(id));
     }
 
     @GetMapping
-    public Page<CategoryDto> getCategories(@RequestParam(required = false, defaultValue = "0") int page,
-                                           @RequestParam(required = false, defaultValue = "10") int size,
-                                           @RequestParam(required = false, defaultValue = "id") String sort) {
-        if (size > 100) {
+    public ResponseEntity<Page<CategoryDto>> getCategories(@RequestBody(required = false) PageDto pageDto) {
+        if (pageDto.getSize() > 100) {
             throw new BigSizeException("You can get maximum 100 elements");
         }
-        return categoryService.getAllCategories(PageRequest.of(page, size, Sort.by(sort)));
+        Page<CategoryDto> allCategories = categoryService.getAllCategories(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
+        return ResponseEntity.ok(allCategories);
     }
 
     @DeleteMapping("/{id}")
-    public RedirectView deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategoryById(id);
-        return new RedirectView(REDIRECT_TO_ALL);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public RedirectView addCategory(@RequestBody CategoryDto categoryDto) {
-        categoryService.addCategory(categoryDto);
-        return new RedirectView(REDIRECT_TO_ALL);
-    }
-
-    @PutMapping("/{id}")
-    public RedirectView updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
-        categoryDto.setId(id);
-        categoryService.addCategory(categoryDto);
-        return new RedirectView(REDIRECT_TO_ALL);
+    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
+        CategoryDto savedCategory = categoryService.addCategory(categoryDto);
+        return ResponseEntity.created(URI.create("localhost:10000/categories/" + savedCategory.getId())).body(savedCategory);
     }
 
     @PatchMapping("/{id}")
-    public RedirectView updateSomeFieldsOfCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> updateSomeFieldsOfCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
         categoryDto.setId(id);
-        categoryService.partialUpdateCategory(categoryDto);
-        return new RedirectView(REDIRECT_TO_ALL);
+        CategoryDto updatedCategory = categoryService.partialUpdateCategory(categoryDto);
+        if(updatedCategory==null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(updatedCategory);
     }
 }

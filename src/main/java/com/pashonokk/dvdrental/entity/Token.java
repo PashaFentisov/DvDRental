@@ -2,14 +2,14 @@ package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Getter
-@ToString(exclude = "user")
+@NoArgsConstructor
 public class Token {
     @Id
     private Long userId;

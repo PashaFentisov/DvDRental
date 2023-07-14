@@ -30,4 +30,9 @@ public class DvDRentalControllerAdvice {
     public ResponseEntity<String> handleCountryNotFoundExceptions(CountryNotFoundException countryNotFoundException) {
         return ResponseEntity.badRequest().body(countryNotFoundException.getMessage());
     }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<String> handleCountryNotFoundExceptions(CustomerNotFoundException customerNotFoundException) {
+        return ResponseEntity.badRequest().body(customerNotFoundException.getMessage());
+    }
 }
