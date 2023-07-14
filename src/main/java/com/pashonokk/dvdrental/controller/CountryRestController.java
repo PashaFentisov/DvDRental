@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
+import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CountryService;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +28,11 @@ public class CountryRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CountryDto>> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
-                                                         @RequestParam(required = false, defaultValue = "10") int size,
-                                                         @RequestParam(required = false, defaultValue = "id") String sort) {
-        if (size > 100) {
+    public ResponseEntity<Page<CountryDto>> getCountries(@RequestBody(required = false) PageDto pageDto) {
+        if (pageDto.getSize() > 100) {
             throw new BigSizeException("You can get maximum 100 elements");
         }
-        Page<CountryDto> countries = countryService.getCountries(PageRequest.of(page, size, Sort.by(sort)));
+        Page<CountryDto> countries = countryService.getCountries(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
         return ResponseEntity.ok(countries);
     }
 
@@ -62,9 +61,9 @@ public class CountryRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> partiallyUpdateCountry(@PathVariable Long id, @RequestBody CountryDto countryDto) {
+    public ResponseEntity<CountryDto> partiallyUpdateCountry(@PathVariable Long id, @RequestBody CountryDto countryDto) {
         countryDto.setId(id);
-        countryService.updateCountry(countryDto);
-        return ResponseEntity.status(204).build();
+        CountryDto updatedCountry = countryService.updateCountry(countryDto);
+        return ResponseEntity.ok(updatedCountry);
     }
 }

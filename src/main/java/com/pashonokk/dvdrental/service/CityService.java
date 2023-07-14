@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CityService {
@@ -49,17 +51,13 @@ public class CityService {
     }
 
     @Transactional
-    public boolean partiallyUpdateCity(CityDto cityDto) {
+    public CityDto partiallyUpdateCity(CityDto cityDto) {
         City city = cityRepository.findById(cityDto.getId()).orElse(null);
         if (city == null) {
-            return false;
+            return null;
         }
-        if (cityDto.getName() != null) {
-            city.setName(cityDto.getName());
-        }
-        if (cityDto.getLastUpdate() != null) {
-            city.setLastUpdate(cityDto.getLastUpdate());
-        }
-        return true;
+        Optional.ofNullable(cityDto.getName()).ifPresent(city::setName);
+        Optional.ofNullable(cityDto.getLastUpdate()).ifPresent(city::setLastUpdate);
+        return cityMapper.toDto(city);
     }
 }

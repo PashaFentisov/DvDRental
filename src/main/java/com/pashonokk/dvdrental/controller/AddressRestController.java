@@ -4,47 +4,58 @@ import com.pashonokk.dvdrental.dto.AddressDto;
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.service.AddressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/addresses")
 @RequiredArgsConstructor
 public class AddressRestController {
     private final AddressService addressService;
-    public static final String REDIRECT_TO_ALL_CUSTOMERS = "/customers";
 
 
     @GetMapping("/{id}")
-    public AddressDto getAddressByCustomerId(@PathVariable Long id) {
-        return addressService.getAddressByCustomerId(id);
+    public ResponseEntity<AddressDto> getAddressByCustomerId(@PathVariable Long id) {
+        AddressDto addressByCustomerId = addressService.getAddressByCustomerId(id);
+        return ResponseEntity.ok(addressByCustomerId);
     }
 
     @PostMapping("{id}")
-    public RedirectView addAddressToCustomer(@PathVariable Long id, @RequestBody AddressSavingDto addressSavingDto) {
+    public ResponseEntity<AddressDto> addAddressToCustomer(@PathVariable Long id, @RequestBody AddressSavingDto addressSavingDto) {
         addressSavingDto.setCustomerId(id);
-        addressService.addAddressToCustomer(addressSavingDto);
-        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+        AddressDto savedAddress = addressService.addAddressToCustomer(addressSavingDto);
+        if (savedAddress == null) {
+            return ResponseEntity.status(409).build();
+        }
+        return ResponseEntity.created(URI.create("localhost:10000/addresses/" + savedAddress.getId())).body(savedAddress);
     }
 
 
     @DeleteMapping("/{id}")
-    public RedirectView deleteCustomersAddress(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteCustomersAddress(@PathVariable Long id) {
         addressService.deleteCustomersAddress(id);
-        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public RedirectView updateCategory(@PathVariable Long id, @RequestBody AddressDto addressDto) {
+    public ResponseEntity<AddressDto> updateCategory(@PathVariable Long id, @RequestBody AddressDto addressDto) {
         addressDto.setId(id);
-        addressService.updateAddress(addressDto);
-        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+        AddressDto updatedAddressDto = addressService.updateAddress(addressDto);
+        if (updatedAddressDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(updatedAddressDto);
     }
 
     @PatchMapping("/{id}")
-    public RedirectView updateSomeFieldsOfAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
+    public ResponseEntity<AddressDto> updateSomeFieldsOfAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
         addressDto.setId(id);
-        addressService.updateSomeFieldsOfAddress(addressDto);
-        return new RedirectView(REDIRECT_TO_ALL_CUSTOMERS);
+        AddressDto updatedAddressDto = addressService.updateSomeFieldsOfAddress(addressDto);
+        if (updatedAddressDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(updatedAddressDto);
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -38,36 +40,28 @@ public class CustomerService {
     }
 
     @Transactional
-    public void addCustomer(CustomerDto customerDto) {
+    public CustomerDto addCustomer(CustomerDto customerDto) {
         Customer customer = customerMapper.toEntity(customerDto);
         try {
             customer.addAddress(customerDto.getAddress());
         } catch (Exception e) {
             log.warn("Add customer without address");
         }
-        customerRepository.save(customer);
+        Customer savedCustomer = customerRepository.save(customer);
+        return customerMapper.toDto(savedCustomer);
     }
 
     @Transactional
-    public void partialUpdateCustomer(CustomerDto customerDto) {
+    public CustomerDto partialUpdateCustomer(CustomerDto customerDto) {
         Customer customer = customerRepository.findByIdWithAddress(customerDto.getId()).orElse(null);
         if (customer == null) {
-            return;
+            return null;
         }
-        if (customerDto.getFirstName() != null) {
-            customer.setFirstName(customerDto.getFirstName());
-        }
-        if (customerDto.getLastName() != null) {
-            customer.setLastName(customerDto.getLastName());
-        }
-        if (customerDto.getEmail() != null) {
-            customer.setEmail(customerDto.getEmail());
-        }
-        if (customerDto.getLastUpdate() != null) {
-            customer.setLastUpdate(customerDto.getLastUpdate());
-        }
-        if (customerDto.getCreateDate() != null) {
-            customer.setCreateDate(customerDto.getCreateDate());
-        }
+        Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
+        Optional.ofNullable(customerDto.getLastUpdate()).ifPresent(customer::setLastUpdate);
+        Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);
+        Optional.ofNullable(customerDto.getLastName()).ifPresent(customer::setLastName);
+        Optional.ofNullable(customerDto.getEmail()).ifPresent(customer::setEmail);
+        return customerMapper.toDto(customer);
     }
 }

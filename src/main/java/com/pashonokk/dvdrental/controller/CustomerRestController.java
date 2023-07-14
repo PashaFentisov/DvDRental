@@ -1,14 +1,17 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
+import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+
+import java.net.URI;
 
 
 @RestController
@@ -17,39 +20,41 @@ import org.springframework.web.servlet.view.RedirectView;
 public class CustomerRestController {
     private final CustomerService customerService;
 
-    public static final String REDIRECT_TO_ALL = "/customers";
 
     @GetMapping("/{id}")
-    public CustomerDto getCustomer(@PathVariable Long id) {
-        return customerService.getCustomerById(id);
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
+        CustomerDto customerDto = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customerDto);
     }
 
     @GetMapping
-    public Page<CustomerDto> getCustomers(@RequestParam(required = false, defaultValue = "0") int page,
-                                          @RequestParam(required = false, defaultValue = "10") int size,
-                                          @RequestParam(required = false, defaultValue = "firstName") String sort) {
-        if (size > 100) {
+    public ResponseEntity<Page<CustomerDto>> getCustomers(@RequestBody(required = false) PageDto pageDto) {
+        if (pageDto.getSize() > 100) {
             throw new BigSizeException("You can get maximum 100 elements");
         }
-        return customerService.getAllCustomers(PageRequest.of(page, size, Sort.by(sort)));
+        Page<CustomerDto> allCustomers = customerService.getAllCustomers(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
+        return ResponseEntity.ok(allCustomers);
     }
 
     @DeleteMapping("/{id}")
-    public RedirectView deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
-        return new RedirectView(REDIRECT_TO_ALL);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public RedirectView addCustomer(@RequestBody CustomerDto customerDto) {
-        customerService.addCustomer(customerDto);
-        return new RedirectView(REDIRECT_TO_ALL);
+    public ResponseEntity<CustomerDto> addCustomer(@RequestBody CustomerDto customerDto) {
+        CustomerDto savedCustomerDto = customerService.addCustomer(customerDto);
+        return ResponseEntity.created(URI.create("localhost:10000/customers/" + savedCustomerDto.getId())).body(savedCustomerDto);
     }
 
     @PatchMapping("/{id}")
-    public RedirectView updateSomeFieldsOfCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<CustomerDto> updateSomeFieldsOfCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         customerDto.setId(id);
-        customerService.partialUpdateCustomer(customerDto);
-        return new RedirectView(REDIRECT_TO_ALL);
+        CustomerDto updatedCustomerDto = customerService.partialUpdateCustomer(customerDto);
+        if (updatedCustomerDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(updatedCustomerDto);
     }
 }

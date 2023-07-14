@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CitySavingDto;
+import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CityService;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,11 @@ public class CityRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CityDto>> getCities(@RequestParam(required = false, defaultValue = "0") int page,
-                                                   @RequestParam(required = false, defaultValue = "10") int size,
-                                                   @RequestParam(required = false, defaultValue = "id") String sort) {
-        if (size > 100) {
+    public ResponseEntity<Page<CityDto>> getCities(@RequestBody(required = false) PageDto pageDto) {
+        if (pageDto.getSize() > 100) {
             throw new BigSizeException("You can get maximum 100 elements");
         }
-        Page<CityDto> cities = cityService.getCities(PageRequest.of(page, size, Sort.by(sort)));
+        Page<CityDto> cities = cityService.getCities(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
         return ResponseEntity.ok(cities);
     }
 
@@ -40,7 +39,7 @@ public class CityRestController {
     public ResponseEntity<CityDto> addCity(@PathVariable Long id, @RequestBody CitySavingDto citySavingDto) {
         citySavingDto.setCountryId(id);
         CityDto savedCityDto = cityService.saveCity(citySavingDto);
-        return ResponseEntity.created(URI.create("localhost:10000/countries/" + savedCityDto.getId())).body(savedCityDto);
+        return ResponseEntity.created(URI.create("localhost:10000/cities/" + savedCityDto.getId())).body(savedCityDto);
     }
 
     @DeleteMapping("/{id}")
@@ -51,11 +50,12 @@ public class CityRestController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
+    public ResponseEntity<CityDto> partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
         cityDto.setId(id);
-        if (!cityService.partiallyUpdateCity(cityDto)) {
+        CityDto updatedCity = cityService.partiallyUpdateCity(cityDto);
+        if (updatedCity==null) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.status(204).build();
+        return ResponseEntity.ok(updatedCity);
     }
 }

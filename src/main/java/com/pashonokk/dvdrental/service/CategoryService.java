@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -32,22 +34,20 @@ public class CategoryService {
     }
 
     @Transactional
-    public void addCategory(CategoryDto categoryDto) {
-        categoryRepository.save(categoryMapper.toEntity(categoryDto));
+    public CategoryDto addCategory(CategoryDto categoryDto) {
+        Category savedCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
+        return categoryMapper.toDto(savedCategory);
     }
 
     @Transactional
-    public void partialUpdateCategory(CategoryDto categoryDto) {
+    public CategoryDto partialUpdateCategory(CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryDto.getId()).orElse(null);
         if (category == null) {
-            return;
+            return null;
         }
-        if (categoryDto.getName() != null) {
-            category.setName(categoryDto.getName());
-        }
-        if (categoryDto.getLastUpdate() != null) {
-            category.setLastUpdate(categoryDto.getLastUpdate());
-        }
+        Optional.ofNullable(categoryDto.getName()).ifPresent(category::setName);
+        Optional.ofNullable(categoryDto.getLastUpdate()).ifPresent(category::setLastUpdate);
+        return categoryMapper.toDto(category);
     }
 
 }
