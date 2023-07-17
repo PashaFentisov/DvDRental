@@ -28,9 +28,9 @@ public class CustomerRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CustomerDto>> getCustomers(@RequestBody(required = false) PageDto pageDto) {
+    public ResponseEntity<Page<CustomerDto>> getCustomers(@RequestBody PageDto pageDto) {
         if (pageDto.getSize() > 100) {
-            throw new BigSizeException("You can get maximum 100 elements");
+            throw new BigSizeException("You can get maximum 100 customers at one time");
         }
         Page<CustomerDto> allCustomers = customerService.getAllCustomers(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
         return ResponseEntity.ok(allCustomers);

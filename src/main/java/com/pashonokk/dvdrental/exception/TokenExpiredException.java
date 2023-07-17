@@ -1,7 +1,9 @@
 package com.pashonokk.dvdrental.exception;
 
-public class TokenExpiredException extends RuntimeException{
+import org.springframework.http.HttpStatus;
+
+public class TokenExpiredException extends GenericDisplayableException {
     public TokenExpiredException(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }

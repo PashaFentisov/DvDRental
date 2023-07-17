@@ -4,11 +4,11 @@ import com.pashonokk.dvdrental.dto.AddressDto;
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
-import com.pashonokk.dvdrental.exception.CustomerNotFoundException;
 import com.pashonokk.dvdrental.mapper.AddressMapper;
 import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
 import com.pashonokk.dvdrental.repository.AddressRepository;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class AddressService {
     @Transactional
     public AddressDto addAddressToCustomer(AddressSavingDto addressSavingDto) {
         Customer customer = customerRepository.findByIdWithAddress(addressSavingDto.getCustomerId())
-                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + addressSavingDto.getCustomerId() + " doesn`t exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Customer with id " + addressSavingDto.getCustomerId() + " doesn`t exist"));
         if (customer.getAddress() != null) {
             log.warn("Customer {} already has address", customer);
             return null;
@@ -50,7 +50,7 @@ public class AddressService {
     @Transactional(readOnly = true)
     public AddressDto getAddressByCustomerId(Long id) {
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + id + " doesn`t exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Customer with id " + id + " doesn`t exist"));
         return addressMapper.toDto(address);
     }
 
@@ -67,10 +67,8 @@ public class AddressService {
 
     @Transactional
     public AddressDto updateSomeFieldsOfAddress(AddressDto addressDto) {
-        Address address = addressRepository.findById(addressDto.getId()).orElse(null);
-        if (address == null) {
-            return null;
-        }
+        Address address = addressRepository.findById(addressDto.getId())
+                .orElseThrow(()-> new EntityNotFoundException("Address with id " + addressDto.getId() + " doesn`t exist"));
         Optional.ofNullable(addressDto.getDistrict()).ifPresent(address::setDistrict);
         Optional.ofNullable(addressDto.getPhone()).ifPresent(address::setPhone);
         Optional.ofNullable(addressDto.getLastUpdate()).ifPresent(address::setLastUpdate);

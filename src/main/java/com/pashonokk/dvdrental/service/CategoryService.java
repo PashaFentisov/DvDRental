@@ -4,6 +4,7 @@ import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,10 +42,8 @@ public class CategoryService {
 
     @Transactional
     public CategoryDto partialUpdateCategory(CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(categoryDto.getId()).orElse(null);
-        if (category == null) {
-            return null;
-        }
+        Category category = categoryRepository.findById(categoryDto.getId())
+                .orElseThrow(()->new EntityNotFoundException("Category with id " + categoryDto.getId() + " doesn`t exist"));
         Optional.ofNullable(categoryDto.getName()).ifPresent(category::setName);
         Optional.ofNullable(categoryDto.getLastUpdate()).ifPresent(category::setLastUpdate);
         return categoryMapper.toDto(category);
