@@ -3,10 +3,10 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
 import com.pashonokk.dvdrental.entity.Country;
-import com.pashonokk.dvdrental.exception.CountryNotFoundException;
 import com.pashonokk.dvdrental.mapper.CityMapper;
 import com.pashonokk.dvdrental.mapper.CountryMapper;
 import com.pashonokk.dvdrental.repository.CountryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +27,7 @@ public class CountryService {
     public CountryDto getCountry(Long id) {
         return countryRepository.findById(id)
                 .map(countryMapper::toDto)
-                .orElseThrow(() -> new CountryNotFoundException("Country with id " + id + " doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Country with id " + id + " doesn't exist"));
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class CountryService {
     @Transactional
     public CountryDto updateCountry(CountryDto countryDto) {
         Country country = countryRepository.findById(countryDto.getId())
-                .orElseThrow(()->new CountryNotFoundException("Country with id " + countryDto.getId() + " doesn't exist"));
+                .orElseThrow(()->new EntityNotFoundException("Country with id " + countryDto.getId() + " doesn't exist"));
         Optional.ofNullable(countryDto.getName()).ifPresent(country::setName);
         Optional.ofNullable(countryDto.getLastUpdate()).ifPresent(country::setLastUpdate);
         return countryMapper.toDto(country);
@@ -58,14 +58,14 @@ public class CountryService {
     @Transactional
     public void updateCountryName(String name, Long id) {
         Country country = countryRepository.findById(id)
-                .orElseThrow(()->new CountryNotFoundException("Country with id " + id + " doesn't exist"));
+                .orElseThrow(()->new EntityNotFoundException("Country with id " + id + " doesn't exist"));
         country.setName(name);
     }
 
     @Transactional(readOnly = true)
     public List<CityDto> getCountryCities(Long id) {
         Country country = countryRepository.findByIdWithCities(id)
-                .orElseThrow(() -> new CountryNotFoundException("Country with id " + " does`nt exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Country with id " + " does`nt exist"));
         return country.getCities().stream().map(cityMapper::toDto).toList();
     }
 }

@@ -2,9 +2,9 @@ package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.entity.Customer;
-import com.pashonokk.dvdrental.exception.CustomerNotFoundException;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class CustomerService {
     public CustomerDto getCustomerById(Long id) {
         return customerRepository.findByIdWithAddress(id)
                 .map(customerMapper::toDto)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + id + " doesn`t exist "));
+                .orElseThrow(() -> new EntityNotFoundException("Customer with id " + id + " doesn`t exist "));
     }
 
     @Transactional(readOnly = true)
@@ -53,10 +53,8 @@ public class CustomerService {
 
     @Transactional
     public CustomerDto partialUpdateCustomer(CustomerDto customerDto) {
-        Customer customer = customerRepository.findByIdWithAddress(customerDto.getId()).orElse(null);
-        if (customer == null) {
-            return null;
-        }
+        Customer customer = customerRepository.findByIdWithAddress(customerDto.getId())
+                        .orElseThrow(()-> new EntityNotFoundException("Customer with id " + customerDto.getId() + " doesn`t exist"));
         Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
         Optional.ofNullable(customerDto.getLastUpdate()).ifPresent(customer::setLastUpdate);
         Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);

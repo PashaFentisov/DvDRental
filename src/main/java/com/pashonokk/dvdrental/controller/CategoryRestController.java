@@ -27,9 +27,9 @@ public class CategoryRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDto>> getCategories(@RequestBody(required = false) PageDto pageDto) {
+    public ResponseEntity<Page<CategoryDto>> getCategories(@RequestBody PageDto pageDto) {
         if (pageDto.getSize() > 100) {
-            throw new BigSizeException("You can get maximum 100 elements");
+            throw new BigSizeException("You can get maximum 100 categories at one time");
         }
         Page<CategoryDto> allCategories = categoryService.getAllCategories(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
         return ResponseEntity.ok(allCategories);

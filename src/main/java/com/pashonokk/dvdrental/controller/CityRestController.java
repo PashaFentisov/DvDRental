@@ -27,9 +27,9 @@ public class CityRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CityDto>> getCities(@RequestBody(required = false) PageDto pageDto) {
+    public ResponseEntity<Page<CityDto>> getCities(@RequestBody PageDto pageDto) {
         if (pageDto.getSize() > 100) {
-            throw new BigSizeException("You can get maximum 100 elements");
+            throw new BigSizeException("You can get maximum 100 cities at one time");
         }
         Page<CityDto> cities = cityService.getCities(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
         return ResponseEntity.ok(cities);

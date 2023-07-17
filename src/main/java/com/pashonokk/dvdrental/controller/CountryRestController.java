@@ -28,9 +28,9 @@ public class CountryRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CountryDto>> getCountries(@RequestBody(required = false) PageDto pageDto) {
+    public ResponseEntity<Page<CountryDto>> getCountries(@RequestBody PageDto pageDto) {
         if (pageDto.getSize() > 100) {
-            throw new BigSizeException("You can get maximum 100 elements");
+            throw new BigSizeException("You can get maximum 100 countries at one time");
         }
         Page<CountryDto> countries = countryService.getCountries(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
         return ResponseEntity.ok(countries);
