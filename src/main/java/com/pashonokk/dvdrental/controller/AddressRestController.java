@@ -35,7 +35,7 @@ public class AddressRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCustomersAddress(@PathVariable Long id) {
-        addressService.deleteCustomersAddress(id);   //todo fixed  but check
+        addressService.deleteCustomersAddress(id);
         return ResponseEntity.noContent().build();
     }
 
