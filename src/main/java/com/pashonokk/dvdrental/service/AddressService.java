@@ -3,7 +3,6 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.AddressDto;
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.entity.Address;
-import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Customer;
 import com.pashonokk.dvdrental.mapper.AddressMapper;
 import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
@@ -31,7 +30,6 @@ public class AddressService {
 
     private static final String ADDRESS_ERROR_MESSAGE = "Address with id %s doesn't exist";
     private static final String CUSTOMER_ERROR_MESSAGE = "Customer with id %s doesn't exist";
-    private static final String CITY_ERROR_MESSAGE = "City with id %s doesn't exist";
 
 
 
@@ -43,19 +41,11 @@ public class AddressService {
             log.warn("Customer {} already has address", customer);
             return null;
         }
-        City city = cityRepository.findById(addressSavingDto.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, addressSavingDto.getCityId())));
         Address address = addressSavingMapper.toEntity(addressSavingDto);
         customer.addAddress(address);
-        city.addAddress(address);
+        cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));  //todo чому воно робить додаткові запити на країну якщо я її не юзаю
         Address savedAddress = addressRepository.save(address);
         return addressMapper.toDto(savedAddress);
-    }
-
-    @Transactional
-    public void deleteCustomersAddress(Long id) {
-        customerRepository.findByIdWithAddress(id)
-                .ifPresent(customer -> customer.removeAddress(customer.getAddress()));
     }
 
     @Transactional(readOnly = true)
@@ -66,11 +56,9 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressDto updateAddress(AddressDto addressDto) {
-        addressRepository.findById(addressDto.getId())
-                .orElseThrow(()->new EntityNotFoundException(String.format(ADDRESS_ERROR_MESSAGE, addressDto.getId())));
-        Address updatedAddress = addressRepository.save(addressMapper.toEntity(addressDto));
-        return addressMapper.toDto(updatedAddress);
+    public void deleteCustomersAddress(Long id) {
+        customerRepository.findByIdWithAddress(id)
+                .ifPresent(customer -> customer.removeAddress(customer.getAddress()));
     }
 
     @Transactional

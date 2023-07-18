@@ -39,13 +39,6 @@ public class AddressRestController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AddressDto> updateAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
-        addressDto.setId(id);
-        AddressDto updatedAddressDto = addressService.updateAddress(addressDto);
-        return ResponseEntity.ok(updatedAddressDto);
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<AddressDto> updateSomeFieldsOfAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
         addressDto.setId(id);

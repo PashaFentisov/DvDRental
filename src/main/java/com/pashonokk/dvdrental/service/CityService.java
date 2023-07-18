@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class CityService {
 
     @Transactional(readOnly = true)
     public CityDto getCityById(Long id) {
-        return cityRepository.findById(id).map(cityMapper::toDto)
+        return cityRepository.findByIdWithCountry(id).map(cityMapper::toDto)
                 .orElseThrow(()->new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, id)));
     }
 
@@ -52,6 +53,12 @@ public class CityService {
 
     @Transactional
     public void deleteById(Long id) {
+        City city = cityRepository.findByIdWithAddresses(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, id)));
+        Set<Address> addresses = city.getAddresses();
+        for(Address address: addresses){
+            city.removeAddresses(address);
+        }
         cityRepository.deleteById(id);
     }
 
@@ -63,9 +70,9 @@ public class CityService {
         Optional.ofNullable(cityDto.getLastUpdate()).ifPresent(city::setLastUpdate);
         return cityMapper.toDto(city);
     }
-
-    public void addAddresstoCity(Address address, Long cityId) {
-        City city = cityRepository.findById(cityId)
+    @Transactional
+    public void addAddressToCity(Address address, Long cityId) {
+        City city = cityRepository.findByIdWithAddressesAndCountry(cityId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityId)));
         city.addAddress(address);
     }

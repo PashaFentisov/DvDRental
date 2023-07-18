@@ -4,7 +4,6 @@ import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
-import com.pashonokk.dvdrental.mapper.AddressMapper;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
@@ -44,6 +43,9 @@ public class CustomerService {
 
     @Transactional
     public void deleteCustomer(Long id) {
+        Customer customer = customerRepository.findByIdWithAddress(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        customer.removeAddress(customer.getAddress());
         customerRepository.deleteById(id);
     }
 
@@ -53,10 +55,17 @@ public class CustomerService {
         Address address = customer.getAddress();
         try {
             customer.addAddress(address);
-            Long cityId = customerSavingDto.getAddressSavingDto().getCityId();
-            cityService.addAddresstoCity(address, cityId);
         } catch (Exception e) {
             log.warn("Add customer without address");
+        }
+        try {
+            Long cityId = customerSavingDto.getAddressSavingDto().getCityId();
+            if(cityId==null){
+               throw new EntityNotFoundException("Address without city");
+            }
+            cityService.addAddressToCity(address, cityId);
+        } catch (Exception e) {
+            log.warn("Address without city");
         }
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toDto(savedCustomer);

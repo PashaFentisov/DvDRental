@@ -16,12 +16,10 @@ import java.net.URI;
 
 
 @RestController
-@RequestMapping(value = "/customers")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
 public class CustomerRestController {
     private final CustomerService customerService;
-
-
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
         CustomerDto customerDto = customerService.getCustomerById(id);

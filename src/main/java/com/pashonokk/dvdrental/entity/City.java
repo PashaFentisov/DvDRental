@@ -1,10 +1,7 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -27,6 +24,7 @@ public class City {
     @JoinColumn(name = "countryId")
     private Country country;
     @OneToMany(mappedBy = "city", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Setter(AccessLevel.PRIVATE)
     private Set<Address> addresses = new HashSet<>();
 
     public void addAddress(Address address) {
@@ -34,7 +32,7 @@ public class City {
         address.setCity(this);
     }
 
-    public void removeCity(Address address) {
+    public void removeAddresses(Address address) {
         this.addresses.remove(address);
         address.setCity(null);
     }

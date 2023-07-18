@@ -57,13 +57,6 @@ public class CountryService {
         return countryMapper.toDto(country);
     }
 
-    @Transactional
-    public void updateCountryName(String name, Long id) {
-        Country country = countryRepository.findById(id)
-                .orElseThrow(()->new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        country.setName(name);
-    }
-
     @Transactional(readOnly = true)
     public List<CityDto> getCountryCities(Long id) {
         Country country = countryRepository.findByIdWithCities(id)

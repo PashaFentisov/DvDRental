@@ -54,12 +54,6 @@ public class CountryRestController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCountryName(@PathVariable Long id, @RequestParam String name) {
-        countryService.updateCountryName(name, id);
-        return ResponseEntity.status(204).build();
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<CountryDto> partiallyUpdateCountry(@PathVariable Long id, @RequestBody CountryDto countryDto) {
         countryDto.setId(id);
