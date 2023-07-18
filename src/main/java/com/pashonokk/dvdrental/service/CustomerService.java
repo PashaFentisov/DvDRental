@@ -1,8 +1,12 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
+import com.pashonokk.dvdrental.dto.CustomerSavingDto;
+import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.mapper.AddressMapper;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
+import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +24,17 @@ import java.util.Optional;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final CustomerSavingMapper customerSavingMapper;
+    private final CityService cityService;
     private final Logger log = LoggerFactory.getLogger(CustomerService.class);
+    private static final String ERROR_MESSAGE = "Customer with id %s doesn't exist";
+
 
     @Transactional(readOnly = true)
     public CustomerDto getCustomerById(Long id) {
-        return customerRepository.findByIdWithAddress(id)
+        return customerRepository.findByIdWithFullAddress(id)
                 .map(customerMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Customer with id " + id + " doesn`t exist "));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
     }
 
     @Transactional(readOnly = true)
@@ -40,10 +48,13 @@ public class CustomerService {
     }
 
     @Transactional
-    public CustomerDto addCustomer(CustomerDto customerDto) {
-        Customer customer = customerMapper.toEntity(customerDto);
+    public CustomerDto addCustomer(CustomerSavingDto customerSavingDto) {
+        Customer customer = customerSavingMapper.toEntity(customerSavingDto);
+        Address address = customer.getAddress();
         try {
-            customer.addAddress(customerDto.getAddress());
+            customer.addAddress(address);
+            Long cityId = customerSavingDto.getAddressSavingDto().getCityId();
+            cityService.addAddresstoCity(address, cityId);
         } catch (Exception e) {
             log.warn("Add customer without address");
         }
@@ -53,8 +64,8 @@ public class CustomerService {
 
     @Transactional
     public CustomerDto partialUpdateCustomer(CustomerDto customerDto) {
-        Customer customer = customerRepository.findByIdWithAddress(customerDto.getId())
-                        .orElseThrow(()-> new EntityNotFoundException("Customer with id " + customerDto.getId() + " doesn`t exist"));
+        Customer customer = customerRepository.findById(customerDto.getId())
+                        .orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerDto.getId())));
         Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
         Optional.ofNullable(customerDto.getLastUpdate()).ifPresent(customer::setLastUpdate);
         Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);

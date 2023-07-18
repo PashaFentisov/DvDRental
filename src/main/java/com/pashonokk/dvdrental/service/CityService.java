@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CitySavingDto;
+import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Country;
 import com.pashonokk.dvdrental.mapper.CityMapper;
@@ -24,10 +25,14 @@ public class CityService {
     private final CityMapper cityMapper;
     private final CitySavingMapper citySavingMapper;
     private final CountryRepository countryRepository;
+    private static final String CITY_ERROR_MESSAGE = "City with id %s doesn't exist";
+    private static final String COUNTRY_ERROR_MESSAGE = "Country with id %s doesn't exist";
+
 
     @Transactional(readOnly = true)
     public CityDto getCityById(Long id) {
-        return cityRepository.findById(id).map(cityMapper::toDto).orElseThrow();
+        return cityRepository.findById(id).map(cityMapper::toDto)
+                .orElseThrow(()->new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, id)));
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +43,7 @@ public class CityService {
     @Transactional
     public CityDto saveCity(CitySavingDto citySavingDto) {
         Country country = countryRepository.findByIdWithCities(citySavingDto.getCountryId())
-                .orElseThrow(() -> new EntityNotFoundException("Country with id " + citySavingDto.getCountryId() + " does`not exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(COUNTRY_ERROR_MESSAGE,citySavingDto.getCountryId())));
         City city = citySavingMapper.toEntity(citySavingDto);
         country.addCity(city);
         City savedCity = cityRepository.save(city);
@@ -53,9 +58,15 @@ public class CityService {
     @Transactional
     public CityDto partiallyUpdateCity(CityDto cityDto) {
         City city = cityRepository.findById(cityDto.getId())
-                .orElseThrow(()-> new EntityNotFoundException("City with id " + cityDto.getId() + "doesn`t exist"));
+                .orElseThrow(()-> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityDto.getId())));
         Optional.ofNullable(cityDto.getName()).ifPresent(city::setName);
         Optional.ofNullable(cityDto.getLastUpdate()).ifPresent(city::setLastUpdate);
         return cityMapper.toDto(city);
+    }
+
+    public void addAddresstoCity(Address address, Long cityId) {
+        City city = cityRepository.findById(cityId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityId)));
+        city.addAddress(address);
     }
 }

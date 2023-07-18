@@ -3,10 +3,12 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.AddressDto;
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.entity.Address;
+import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Customer;
 import com.pashonokk.dvdrental.mapper.AddressMapper;
 import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
 import com.pashonokk.dvdrental.repository.AddressRepository;
+import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,21 +24,30 @@ import java.util.Optional;
 public class AddressService {
     private final AddressRepository addressRepository;
     private final CustomerRepository customerRepository;
+    private final CityRepository cityRepository;
     private final AddressSavingMapper addressSavingMapper;
     private final AddressMapper addressMapper;
     private final Logger log = LoggerFactory.getLogger(AddressService.class);
+
+    private static final String ADDRESS_ERROR_MESSAGE = "Address with id %s doesn't exist";
+    private static final String CUSTOMER_ERROR_MESSAGE = "Customer with id %s doesn't exist";
+    private static final String CITY_ERROR_MESSAGE = "City with id %s doesn't exist";
+
 
 
     @Transactional
     public AddressDto addAddressToCustomer(AddressSavingDto addressSavingDto) {
         Customer customer = customerRepository.findByIdWithAddress(addressSavingDto.getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException("Customer with id " + addressSavingDto.getCustomerId() + " doesn`t exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CUSTOMER_ERROR_MESSAGE, addressSavingDto.getCustomerId())));
         if (customer.getAddress() != null) {
             log.warn("Customer {} already has address", customer);
             return null;
         }
+        City city = cityRepository.findById(addressSavingDto.getCityId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, addressSavingDto.getCityId())));
         Address address = addressSavingMapper.toEntity(addressSavingDto);
         customer.addAddress(address);
+        city.addAddress(address);
         Address savedAddress = addressRepository.save(address);
         return addressMapper.toDto(savedAddress);
     }
@@ -48,19 +59,16 @@ public class AddressService {
     }
 
     @Transactional(readOnly = true)
-    public AddressDto getAddressByCustomerId(Long id) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer with id " + id + " doesn`t exist"));
+    public AddressDto getAddressWithCityAndCountryByCustomerId(Long id) {
+        Address address = addressRepository.findByIdAndCityAndCountry(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CUSTOMER_ERROR_MESSAGE, id)));
         return addressMapper.toDto(address);
     }
 
     @Transactional
     public AddressDto updateAddress(AddressDto addressDto) {
-        Address address = addressRepository.findById(addressDto.getId()).orElse(null);
-        if (address == null) {
-            log.warn("There isn`t address with id {}", addressDto.getId());
-            return null;
-        }
+        addressRepository.findById(addressDto.getId())
+                .orElseThrow(()->new EntityNotFoundException(String.format(ADDRESS_ERROR_MESSAGE, addressDto.getId())));
         Address updatedAddress = addressRepository.save(addressMapper.toEntity(addressDto));
         return addressMapper.toDto(updatedAddress);
     }
@@ -68,7 +76,7 @@ public class AddressService {
     @Transactional
     public AddressDto updateSomeFieldsOfAddress(AddressDto addressDto) {
         Address address = addressRepository.findById(addressDto.getId())
-                .orElseThrow(()-> new EntityNotFoundException("Address with id " + addressDto.getId() + " doesn`t exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADDRESS_ERROR_MESSAGE, addressDto.getId())));
         Optional.ofNullable(addressDto.getDistrict()).ifPresent(address::setDistrict);
         Optional.ofNullable(addressDto.getPhone()).ifPresent(address::setPhone);
         Optional.ofNullable(addressDto.getLastUpdate()).ifPresent(address::setLastUpdate);

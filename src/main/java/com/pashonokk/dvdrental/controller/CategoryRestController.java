@@ -51,9 +51,6 @@ public class CategoryRestController {
     public ResponseEntity<CategoryDto> updateSomeFieldsOfCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
         categoryDto.setId(id);
         CategoryDto updatedCategory = categoryService.partialUpdateCategory(categoryDto);
-        if(updatedCategory==null){
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(updatedCategory);
     }
 }

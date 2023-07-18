@@ -21,7 +21,6 @@ public class Customer {
     private LocalDate createDate;
     private boolean active;
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @Setter(AccessLevel.PRIVATE)
     private Address address;
 
     public void addAddress(Address address) {

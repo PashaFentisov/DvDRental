@@ -18,7 +18,7 @@ public class AddressRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AddressDto> getAddressByCustomerId(@PathVariable Long id) {
-        AddressDto addressByCustomerId = addressService.getAddressByCustomerId(id);
+        AddressDto addressByCustomerId = addressService.getAddressWithCityAndCountryByCustomerId(id);
         return ResponseEntity.ok(addressByCustomerId);
     }
 
@@ -35,17 +35,14 @@ public class AddressRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCustomersAddress(@PathVariable Long id) {
-        addressService.deleteCustomersAddress(id);
+        addressService.deleteCustomersAddress(id);   //todo fixed  but check
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AddressDto> updateCategory(@PathVariable Long id, @RequestBody AddressDto addressDto) {
+    public ResponseEntity<AddressDto> updateAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
         addressDto.setId(id);
         AddressDto updatedAddressDto = addressService.updateAddress(addressDto);
-        if (updatedAddressDto == null) {
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(updatedAddressDto);
     }
 
@@ -53,9 +50,6 @@ public class AddressRestController {
     public ResponseEntity<AddressDto> updateSomeFieldsOfAddress(@PathVariable Long id, @RequestBody AddressDto addressDto) {
         addressDto.setId(id);
         AddressDto updatedAddressDto = addressService.updateSomeFieldsOfAddress(addressDto);
-        if (updatedAddressDto == null) {
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(updatedAddressDto);
     }
 }
