@@ -13,9 +13,13 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    @EntityGraph(attributePaths = "address")
+    @EntityGraph(attributePaths = {"address", "address.city", "address.city.country"})
     Page<Customer> findAll(Pageable pageable);
+
+    @Query("select c from Customer c left join fetch c.address left join fetch c.address.city left join fetch c.address.city.country where c.id=:id")
+    Optional<Customer> findByIdWithFullAddress(@Param("id") Long id);
 
     @Query("select c from Customer c left join fetch c.address where c.id=:id")
     Optional<Customer> findByIdWithAddress(@Param("id") Long id);
 }
+

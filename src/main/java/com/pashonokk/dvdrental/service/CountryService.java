@@ -23,11 +23,13 @@ public class CountryService {
     private final CountryMapper countryMapper;
     private final CityMapper cityMapper;
 
+    private static final String ERROR_MESSAGE = "Country with id %s doesn't exist";
+
     @Transactional(readOnly = true)
     public CountryDto getCountry(Long id) {
         return countryRepository.findById(id)
                 .map(countryMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Country with id " + id + " doesn't exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
     }
 
     @Transactional
@@ -49,23 +51,16 @@ public class CountryService {
     @Transactional
     public CountryDto updateCountry(CountryDto countryDto) {
         Country country = countryRepository.findById(countryDto.getId())
-                .orElseThrow(()->new EntityNotFoundException("Country with id " + countryDto.getId() + " doesn't exist"));
+                .orElseThrow(()->new EntityNotFoundException(String.format(ERROR_MESSAGE, countryDto.getId())));
         Optional.ofNullable(countryDto.getName()).ifPresent(country::setName);
         Optional.ofNullable(countryDto.getLastUpdate()).ifPresent(country::setLastUpdate);
         return countryMapper.toDto(country);
     }
 
-    @Transactional
-    public void updateCountryName(String name, Long id) {
-        Country country = countryRepository.findById(id)
-                .orElseThrow(()->new EntityNotFoundException("Country with id " + id + " doesn't exist"));
-        country.setName(name);
-    }
-
     @Transactional(readOnly = true)
     public List<CityDto> getCountryCities(Long id) {
         Country country = countryRepository.findByIdWithCities(id)
-                .orElseThrow(() -> new EntityNotFoundException("Country with id " + " does`nt exist"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
         return country.getCities().stream().map(cityMapper::toDto).toList();
     }
 }

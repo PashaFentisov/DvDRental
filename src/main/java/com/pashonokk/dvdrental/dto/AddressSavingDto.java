@@ -18,4 +18,5 @@ public class AddressSavingDto {
     private LocalDate lastUpdate;
     private String phone;
     private Long customerId;
+    private Long cityId;
 }

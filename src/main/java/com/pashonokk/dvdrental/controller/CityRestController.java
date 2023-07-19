@@ -53,9 +53,6 @@ public class CityRestController {
     public ResponseEntity<CityDto> partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
         cityDto.setId(id);
         CityDto updatedCity = cityService.partiallyUpdateCity(cityDto);
-        if (updatedCity==null) {
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(updatedCity);
     }
 }

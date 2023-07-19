@@ -1,13 +1,12 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -18,11 +17,25 @@ public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false, updatable = false)
     private String name;
     private LocalDate lastUpdate;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "countryId")
     private Country country;
+    @OneToMany(mappedBy = "city", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Setter(AccessLevel.PRIVATE)
+    private Set<Address> addresses = new HashSet<>();
+
+    public void addAddress(Address address) {
+        this.addresses.add(address);
+        address.setCity(this);
+    }
+
+    public void removeAddresses(Address address) {
+        this.addresses.remove(address);
+        address.setCity(null);
+    }
 
     @Override
     public boolean equals(Object o) {

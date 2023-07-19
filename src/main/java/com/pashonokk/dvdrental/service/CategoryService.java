@@ -18,10 +18,12 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private static final String ERROR_MESSAGE = "Category with id %s doesn't exist";
 
     @Transactional(readOnly = true)
     public CategoryDto getCategory(Long id) {
-        return categoryRepository.findById(id).map(categoryMapper::toDto).orElseThrow();
+        return categoryRepository.findById(id).map(categoryMapper::toDto)
+                .orElseThrow(()->new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +45,7 @@ public class CategoryService {
     @Transactional
     public CategoryDto partialUpdateCategory(CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryDto.getId())
-                .orElseThrow(()->new EntityNotFoundException("Category with id " + categoryDto.getId() + " doesn`t exist"));
+                .orElseThrow(()->new EntityNotFoundException(String.format(ERROR_MESSAGE, categoryDto.getId())));
         Optional.ofNullable(categoryDto.getName()).ifPresent(category::setName);
         Optional.ofNullable(categoryDto.getLastUpdate()).ifPresent(category::setLastUpdate);
         return categoryMapper.toDto(category);

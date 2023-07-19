@@ -13,4 +13,5 @@ public class CityDto {
     private Long id;
     private String name;
     private LocalDate lastUpdate;
+    private CountryDto countryDto;
 }
