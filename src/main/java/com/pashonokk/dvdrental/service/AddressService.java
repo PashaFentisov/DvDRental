@@ -43,7 +43,7 @@ public class AddressService {
         }
         Address address = addressSavingMapper.toEntity(addressSavingDto);
         customer.addAddress(address);
-        cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));  //todo чому воно робить додаткові запити на країну якщо я її не юзаю
+        cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));
         Address savedAddress = addressRepository.save(address);
         return addressMapper.toDto(savedAddress);
     }
