@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,5 +22,5 @@ public class FilmSavingDto {
     private Double replacementCost;
     private Double rating;
     private LocalDate lastUpdate;
-    private Long categoryId;
+    private Set<Long> categoryIds;
 }

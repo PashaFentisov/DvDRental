@@ -23,10 +23,10 @@ public class Film {
     @Column(unique = true, nullable = false, updatable = false)
     private String description;
     private LocalDate releaseYear;
-    @Column(columnDefinition = "interval")
+//    @Column(columnDefinition = "interval")
     private Duration rentalDuration;
     private Double rentalRate;
-    @Column(columnDefinition = "interval")
+//    @Column(columnDefinition = "interval")
     private Duration length;
     private Double replacementCost;
     private Double rating;
