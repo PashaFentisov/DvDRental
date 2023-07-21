@@ -29,6 +29,9 @@ public class Film {
     private Double replacementCost;
     private Double rating;
     private LocalDate lastUpdate;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "language_id", unique = true, nullable = false, updatable = false)
+    private Language language;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "film_category",
                joinColumns = @JoinColumn(name = "film_id"),
@@ -47,16 +50,17 @@ public class Film {
         category.getFilms().remove(this);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Film film = (Film) o;
-        return title.equals(film.title) && description.equals(film.description);
+        return title.equals(film.title) && description.equals(film.description) && language.equals(film.language);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description);
+        return Objects.hash(title, description, language);
     }
 }

@@ -23,4 +23,5 @@ public class FilmDto {
     private Double rating;
     private LocalDate lastUpdate;
     private Set<CategoryDto> categories;
+    private LanguageDto languageDto;
 }

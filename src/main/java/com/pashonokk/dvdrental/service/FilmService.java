@@ -5,11 +5,14 @@ import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.FilmSavingDto;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.entity.Film;
+import com.pashonokk.dvdrental.entity.Language;
+import com.pashonokk.dvdrental.exception.FilmWithoutLanguageException;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.mapper.FilmMapper;
 import com.pashonokk.dvdrental.mapper.FilmSavingMapper;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
 import com.pashonokk.dvdrental.repository.FilmRepository;
+import com.pashonokk.dvdrental.repository.LanguageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,11 +29,13 @@ import java.util.Optional;
 public class FilmService {
     private final FilmRepository filmRepository;
     private final CategoryRepository categoryRepository;
+    private final LanguageRepository languageRepository;
     private final FilmMapper filmMapper;
     private final CategoryMapper categoryMapper;
     private final FilmSavingMapper filmSavingMapper;
     private static final String FILM_ERROR_MESSAGE = "Film with id %s doesn't exist";
     private static final String CATEGORY_ERROR_MESSAGE = "Category with id %s doesn't exist";
+    private static final String LANGUAGE_ERROR_MESSAGE = "Language with id %s doesn't exist";
 
     @Transactional(readOnly = true)
     public Page<FilmDto> getAllFilms(Pageable pageable) {
@@ -52,15 +57,20 @@ public class FilmService {
 
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
+        if(filmSavingDto.getLanguageId()==null){
+            throw new FilmWithoutLanguageException("Provide a valid Language for the Film");
+        }
+        Language language = languageRepository.findById(filmSavingDto.getLanguageId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LANGUAGE_ERROR_MESSAGE, filmSavingDto.getLanguageId())));
         List<Category> categoriesByIds = Collections.emptyList();
         if(filmSavingDto.getCategoryIds()!=null){
             categoriesByIds = categoryRepository.findAllById(filmSavingDto.getCategoryIds());
         }
-
         Film film = filmSavingMapper.toEntity(filmSavingDto);
         for (int i = 0; i < categoriesByIds.size(); i++) {
             film.getCategories().add(categoriesByIds.get(i));
         }
+        language.addFilm(film);
         Film savedFilm = filmRepository.save(film);
         return filmMapper.toDto(savedFilm);
 
