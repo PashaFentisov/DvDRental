@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.entity.Category;
+import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,6 +34,11 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategoryById(Long id) {
+        Category category = categoryRepository.findByIdWithFilms(id)
+                .orElseThrow(()->new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        for (Film film : category.getFilms()) {
+            film.removeCategory(category);
+        }
         categoryRepository.deleteById(id);
     }
 

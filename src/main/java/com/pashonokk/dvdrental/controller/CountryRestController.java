@@ -2,7 +2,6 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
-import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CountryService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -28,11 +28,13 @@ public class CountryRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CountryDto>> getCountries(@RequestBody PageDto pageDto) {
-        if (pageDto.getSize() > 100) {
+    public ResponseEntity<Page<CountryDto>> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
+                                                         @RequestParam(required = false, defaultValue = "10") int size,
+                                                         @RequestParam(required = false, defaultValue = "id") String sort) {
+        if (size > 100) {
             throw new BigSizeException("You can get maximum 100 countries at one time");
         }
-        Page<CountryDto> countries = countryService.getCountries(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
+        Page<CountryDto> countries = countryService.getCountries(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(countries);
     }
 
@@ -44,8 +46,13 @@ public class CountryRestController {
 
     @PostMapping
     public ResponseEntity<CountryDto> addCountry(@RequestBody CountryDto countryDto) {
-        CountryDto savedCountryDto = countryService.addCountry(countryDto);
-        return ResponseEntity.created(URI.create("localhost:10000/countries/" + savedCountryDto.getId())).body(savedCountryDto);
+        CountryDto savedCountry = countryService.addCountry(countryDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedCountry.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedCountry);
     }
 
     @DeleteMapping("/{id}")

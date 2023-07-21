@@ -6,6 +6,7 @@ import com.pashonokk.dvdrental.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
@@ -29,7 +30,12 @@ public class AddressRestController {
         if (savedAddress == null) {
             return ResponseEntity.status(409).build();
         }
-        return ResponseEntity.created(URI.create("localhost:10000/addresses/" + savedAddress.getId())).body(savedAddress);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedAddress.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedAddress);
     }
 
 

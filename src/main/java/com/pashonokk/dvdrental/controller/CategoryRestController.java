@@ -1,7 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
-import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
@@ -27,11 +27,13 @@ public class CategoryRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDto>> getCategories(@RequestBody PageDto pageDto) {
-        if (pageDto.getSize() > 100) {
+    public ResponseEntity<Page<CategoryDto>> getCategories(@RequestParam(required = false, defaultValue = "0") int page,
+                                                           @RequestParam(required = false, defaultValue = "10") int size,
+                                                           @RequestParam(required = false, defaultValue = "id") String sort) {
+        if (size > 100) {
             throw new BigSizeException("You can get maximum 100 categories at one time");
         }
-        Page<CategoryDto> allCategories = categoryService.getAllCategories(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
+        Page<CategoryDto> allCategories = categoryService.getAllCategories(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allCategories);
     }
 
@@ -44,7 +46,12 @@ public class CategoryRestController {
     @PostMapping
     public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
         CategoryDto savedCategory = categoryService.addCategory(categoryDto);
-        return ResponseEntity.created(URI.create("localhost:10000/categories/" + savedCategory.getId())).body(savedCategory);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedCategory.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedCategory);
     }
 
     @PatchMapping("/{id}")
