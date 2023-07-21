@@ -3,7 +3,6 @@ package com.pashonokk.dvdrental.controller;
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.FilmSavingDto;
-import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.FilmService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -20,15 +20,17 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/films")
-public class FilmController {
+public class FilmRestController {
     private final FilmService filmService;
 
     @GetMapping
-    public ResponseEntity<Page<FilmDto>> getFilms(@RequestBody PageDto pageDto) {
-        if (pageDto.getSize() > 100) {
+    public ResponseEntity<Page<FilmDto>> getFilms(@RequestParam(required = false, defaultValue = "0") int page,
+                                                  @RequestParam(required = false, defaultValue = "10") int size,
+                                                  @RequestParam(required = false, defaultValue = "id") String sort) {
+        if (size > 100) {
             throw new BigSizeException("You can get maximum 100 films at one time");
         }
-        Page<FilmDto> allFilms = filmService.getAllFilms(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
+        Page<FilmDto> allFilms = filmService.getAllFilms(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allFilms);
     }
 
@@ -47,8 +49,14 @@ public class FilmController {
     @PostMapping
     public ResponseEntity<FilmDto> addFilm(@RequestBody FilmSavingDto filmSavingDto) {
         FilmDto savedFilm = filmService.addFilm(filmSavingDto);
-        return ResponseEntity.created(URI.create("localhost:10000/films/" + savedFilm.getId())).body(savedFilm);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedFilm.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedFilm);
     }
+
     @PostMapping("/{id}/categories/{categoryId}")
     public ResponseEntity<FilmDto> addCategoryToFilm(@PathVariable Long id, @PathVariable Long categoryId) {
         FilmDto updatedFilmDto = filmService.addCategoryToFilm(id, categoryId);

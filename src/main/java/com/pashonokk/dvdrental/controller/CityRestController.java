@@ -2,7 +2,6 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CitySavingDto;
-import com.pashonokk.dvdrental.dto.PageDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CityService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
@@ -27,19 +27,26 @@ public class CityRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CityDto>> getCities(@RequestBody PageDto pageDto) {
-        if (pageDto.getSize() > 100) {
+    public ResponseEntity<Page<CityDto>> getCities(@RequestParam(required = false, defaultValue = "0") int page,
+                                                   @RequestParam(required = false, defaultValue = "10") int size,
+                                                   @RequestParam(required = false, defaultValue = "id") String sort) {
+        if (size > 100) {
             throw new BigSizeException("You can get maximum 100 cities at one time");
         }
-        Page<CityDto> cities = cityService.getCities(PageRequest.of(pageDto.getPage(), pageDto.getSize(), Sort.by(pageDto.getSort())));
+        Page<CityDto> cities = cityService.getCities(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(cities);
     }
 
     @PostMapping("{id}")
     public ResponseEntity<CityDto> addCity(@PathVariable Long id, @RequestBody CitySavingDto citySavingDto) {
         citySavingDto.setCountryId(id);
-        CityDto savedCityDto = cityService.saveCity(citySavingDto);
-        return ResponseEntity.created(URI.create("localhost:10000/cities/" + savedCityDto.getId())).body(savedCityDto);
+        CityDto savedCity = cityService.saveCity(citySavingDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedCity.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedCity);
     }
 
     @DeleteMapping("/{id}")
