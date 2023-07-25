@@ -2,10 +2,10 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.dto.CustomerSavingDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +27,13 @@ public class CustomerRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CustomerDto>> getCustomers(@RequestParam(required = false, defaultValue = "0") int page,
-                                                          @RequestParam(required = false, defaultValue = "10") int size,
-                                                          @RequestParam(required = false, defaultValue = "id") String sort) {
+    public ResponseEntity<PageResponse<CustomerDto>> getCustomers(@RequestParam(required = false, defaultValue = "0") int page,
+                                                                  @RequestParam(required = false, defaultValue = "10") int size,
+                                                                  @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 customers at one time");
         }
-        Page<CustomerDto> allCustomers = customerService.getAllCustomers(PageRequest.of(page, size, Sort.by(sort)));
+        PageResponse<CustomerDto> allCustomers = customerService.getAllCustomers(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allCustomers);
     }
 

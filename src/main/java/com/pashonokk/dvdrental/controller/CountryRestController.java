@@ -2,10 +2,10 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CountryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +28,13 @@ public class CountryRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CountryDto>> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
+    public ResponseEntity<PageResponse<CountryDto>> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
                                                          @RequestParam(required = false, defaultValue = "10") int size,
                                                          @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 countries at one time");
         }
-        Page<CountryDto> countries = countryService.getCountries(PageRequest.of(page, size, Sort.by(sort)));
+        PageResponse<CountryDto> countries = countryService.getCountries(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(countries);
     }
 

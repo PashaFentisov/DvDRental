@@ -2,16 +2,17 @@ package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.dto.CustomerSavingDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
+import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final PageMapper pageMapper;
     private final CustomerSavingMapper customerSavingMapper;
     private final CityService cityService;
     private final Logger log = LoggerFactory.getLogger(CustomerService.class);
@@ -37,8 +39,8 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CustomerDto> getAllCustomers(Pageable pageable) {
-        return customerRepository.findAll(pageable).map(customerMapper::toDto);
+    public PageResponse<CustomerDto> getAllCustomers(Pageable pageable) {
+        return pageMapper.toPageResponse(customerRepository.findAll(pageable).map(customerMapper::toDto));
     }
 
     @Transactional

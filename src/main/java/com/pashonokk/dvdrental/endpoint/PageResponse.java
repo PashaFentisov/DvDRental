@@ -1,4 +1,4 @@
-package com.pashonokk.dvdrental.pageFeature;
+package com.pashonokk.dvdrental.endpoint;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class GeneralPageResponse<T> {
+public class PageResponse<T> {
     private HttpStatus status;
     private String message;
     private Long pageNumber;
@@ -22,7 +22,7 @@ public class GeneralPageResponse<T> {
     @Setter(AccessLevel.PRIVATE)
     private List<T> records;
 
-    public GeneralPageResponse(Page<T> page){
+    public PageResponse(Page<T> page){
         Pageable pageable = page.getPageable();
         this.status = HttpStatus.OK;
         this.message = "processed successfully";

@@ -4,8 +4,8 @@ import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
-import com.pashonokk.dvdrental.mapper.impl.PageMapperImpl;
-import com.pashonokk.dvdrental.pageFeature.GeneralPageResponse;
+import com.pashonokk.dvdrental.mapper.PageMapper;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
 import com.pashonokk.dvdrental.repository.FilmRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,7 +23,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final FilmRepository filmRepository;
     private final CategoryMapper categoryMapper;
-    private final PageMapperImpl pageMapperImpl;
+    private final PageMapper pageMapper;
     private static final String ERROR_MESSAGE = "Category with id %s doesn't exist";
 
     @Transactional(readOnly = true)
@@ -33,8 +33,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public GeneralPageResponse<CategoryDto> getAllCategories(Pageable pageable) {
-        return pageMapperImpl.toGeneralResponse(categoryRepository.findAll(pageable).map(categoryMapper::toDto));
+    public PageResponse<CategoryDto> getAllCategories(Pageable pageable) {
+        return pageMapper.toPageResponse(categoryRepository.findAll(pageable).map(categoryMapper::toDto));
     }
 
     @Transactional

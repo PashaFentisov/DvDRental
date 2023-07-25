@@ -10,12 +10,13 @@ import com.pashonokk.dvdrental.exception.FilmWithoutLanguageException;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.mapper.FilmMapper;
 import com.pashonokk.dvdrental.mapper.FilmSavingMapper;
+import com.pashonokk.dvdrental.mapper.PageMapper;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
 import com.pashonokk.dvdrental.repository.FilmRepository;
 import com.pashonokk.dvdrental.repository.LanguageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmRepository filmRepository;
+    private final PageMapper pageMapper;
     private final CategoryRepository categoryRepository;
     private final LanguageRepository languageRepository;
     private final FilmMapper filmMapper;
@@ -37,8 +39,8 @@ public class FilmService {
     private static final String CATEGORY_ERROR_MESSAGE = "Category with id %s doesn't exist";
 
     @Transactional(readOnly = true)
-    public Page<FilmDto> getAllFilms(Pageable pageable) {
-        return filmRepository.findAll(pageable).map(filmMapper::toDto);
+    public PageResponse<FilmDto> getAllFilms(Pageable pageable) {
+        return pageMapper.toPageResponse(filmRepository.findAll(pageable).map(filmMapper::toDto));
     }
 
     @Transactional(readOnly = true)
