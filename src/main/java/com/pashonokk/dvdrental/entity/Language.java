@@ -20,19 +20,9 @@ public class Language {
     @Column(unique = true, nullable = false, updatable = false)
     private String name;
     private LocalDate lastUpdate;
-    @OneToMany(mappedBy = "language")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "languages")
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
-
-    public void addFilm(Film film) {
-        film.setLanguage(this);
-        this.films.add(film);
-    }
-
-    public void removeFilm(Film film) {
-        film.setLanguage(null);
-        this.films.remove(film);
-    }
 
     @Override
     public boolean equals(Object o) {

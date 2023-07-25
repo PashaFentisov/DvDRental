@@ -22,6 +22,7 @@ public class Category {
     private String name;
     private LocalDate lastUpdate;
     @ManyToMany(mappedBy = "categories", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
 
     @Override

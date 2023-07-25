@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS film
     replacement_cost DOUBLE PRECISION,
     rating           DOUBLE PRECISION,
     last_update      DATE,
-    language_id      BIGINT,
-    UNIQUE (title, description, language_id)
+    UNIQUE (title, description)
 );
 
 CREATE TABLE IF NOT EXISTS film_category

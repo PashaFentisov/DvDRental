@@ -8,9 +8,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class, LanguageMapper.class})
 public interface FilmMapper {
     @Mapping(source = "categories", target = "categories")
-    @Mapping(source = "languageDto", target = "language")
+    @Mapping(source = "languages", target = "languages")
     Film toEntity(FilmDto filmDto);
+
     @Mapping(source = "categories", target = "categories")
-    @Mapping(source = "language", target = "languageDto")
+    @Mapping(source = "languages", target = "languages")
     FilmDto toDto(Film film);
 }

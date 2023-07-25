@@ -35,8 +35,14 @@ public class FilmRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FilmDto> getFilmById(@PathVariable Long id) {
-        FilmDto filmDto = filmService.getFilmWithCategories(id);
+        FilmDto filmDto = filmService.getFilmWithCategoriesAndLanguages(id);
         return ResponseEntity.ok(filmDto);
+    }
+
+    @GetMapping("/byLanguage/{language}")
+    public ResponseEntity<List<FilmDto>> getFilmsByLanguage(@PathVariable String language) {
+        List<FilmDto> filmsByLanguage = filmService.getFilmsWithCategoriesAndLanguagesByLanguage(language);
+        return ResponseEntity.ok(filmsByLanguage);
     }
 
     @GetMapping("/{id}/categories")

@@ -6,6 +6,12 @@ CREATE TABLE IF NOT EXISTS language
     UNIQUE(name)
 );
 
-ALTER TABLE film
-    ADD CONSTRAINT fk_language
-        FOREIGN KEY (language_id) REFERENCES language (id);
+
+CREATE TABLE IF NOT EXISTS film_language
+(
+    film_id     BIGINT,
+    language_id BIGINT,
+    FOREIGN KEY (film_id) references film (id),
+    FOREIGN KEY (language_id) references language (id),
+    PRIMARY KEY (film_id, language_id)
+);

@@ -35,15 +35,15 @@ public class FilmService {
     private final FilmSavingMapper filmSavingMapper;
     private static final String FILM_ERROR_MESSAGE = "Film with id %s doesn't exist";
     private static final String CATEGORY_ERROR_MESSAGE = "Category with id %s doesn't exist";
-    private static final String LANGUAGE_ERROR_MESSAGE = "Language with id %s doesn't exist";
 
     @Transactional(readOnly = true)
     public Page<FilmDto> getAllFilms(Pageable pageable) {
         return filmRepository.findAll(pageable).map(filmMapper::toDto);
     }
+
     @Transactional(readOnly = true)
-    public FilmDto getFilmWithCategories(Long id) {
-        Film film = filmRepository.findByIdWithCategories(id)
+    public FilmDto getFilmWithCategoriesAndLanguages(Long id) {
+        Film film = filmRepository.findByIdWithCategoriesAndLanguages(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
         return filmMapper.toDto(film);
     }
@@ -57,28 +57,24 @@ public class FilmService {
 
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
-        if(filmSavingDto.getLanguageId()==null){
+        if (filmSavingDto.getLanguageIds() == null) {
             throw new FilmWithoutLanguageException("Provide a valid Language for the Film");
         }
-        Language language = languageRepository.findById(filmSavingDto.getLanguageId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(LANGUAGE_ERROR_MESSAGE, filmSavingDto.getLanguageId())));
-        List<Category> categoriesByIds = Collections.emptyList();
-        if(filmSavingDto.getCategoryIds()!=null){
-            categoriesByIds = categoryRepository.findAllById(filmSavingDto.getCategoryIds());
+        List<Category> categoriesById = Collections.emptyList();
+        if (filmSavingDto.getCategoryIds() != null) {
+            categoriesById = categoryRepository.findAllById(filmSavingDto.getCategoryIds());
         }
+        List<Language> languagesById = languageRepository.findAllById(filmSavingDto.getLanguageIds());
         Film film = filmSavingMapper.toEntity(filmSavingDto);
-        for (int i = 0; i < categoriesByIds.size(); i++) {
-            film.getCategories().add(categoriesByIds.get(i));
-        }
-        language.addFilm(film);
+        film.addCategory(categoriesById);
+        film.addLanguage(languagesById);
         Film savedFilm = filmRepository.save(film);
         return filmMapper.toDto(savedFilm);
-
     }
 
     @Transactional
     public void deleteFilmById(Long id) {
-        Film film = filmRepository.findByIdWithCategories(id)
+        Film film = filmRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
         filmRepository.delete(film);
     }
@@ -86,7 +82,7 @@ public class FilmService {
     @Transactional
     public FilmDto updateSomeFieldsOfFilm(FilmDto filmDto) {
         Film film = filmRepository.findByIdWithCategories(filmDto.getId())
-                .orElseThrow(()-> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, filmDto.getId())));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, filmDto.getId())));
 
         Optional.ofNullable(filmDto.getTitle()).ifPresent(film::setTitle);
         Optional.ofNullable(filmDto.getDescription()).ifPresent(film::setDescription);
@@ -99,13 +95,19 @@ public class FilmService {
         Optional.ofNullable(filmDto.getLastUpdate()).ifPresent(film::setLastUpdate);
         return filmMapper.toDto(film);
     }
+
     @Transactional
     public FilmDto addCategoryToFilm(Long id, Long categoryId) {
         Film film = filmRepository.findByIdWithCategories(id)
-                .orElseThrow(()-> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CATEGORY_ERROR_MESSAGE, categoryId)));
         film.addCategory(category);
         return filmMapper.toDto(film);
+    }
+
+    public List<FilmDto> getFilmsWithCategoriesAndLanguagesByLanguage(String language) {
+        List<Film> filmsByLanguage = filmRepository.findByIdWithCategoriesAndLanguagesByLanguage(language);
+        return filmsByLanguage.stream().map(filmMapper::toDto).toList();
     }
 }
