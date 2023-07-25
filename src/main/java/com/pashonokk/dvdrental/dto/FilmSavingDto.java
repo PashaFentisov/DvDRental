@@ -23,4 +23,5 @@ public class FilmSavingDto {
     private Double rating;
     private LocalDate lastUpdate;
     private Set<Long> categoryIds;
+    private Set<Long> languageIds;
 }

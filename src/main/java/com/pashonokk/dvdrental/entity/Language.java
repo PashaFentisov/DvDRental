@@ -9,19 +9,18 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class Category {
+public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false, updatable = false)
     private String name;
     private LocalDate lastUpdate;
-    @ManyToMany(mappedBy = "categories", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "languages")
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
 
@@ -29,8 +28,8 @@ public class Category {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return name.equals(category.name);
+        Language language = (Language) o;
+        return name.equals(language.name);
     }
 
     @Override

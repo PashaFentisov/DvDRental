@@ -21,7 +21,7 @@ public class City {
     private String name;
     private LocalDate lastUpdate;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "countryId")
+    @JoinColumn(name = "countryId", unique = true, nullable = false, updatable = false)
     private Country country;
     @OneToMany(mappedBy = "city", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter(AccessLevel.PRIVATE)

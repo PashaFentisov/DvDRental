@@ -1,11 +1,15 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,10 +34,14 @@ public class Film {
     private Double rating;
     private LocalDate lastUpdate;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "film_language",
+            joinColumns = @JoinColumn(name = "film_id"),
+            inverseJoinColumns = @JoinColumn(name = "language_id"))
+    private Set<Language> languages = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "film_category",
-               joinColumns = @JoinColumn(name = "film_id"),
-               inverseJoinColumns = @JoinColumn(name = "category_id"))
-    @Setter(AccessLevel.PRIVATE)
+            joinColumns = @JoinColumn(name = "film_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
 
@@ -42,9 +50,33 @@ public class Film {
         category.getFilms().add(this);
     }
 
+    public void addCategory(List<Category> categories) {
+        for (Category category : categories) {
+            categories.add(category);
+            category.getFilms().add(this);
+        }
+    }
+
     public void removeCategory(Category category) {
         this.categories.remove(category);
         category.getFilms().remove(this);
+    }
+
+    public void addLanguage(Language language) {
+        language.getFilms().add(this);
+        this.languages.add(language);
+    }
+
+    public void addLanguage(List<Language> languages) {
+        for (Language language : languages) {
+            language.getFilms().add(this);
+            this.languages.add(language);
+        }
+    }
+
+    public void removeLanguage(Language language) {
+        language.getFilms().remove(this);
+        this.languages.remove(language);
     }
 
     @Override

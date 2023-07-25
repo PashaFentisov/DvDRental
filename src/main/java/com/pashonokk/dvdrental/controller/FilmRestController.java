@@ -10,14 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmRestController {
@@ -36,8 +35,14 @@ public class FilmRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FilmDto> getFilmById(@PathVariable Long id) {
-        FilmDto filmDto = filmService.getFilmWithCategories(id);
+        FilmDto filmDto = filmService.getFilmWithCategoriesAndLanguages(id);
         return ResponseEntity.ok(filmDto);
+    }
+
+    @GetMapping("/byLanguage/{language}")
+    public ResponseEntity<List<FilmDto>> getFilmsByLanguage(@PathVariable String language) {
+        List<FilmDto> filmsByLanguage = filmService.getFilmsWithCategoriesAndLanguagesByLanguage(language);
+        return ResponseEntity.ok(filmsByLanguage);
     }
 
     @GetMapping("/{id}/categories")
