@@ -2,9 +2,9 @@ package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.pageFeature.GeneralPageResponse;
 import com.pashonokk.dvdrental.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +21,20 @@ public class CategoryRestController {
     private final CategoryService categoryService;
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getCategory(id));
-    }
-
     @GetMapping
-    public ResponseEntity<Page<CategoryDto>> getCategories(@RequestParam(required = false, defaultValue = "0") int page,
-                                                           @RequestParam(required = false, defaultValue = "10") int size,
-                                                           @RequestParam(required = false, defaultValue = "id") String sort) {
+    public ResponseEntity<GeneralPageResponse<CategoryDto>> getCategories(@RequestParam(required = false, defaultValue = "0") int page,
+                                                                          @RequestParam(required = false, defaultValue = "10") int size,
+                                                                          @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 categories at one time");
         }
-        Page<CategoryDto> allCategories = categoryService.getAllCategories(PageRequest.of(page, size, Sort.by(sort)));
+        GeneralPageResponse<CategoryDto> allCategories = categoryService.getAllCategories(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allCategories);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.getCategory(id));
     }
 
     @DeleteMapping("/{id}")
