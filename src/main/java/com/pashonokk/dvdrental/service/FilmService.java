@@ -59,14 +59,14 @@ public class FilmService {
 
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
-        if (filmSavingDto.getLanguageIds() == null) {
+        if (filmSavingDto.getLanguagesIds() == null) {
             throw new FilmWithoutLanguageException("Provide a valid Language for the Film");
         }
         List<Category> categoriesById = Collections.emptyList();
-        if (filmSavingDto.getCategoryIds() != null) {
-            categoriesById = categoryRepository.findAllById(filmSavingDto.getCategoryIds());
+        if (filmSavingDto.getCategoriesIds() != null) {
+            categoriesById = categoryRepository.findAllById(filmSavingDto.getCategoriesIds());
         }
-        List<Language> languagesById = languageRepository.findAllById(filmSavingDto.getLanguageIds());
+        List<Language> languagesById = languageRepository.findAllById(filmSavingDto.getLanguagesIds());
         Film film = filmSavingMapper.toEntity(filmSavingDto);
         film.addCategory(categoriesById);
         film.addLanguage(languagesById);

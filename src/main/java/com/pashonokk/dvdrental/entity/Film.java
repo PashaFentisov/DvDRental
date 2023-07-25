@@ -43,6 +43,11 @@ public class Film {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "film_actor",
+            joinColumns = @JoinColumn(name = "film_id"),
+            inverseJoinColumns = @JoinColumn(name = "actor_id"))
+    private Set<Actor> actors = new HashSet<>();
 
 
     public void addCategory(Category category) {
@@ -52,11 +57,9 @@ public class Film {
 
     public void addCategory(List<Category> categories) {
         for (Category category : categories) {
-            categories.add(category);
-            category.getFilms().add(this);
+            addCategory(category);
         }
     }
-
     public void removeCategory(Category category) {
         this.categories.remove(category);
         category.getFilms().remove(this);
@@ -69,14 +72,29 @@ public class Film {
 
     public void addLanguage(List<Language> languages) {
         for (Language language : languages) {
-            language.getFilms().add(this);
-            this.languages.add(language);
+            addLanguage(language);
         }
     }
 
     public void removeLanguage(Language language) {
         language.getFilms().remove(this);
         this.languages.remove(language);
+    }
+
+    public void addActor(Actor actor) {
+        actor.getFilms().add(this);
+        this.actors.add(actor);
+    }
+
+    public void addActor(List<Actor> actors) {
+        for (Actor actor : actors) {
+            addActor(actor);
+        }
+    }
+
+    public void removeActor(Actor actor) {
+        actor.getFilms().remove(this);
+        this.actors.remove(actor);
     }
 
     @Override

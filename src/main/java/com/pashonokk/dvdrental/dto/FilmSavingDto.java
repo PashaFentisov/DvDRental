@@ -22,6 +22,7 @@ public class FilmSavingDto {
     private Double replacementCost;
     private Double rating;
     private LocalDate lastUpdate;
-    private Set<Long> categoryIds;
-    private Set<Long> languageIds;
+    private Set<Long> categoriesIds;
+    private Set<Long> languagesIds;
+    private Set<Long> actorsIds;
 }
