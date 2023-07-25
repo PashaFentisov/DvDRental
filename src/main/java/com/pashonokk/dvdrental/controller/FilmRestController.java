@@ -4,9 +4,9 @@ import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.FilmSavingDto;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.service.FilmService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +23,13 @@ public class FilmRestController {
     private final FilmService filmService;
 
     @GetMapping
-    public ResponseEntity<Page<FilmDto>> getFilms(@RequestParam(required = false, defaultValue = "0") int page,
-                                                  @RequestParam(required = false, defaultValue = "10") int size,
-                                                  @RequestParam(required = false, defaultValue = "id") String sort) {
+    public ResponseEntity<PageResponse<FilmDto>> getFilms(@RequestParam(required = false, defaultValue = "0") int page,
+                                                          @RequestParam(required = false, defaultValue = "10") int size,
+                                                          @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 films at one time");
         }
-        Page<FilmDto> allFilms = filmService.getAllFilms(PageRequest.of(page, size, Sort.by(sort)));
+        PageResponse<FilmDto> allFilms = filmService.getAllFilms(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allFilms);
     }
 

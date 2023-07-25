@@ -1,10 +1,10 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.LanguageDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.LanguageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +20,13 @@ public class LanguageRestController {
     private final LanguageService languageService;
 
     @GetMapping
-    public ResponseEntity<Page<LanguageDto>> getLanguages(@RequestParam(required = false, defaultValue = "0") int page,
-                                                          @RequestParam(required = false, defaultValue = "10") int size,
-                                                          @RequestParam(required = false, defaultValue = "id") String sort) {
+    public ResponseEntity<PageResponse<LanguageDto>> getLanguages(@RequestParam(required = false, defaultValue = "0") int page,
+                                                                  @RequestParam(required = false, defaultValue = "10") int size,
+                                                                  @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 languages at one time");
         }
-        Page<LanguageDto> allLanguages = languageService.getAllLanguages(PageRequest.of(page, size, Sort.by(sort)));
+        PageResponse<LanguageDto> allLanguages = languageService.getAllLanguages(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allLanguages);
     }
 

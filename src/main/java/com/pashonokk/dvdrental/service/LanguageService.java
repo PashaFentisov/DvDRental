@@ -1,14 +1,15 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.LanguageDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.entity.Language;
 import com.pashonokk.dvdrental.mapper.LanguageMapper;
+import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.repository.FilmRepository;
 import com.pashonokk.dvdrental.repository.LanguageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +23,12 @@ public class LanguageService {
     private final LanguageRepository languageRepository;
     private final FilmRepository filmRepository;
     private final LanguageMapper languageMapper;
+    private final PageMapper pageMapper;
     private static final String ERROR_MESSAGE = "Language with id %s doesn't exist";
 
     @Transactional(readOnly = true)
-    public Page<LanguageDto> getAllLanguages(Pageable pageable) {
-        return languageRepository.findAll(pageable).map(languageMapper::toDto);
+    public PageResponse<LanguageDto> getAllLanguages(Pageable pageable) {
+        return pageMapper.toPageResponse(languageRepository.findAll(pageable).map(languageMapper::toDto));
     }
 
     @Transactional(readOnly = true)
