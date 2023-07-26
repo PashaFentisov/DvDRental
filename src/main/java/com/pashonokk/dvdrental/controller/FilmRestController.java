@@ -82,7 +82,7 @@ public class FilmRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<FilmDto> updateSomeFieldsOfFilm(@PathVariable Long id, @RequestBody FilmDto filmDto) {
+    public ResponseEntity<FilmDto> updateFilm(@PathVariable Long id, @RequestBody FilmDto filmDto) {
         filmDto.setId(id);
         FilmDto updatedFilmDto = filmService.updateSomeFieldsOfFilm(filmDto);
         return ResponseEntity.ok(updatedFilmDto);

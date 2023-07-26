@@ -54,7 +54,7 @@ public class LanguageRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<LanguageDto> updateSomeFieldsOfLanguage(@PathVariable Long id, @RequestBody LanguageDto languageDto) {
+    public ResponseEntity<LanguageDto> updateLanguage(@PathVariable Long id, @RequestBody LanguageDto languageDto) {
         languageDto.setId(id);
         LanguageDto updatedLanguageDto = languageService.updateSomeFieldsOfLanguage(languageDto);
         return ResponseEntity.ok(updatedLanguageDto);

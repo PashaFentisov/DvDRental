@@ -55,7 +55,7 @@ public class CustomerRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CustomerDto> updateSomeFieldsOfCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         customerDto.setId(id);
         CustomerDto updatedCustomerDto = customerService.partialUpdateCustomer(customerDto);
         return ResponseEntity.ok(updatedCustomerDto);

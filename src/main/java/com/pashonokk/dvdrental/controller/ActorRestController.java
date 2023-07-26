@@ -60,7 +60,7 @@ public class ActorRestController {
         return ResponseEntity.noContent().build();
     }
     @PatchMapping("/{id}")
-    public ResponseEntity<ActorDto> updateSomeFieldsOfActor(@PathVariable Long id, @RequestBody ActorDto actorDto) {
+    public ResponseEntity<ActorDto> updateActor(@PathVariable Long id, @RequestBody ActorDto actorDto) {
         actorDto.setId(id);
         ActorDto updatedActorDto = actorService.updateSomeFieldsOfActor(actorDto);
         return ResponseEntity.ok(updatedActorDto);
