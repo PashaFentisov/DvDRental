@@ -44,5 +44,9 @@ public class Actor {
         return Objects.hash(firstName, lastName, birthDate);
     }
 
-    //todo методи для додавання фільма і видалення
+    public void removeFilms(Set<Film> films) {
+        for(Film film: films){
+            film.removeActor(this);
+        }
+    }
 }

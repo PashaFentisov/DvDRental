@@ -1,27 +1,24 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.CategoryDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Category;
-import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.mapper.CategoryMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
-import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
-import com.pashonokk.dvdrental.repository.FilmRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final FilmRepository filmRepository;
     private final CategoryMapper categoryMapper;
     private final PageMapper pageMapper;
     private static final String ERROR_MESSAGE = "Category with id %s doesn't exist";
@@ -41,10 +38,7 @@ public class CategoryService {
     public void deleteCategoryById(Long id) {
         Category category = categoryRepository.findByIdWithFilms(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        List<Film> films = filmRepository.findByLanguageIdWithLanguages(id);
-        for (Film film : films) {
-            film.removeCategory(category);
-        }
+        category.removeFilms(new HashSet<>(category.getFilms()));
         categoryRepository.deleteById(id);
     }
 

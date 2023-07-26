@@ -2,11 +2,9 @@ package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.LanguageDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
-import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.entity.Language;
 import com.pashonokk.dvdrental.mapper.LanguageMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
-import com.pashonokk.dvdrental.repository.FilmRepository;
 import com.pashonokk.dvdrental.repository.LanguageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,14 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class LanguageService {
     private final LanguageRepository languageRepository;
-    private final FilmRepository filmRepository;
     private final LanguageMapper languageMapper;
     private final PageMapper pageMapper;
     private static final String ERROR_MESSAGE = "Language with id %s doesn't exist";
@@ -50,10 +47,7 @@ public class LanguageService {
     public void deleteLanguageById(Long id) {
         Language language = languageRepository.findByIdWithFilms(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        List<Film> films = filmRepository.findByLanguageIdWithLanguages(id);
-        for (Film film : films) {
-            film.removeLanguage(language);
-        }
+        language.removeFilms(new HashSet<>(language.getFilms()));
         languageRepository.delete(language);
     }
 
