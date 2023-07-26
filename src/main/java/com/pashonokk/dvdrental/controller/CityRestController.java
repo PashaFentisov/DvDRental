@@ -57,7 +57,7 @@ public class CityRestController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CityDto> partiallyUpdateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
+    public ResponseEntity<CityDto> updateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
         cityDto.setId(id);
         CityDto updatedCity = cityService.partiallyUpdateCity(cityDto);
         return ResponseEntity.ok(updatedCity);

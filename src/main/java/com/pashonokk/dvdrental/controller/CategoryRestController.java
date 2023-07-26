@@ -55,7 +55,7 @@ public class CategoryRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateSomeFieldsOfCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
         categoryDto.setId(id);
         CategoryDto updatedCategory = categoryService.partialUpdateCategory(categoryDto);
         return ResponseEntity.ok(updatedCategory);

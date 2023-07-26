@@ -25,6 +25,12 @@ public class Category {
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
 
+    public void removeFilms(Set<Film> films) {
+        for(Film film: films){
+            film.removeCategory(this);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

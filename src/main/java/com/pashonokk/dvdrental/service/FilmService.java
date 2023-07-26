@@ -1,17 +1,17 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.ActorDto;
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.FilmSavingDto;
+import com.pashonokk.dvdrental.endpoint.PageResponse;
+import com.pashonokk.dvdrental.entity.Actor;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.entity.Language;
 import com.pashonokk.dvdrental.exception.FilmWithoutLanguageException;
-import com.pashonokk.dvdrental.mapper.CategoryMapper;
-import com.pashonokk.dvdrental.mapper.FilmMapper;
-import com.pashonokk.dvdrental.mapper.FilmSavingMapper;
-import com.pashonokk.dvdrental.mapper.PageMapper;
-import com.pashonokk.dvdrental.endpoint.PageResponse;
+import com.pashonokk.dvdrental.mapper.*;
+import com.pashonokk.dvdrental.repository.ActorRepository;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
 import com.pashonokk.dvdrental.repository.FilmRepository;
 import com.pashonokk.dvdrental.repository.LanguageRepository;
@@ -32,8 +32,10 @@ public class FilmService {
     private final PageMapper pageMapper;
     private final CategoryRepository categoryRepository;
     private final LanguageRepository languageRepository;
+    private final ActorRepository actorRepository;
     private final FilmMapper filmMapper;
     private final CategoryMapper categoryMapper;
+    private final ActorMapper actorMapper;
     private final FilmSavingMapper filmSavingMapper;
     private static final String FILM_ERROR_MESSAGE = "Film with id %s doesn't exist";
     private static final String CATEGORY_ERROR_MESSAGE = "Category with id %s doesn't exist";
@@ -57,19 +59,31 @@ public class FilmService {
         return film.getCategories().stream().map(categoryMapper::toDto).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ActorDto> getFilmsActors(Long id) {
+        Film film = filmRepository.findByIdWithActors(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
+        return film.getActors().stream().map(actorMapper::toDto).toList();
+    }
+
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
-        if (filmSavingDto.getLanguageIds() == null) {
+        if (filmSavingDto.getLanguagesIds() == null) {
             throw new FilmWithoutLanguageException("Provide a valid Language for the Film");
         }
         List<Category> categoriesById = Collections.emptyList();
-        if (filmSavingDto.getCategoryIds() != null) {
-            categoriesById = categoryRepository.findAllById(filmSavingDto.getCategoryIds());
+        if (filmSavingDto.getCategoriesIds() != null) {
+            categoriesById = categoryRepository.findAllByIdAndFilms(filmSavingDto.getCategoriesIds());
         }
-        List<Language> languagesById = languageRepository.findAllById(filmSavingDto.getLanguageIds());
+        List<Actor> actorsByIds = Collections.emptyList();
+        if (filmSavingDto.getActorsIds() != null) {
+            actorsByIds = actorRepository.findAllByIdAndFilms(filmSavingDto.getActorsIds());
+        }
+        List<Language> languagesById = languageRepository.findAllByIdAndFilms(filmSavingDto.getLanguagesIds());
         Film film = filmSavingMapper.toEntity(filmSavingDto);
         film.addCategory(categoriesById);
         film.addLanguage(languagesById);
+        film.addActor(actorsByIds);
         Film savedFilm = filmRepository.save(film);
         return filmMapper.toDto(savedFilm);
     }
@@ -107,7 +121,7 @@ public class FilmService {
         film.addCategory(category);
         return filmMapper.toDto(film);
     }
-
+    @Transactional(readOnly = true)
     public List<FilmDto> getFilmsWithCategoriesAndLanguagesByLanguage(String language) {
         List<Film> filmsByLanguage = filmRepository.findByIdWithCategoriesAndLanguagesByLanguage(language);
         return filmsByLanguage.stream().map(filmMapper::toDto).toList();

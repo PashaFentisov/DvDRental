@@ -1,10 +1,11 @@
 package com.pashonokk.dvdrental.controller;
 
+import com.pashonokk.dvdrental.dto.ActorDto;
 import com.pashonokk.dvdrental.dto.CategoryDto;
 import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.FilmSavingDto;
-import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
+import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.FilmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,12 @@ public class FilmRestController {
         return ResponseEntity.ok(filmsCategories);
     }
 
+    @GetMapping("/{id}/actors")
+    public ResponseEntity<List<ActorDto>> getFilmsActors(@PathVariable Long id) {
+        List<ActorDto> filmsActors = filmService.getFilmsActors(id);
+        return ResponseEntity.ok(filmsActors);
+    }
+
     @PostMapping
     public ResponseEntity<FilmDto> addFilm(@RequestBody FilmSavingDto filmSavingDto) {
         FilmDto savedFilm = filmService.addFilm(filmSavingDto);
@@ -75,7 +82,7 @@ public class FilmRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<FilmDto> updateSomeFieldsOfAddress(@PathVariable Long id, @RequestBody FilmDto filmDto) {
+    public ResponseEntity<FilmDto> updateFilm(@PathVariable Long id, @RequestBody FilmDto filmDto) {
         filmDto.setId(id);
         FilmDto updatedFilmDto = filmService.updateSomeFieldsOfFilm(filmDto);
         return ResponseEntity.ok(updatedFilmDto);
