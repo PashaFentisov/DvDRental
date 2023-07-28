@@ -103,6 +103,10 @@
             <artifactId>javax.persistence-api</artifactId>
             <version>${javax.persistence-api.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-envers</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

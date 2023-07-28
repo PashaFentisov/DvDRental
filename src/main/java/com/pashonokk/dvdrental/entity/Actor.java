@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@Audited
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

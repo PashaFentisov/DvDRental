@@ -1,7 +1,11 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 
@@ -10,6 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@Audited
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

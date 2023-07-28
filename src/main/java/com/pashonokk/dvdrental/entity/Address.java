@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Audited
 public class Address {
     @Id
     private Long id;
