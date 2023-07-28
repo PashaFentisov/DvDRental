@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@Audited
 public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

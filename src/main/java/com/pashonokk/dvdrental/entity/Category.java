@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
