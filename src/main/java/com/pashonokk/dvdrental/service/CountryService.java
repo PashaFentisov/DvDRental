@@ -42,7 +42,8 @@ public class CountryService {
 
     @Transactional(readOnly = true)
     public PageResponse<CountryDto> getCountries(Pageable pageable) {
-        return pageMapper.toPageResponse(countryRepository.findAll(pageable).map(countryMapper::toDto));
+        return pageMapper.toPageResponse(countryRepository.findAll(pageable)
+                .map(countryMapper::toDto));
     }
 
     @Transactional

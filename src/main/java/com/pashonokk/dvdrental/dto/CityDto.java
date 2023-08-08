@@ -14,4 +14,9 @@ public class CityDto {
     private String name;
     private LocalDate lastUpdate;
     private CountryDto countryDto;
+
+    public CityDto(String name, LocalDate lastUpdate) {
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
 }

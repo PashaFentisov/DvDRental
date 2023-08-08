@@ -26,6 +26,11 @@ public class Country {
     @Setter(AccessLevel.PRIVATE)
     private Set<City> cities = new HashSet<>();
 
+    public Country(String name, LocalDate lastUpdate){
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
+
     public void addCity(City city) {
         this.cities.add(city);
         city.setCountry(this);
