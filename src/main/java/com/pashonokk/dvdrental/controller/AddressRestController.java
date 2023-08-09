@@ -23,7 +23,7 @@ public class AddressRestController {
         return ResponseEntity.ok(addressByCustomerId);
     }
 
-    @PostMapping("{id}")
+    @PostMapping("/customers/{id}")
     public ResponseEntity<AddressDto> addAddressToCustomer(@PathVariable Long id, @RequestBody AddressSavingDto addressSavingDto) {
         addressSavingDto.setCustomerId(id);
         AddressDto savedAddress = addressService.addAddressToCustomer(addressSavingDto);
@@ -37,7 +37,6 @@ public class AddressRestController {
                 .toUri();
         return ResponseEntity.created(location).body(savedAddress);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCustomersAddress(@PathVariable Long id) {

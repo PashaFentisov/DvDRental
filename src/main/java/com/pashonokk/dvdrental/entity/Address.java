@@ -18,6 +18,7 @@ import java.util.Objects;
 @Audited
 public class Address {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int houseNumber;
     private String street;
@@ -28,10 +29,10 @@ public class Address {
     @Column(unique = true, nullable = false, updatable = false)
     private String phone;
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
     @JoinColumn(name = "customer_id")
     private Customer customer;
-
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    private Store store;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")
     private City city;

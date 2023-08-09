@@ -12,9 +12,9 @@ CREATE TABLE customer_aud
     id          bigint      NOT NULL,
     rev         integer     NOT NULL,
     revtype     smallint,
-    first_name  VARCHAR(30) NOT NULL,
-    last_name   VARCHAR(30) NOT NULL,
-    email       VARCHAR(30) NOT NULL,
+    first_name  VARCHAR(30),
+    last_name   VARCHAR(30),
+    email       VARCHAR(30),
     last_update DATE,
     create_date DATE,
     active      boolean,
@@ -24,17 +24,18 @@ CREATE TABLE customer_aud
 
 CREATE TABLE address_aud
 (
+    id           bigint      NOT NULL,
     rev          integer      NOT NULL,
     revtype      smallint,
-    customer_id  BIGINT       NOT NUll,
+    customer_id  BIGINT,
     city_id      BIGINT,
     house_number BIGINT,
     postal_code  INT,
     street       VARCHAR(300),
     district     VARCHAR(300),
-    phone        VARCHAR(300) NOT NULL,
+    phone        VARCHAR(300),
     last_update  DATE,
-    PRIMARY KEY (customer_id, rev),
+    PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
 
@@ -43,7 +44,7 @@ CREATE TABLE city_aud
     rev         integer     NOT NULL,
     revtype     smallint,
     id          bigint,
-    name        VARCHAR(50) NOT NULL,
+    name        VARCHAR(50),
     last_update DATE,
     country_id  BIGINT,
     PRIMARY KEY (id, rev),
@@ -55,7 +56,7 @@ CREATE TABLE country_aud
     rev         integer     NOT NULL,
     revtype     smallint,
     id          bigint,
-    name        VARCHAR(50) NOT NULL,
+    name        VARCHAR(50),
     last_update DATE,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
@@ -66,9 +67,9 @@ CREATE TABLE actor_aud
     rev         integer     NOT NULL,
     revtype     smallint,
     id          bigint,
-    first_name  VARCHAR(30) NOT NULL,
-    last_name   VARCHAR(30) NOT NULL,
-    biography   TEXT        NOT NULL,
+    first_name  VARCHAR(30),
+    last_name   VARCHAR(30),
+    biography   TEXT,
     birth_date  DATE,
     last_update DATE,
     PRIMARY KEY (id, rev),
@@ -80,8 +81,8 @@ CREATE TABLE film_aud
     rev         integer     NOT NULL,
     revtype     smallint,
     id               bigint,
-    title            VARCHAR(100)  NOT NULL,
-    description      VARCHAR(5000) NOT NULL,
+    title            VARCHAR(100),
+    description      VARCHAR(5000),
     release_year     DATE,
     rental_duration  NUMERIC,
     rental_rate      DOUBLE PRECISION,
@@ -98,7 +99,7 @@ CREATE TABLE language_aud
     rev         integer     NOT NULL,
     revtype     smallint,
     id          bigint,
-    name        VARCHAR(30) NOT NULL,
+    name        VARCHAR(30),
     last_update DATE,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
@@ -109,7 +110,7 @@ CREATE TABLE category_aud
     rev         integer     NOT NULL,
     revtype     smallint,
     id          bigint,
-    name        VARCHAR(30) NOT NULL,
+    name        VARCHAR(30),
     last_update DATE,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
@@ -143,4 +144,14 @@ CREATE TABLE film_category_aud
     category_id BIGINT,
     PRIMARY KEY (film_id, category_id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
+);
+
+CREATE TABLE IF NOT EXISTS store_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    address_id  BIGINT,
+    last_update DATE,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (address_id, rev)
 );

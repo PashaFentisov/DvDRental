@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS address
 (
+    id SERIAL PRIMARY KEY,
     customer_id  BIGINT,
     city_id  BIGINT,
     house_number BIGINT,
@@ -10,6 +11,5 @@ CREATE TABLE IF NOT EXISTS address
     last_update DATE,
     FOREIGN KEY (customer_id) references customer (id),
     FOREIGN KEY (city_id) references city (id),
-    PRIMARY KEY (customer_id),
     UNIQUE(postal_code, phone)
 );
