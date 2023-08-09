@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,10 +29,11 @@ public class Address {
     private LocalDate lastUpdate;
     @Column(unique = true, nullable = false, updatable = false)
     private String phone;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    @JsonIgnore
     private Customer customer;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    @JsonIgnore
     private Store store;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")

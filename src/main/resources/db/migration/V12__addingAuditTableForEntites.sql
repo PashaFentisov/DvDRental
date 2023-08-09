@@ -9,7 +9,7 @@ create sequence revinfo_seq
 
 CREATE TABLE customer_aud
 (
-    id          bigint      NOT NULL,
+    address_id  bigint,
     rev         integer     NOT NULL,
     revtype     smallint,
     first_name  VARCHAR(30),
@@ -18,7 +18,7 @@ CREATE TABLE customer_aud
     last_update DATE,
     create_date DATE,
     active      boolean,
-    PRIMARY KEY (id, rev),
+    PRIMARY KEY (address_id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
 
@@ -27,7 +27,6 @@ CREATE TABLE address_aud
     id           bigint      NOT NULL,
     rev          integer      NOT NULL,
     revtype      smallint,
-    customer_id  BIGINT,
     city_id      BIGINT,
     house_number BIGINT,
     postal_code  INT,

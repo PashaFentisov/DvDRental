@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @Audited
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
@@ -25,7 +24,9 @@ public class Customer {
     private LocalDate lastUpdate;
     private LocalDate createDate;
     private boolean active;
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
+    @MapsId
+    @JoinColumn(name = "address_id")
     private Address address;
 
     public void addAddress(Address address) {

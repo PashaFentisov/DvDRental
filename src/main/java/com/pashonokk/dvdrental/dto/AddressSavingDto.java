@@ -17,6 +17,5 @@ public class AddressSavingDto {
     private int postalCode;
     private LocalDate lastUpdate;
     private String phone;
-    private Long customerId;  //todo прибрати і переробити звязок між ними
     private Long cityId;
 }

@@ -31,7 +31,7 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public StoreDto getStoreById(Long id) {
-        Store store = storeRepository.findByIdWithFullAddress(id)
+        Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id)));
         return storeMapper.toDto(store);
     }
@@ -56,12 +56,12 @@ public class StoreService {
 
     @Transactional
     public void deleteStore(Long id) {
-        storeRepository.deleteById(id);
+        storeRepository.delete(storeRepository.getStoreById(id).orElseThrow(()->new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id))));
     }
 
     @Transactional
     public StoreDto updateSomeFieldsOfStore(StoreDto storeDto) {
-        Store store = storeRepository.findByIdWithAddress(storeDto.getId())
+        Store store = storeRepository.getStoreById(storeDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, storeDto.getId())));
         Optional.ofNullable(storeDto.getLastUpdate()).ifPresent(store::setLastUpdate);
         return storeMapper.toDto(store);
