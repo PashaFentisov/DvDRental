@@ -9,13 +9,8 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressSavingDto {
+public class StoreDto {
     private Long id;
-    private int houseNumber;
-    private String street;
-    private String district;
-    private int postalCode;
+    private AddressDto addressDto;
     private LocalDate lastUpdate;
-    private String phone;
-    private Long cityId;
 }

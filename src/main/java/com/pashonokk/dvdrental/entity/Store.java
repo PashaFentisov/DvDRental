@@ -15,27 +15,22 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Audited
-public class Customer {
+public class Store {
     @Id
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private LocalDate lastUpdate;
-    private LocalDate createDate;
-    private boolean active;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @MapsId
     @JoinColumn(name = "address_id")
     private Address address;
+    private LocalDate lastUpdate;
 
     public void addAddress(Address address) {
-        address.setCustomer(this);
+        address.setStore(this);
         this.setAddress(address);
     }
 
     public void removeAddress(Address address) {
         this.setAddress(null);
-        address.setCustomer(null);
+        address.setStore(null);
     }
 }

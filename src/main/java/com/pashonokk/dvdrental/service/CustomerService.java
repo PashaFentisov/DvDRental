@@ -5,14 +5,14 @@ import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.exception.CustomerWithoutAddressException;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
+import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +23,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
+    private final CityRepository cityRepository;
     private final CustomerMapper customerMapper;
     private final PageMapper pageMapper;
     private final CustomerSavingMapper customerSavingMapper;
-    private final CityService cityService;
-    private final Logger log = LoggerFactory.getLogger(CustomerService.class);
     private static final String ERROR_MESSAGE = "Customer with id %s doesn't exist";
 
 
     @Transactional(readOnly = true)
     public CustomerDto getCustomerById(Long id) {
-        return customerRepository.findByIdWithFullAddress(id)
+        return customerRepository.findCustomerById(id)
                 .map(customerMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
     }
@@ -44,33 +43,21 @@ public class CustomerService {
     }
 
     @Transactional
-    public void deleteCustomer(Long id) {
-        Customer customer = customerRepository.findByIdWithAddress(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        customer.removeAddress(customer.getAddress());
-        customerRepository.deleteById(id);
-    }
-
-    @Transactional
     public CustomerDto addCustomer(CustomerSavingDto customerSavingDto) {
         Customer customer = customerSavingMapper.toEntity(customerSavingDto);
         Address address = customer.getAddress();
-        try {
-            customer.addAddress(address);
-        } catch (Exception e) {
-            log.warn("Add customer without address");
+        if(address==null){
+            throw new CustomerWithoutAddressException("Store cannot exist without an address");
         }
-        try {
-            Long cityId = customerSavingDto.getAddressSavingDto().getCityId();
-            if(cityId==null){
-               throw new EntityNotFoundException("Address without city");
-            }
-            cityService.addAddressToCity(address, cityId);
-        } catch (Exception e) {
-            log.warn("Address without city");
-        }
+        customer.addAddress(address);
+        cityRepository.findByIdWithAddressesAndCountry(customerSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toDto(savedCustomer);
+    }
+
+    @Transactional
+    public void deleteCustomer(Long id) {
+        customerRepository.delete(customerRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, id))));
     }
 
     @Transactional
