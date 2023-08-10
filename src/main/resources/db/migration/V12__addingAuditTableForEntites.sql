@@ -172,3 +172,15 @@ CREATE TABLE IF NOT EXISTS staff_aud
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (address_id, rev)
 );
+
+CREATE TABLE IF NOT EXISTS inventory_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    id BIGINT,
+    store_id  BIGINT,
+    film_id  BIGINT,
+    last_update DATE,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);

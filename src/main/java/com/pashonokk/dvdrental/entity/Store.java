@@ -9,7 +9,9 @@ import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,6 +31,9 @@ public class Store {
     @OneToMany(mappedBy = "store")
     @JsonIgnore
     private Set<Staff> staff = new HashSet<>();
+    @OneToMany(mappedBy = "store")
+    @JsonIgnore
+    private List<Inventory> inventories = new ArrayList<>();
 
     public void addAddress(Address address) {
         address.setStore(this);

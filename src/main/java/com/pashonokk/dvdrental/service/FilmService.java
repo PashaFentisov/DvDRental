@@ -1,9 +1,6 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.dto.ActorDto;
-import com.pashonokk.dvdrental.dto.CategoryDto;
-import com.pashonokk.dvdrental.dto.FilmDto;
-import com.pashonokk.dvdrental.dto.FilmSavingDto;
+import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Actor;
 import com.pashonokk.dvdrental.entity.Category;
@@ -34,6 +31,7 @@ public class FilmService {
     private final LanguageRepository languageRepository;
     private final ActorRepository actorRepository;
     private final FilmMapper filmMapper;
+    private final StoreMapper storeMapper;
     private final CategoryMapper categoryMapper;
     private final ActorMapper actorMapper;
     private final FilmSavingMapper filmSavingMapper;
@@ -64,6 +62,12 @@ public class FilmService {
         Film film = filmRepository.findByIdWithActors(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
         return film.getActors().stream().map(actorMapper::toDto).toList();
+    }
+    @Transactional(readOnly = true)
+    public List<StoreDto> getFilmStores(Long id) {
+        Film film = filmRepository.getFilmById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
+        return film.getInventories().stream().map(inventory -> storeMapper.toDto(inventory.getStore())).toList();
     }
 
     @Transactional

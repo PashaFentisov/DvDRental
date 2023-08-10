@@ -1,15 +1,17 @@
 package com.pashonokk.dvdrental.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -26,8 +28,10 @@ public class Film {
     @Column(unique = true, nullable = false, updatable = false)
     private String description;
     private LocalDate releaseYear;
+    @NotAudited
     private Duration rentalDuration;
     private Double rentalRate;
+    @NotAudited
     private Duration length;
     private Double replacementCost;
     private Double rating;
@@ -47,6 +51,10 @@ public class Film {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id"))
     private Set<Actor> actors = new HashSet<>();
+
+    @OneToMany(mappedBy = "film")
+    @JsonIgnore
+    private List<Inventory> inventories = new ArrayList<>();
 
 
     public void addCategory(Category category) {

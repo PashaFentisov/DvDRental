@@ -1,9 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
-import com.pashonokk.dvdrental.dto.ActorDto;
-import com.pashonokk.dvdrental.dto.CategoryDto;
-import com.pashonokk.dvdrental.dto.FilmDto;
-import com.pashonokk.dvdrental.dto.FilmSavingDto;
+import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.FilmService;
@@ -56,6 +53,12 @@ public class FilmRestController {
     public ResponseEntity<List<ActorDto>> getFilmsActors(@PathVariable Long id) {
         List<ActorDto> filmsActors = filmService.getFilmsActors(id);
         return ResponseEntity.ok(filmsActors);
+    }
+
+    @GetMapping("/{id}/stores")
+    public ResponseEntity<List<StoreDto>> getFilmStores(@PathVariable Long id) {
+        List<StoreDto> filmStores = filmService.getFilmStores(id);
+        return ResponseEntity.ok(filmStores);
     }
 
     @PostMapping
