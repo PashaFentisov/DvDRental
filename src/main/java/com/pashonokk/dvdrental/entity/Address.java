@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"store", "staff", "customer"})
 @Audited
 public class Address {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int houseNumber;
     private String street;
@@ -27,11 +29,15 @@ public class Address {
     private LocalDate lastUpdate;
     @Column(unique = true, nullable = false, updatable = false)
     private String phone;
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "customer_id")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    @JsonIgnore
     private Customer customer;
-
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    @JsonIgnore
+    private Store store;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    @JsonIgnore
+    private Staff staff;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")
     private City city;

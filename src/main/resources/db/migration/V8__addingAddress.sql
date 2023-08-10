@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS address
 (
-    customer_id  BIGINT,
+    id SERIAL PRIMARY KEY,
     city_id  BIGINT,
     house_number BIGINT,
     postal_code INT,
@@ -8,8 +8,11 @@ CREATE TABLE IF NOT EXISTS address
     district VARCHAR(300),
     phone VARCHAR(300) NOT NULL,
     last_update DATE,
-    FOREIGN KEY (customer_id) references customer (id),
     FOREIGN KEY (city_id) references city (id),
-    PRIMARY KEY (customer_id),
     UNIQUE(postal_code, phone)
 );
+
+ALTER TABLE customer
+    ADD CONSTRAINT fk_customer_address
+        FOREIGN KEY (address_id)
+            REFERENCES address(id);
