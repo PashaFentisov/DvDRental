@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"store", "staff", "customer"})
 @Audited
 public class Address {
     @Id
@@ -35,6 +35,9 @@ public class Address {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
     @JsonIgnore
     private Store store;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
+    @JsonIgnore
+    private Staff staff;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")
     private City city;

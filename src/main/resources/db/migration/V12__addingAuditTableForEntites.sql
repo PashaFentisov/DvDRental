@@ -154,3 +154,21 @@ CREATE TABLE IF NOT EXISTS store_aud
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (address_id, rev)
 );
+
+CREATE TABLE IF NOT EXISTS staff_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    address_id  BIGINT,
+    store_id  BIGINT,
+    first_name VARCHAR(30),
+    last_name VARCHAR(30),
+    email VARCHAR(30),
+    username VARCHAR(50),
+    password VARCHAR(50),
+    picture_url VARCHAR(5000),
+    last_update DATE,
+    active BOOLEAN,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (address_id, rev)
+);

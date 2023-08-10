@@ -1,6 +1,8 @@
 package com.pashonokk.dvdrental.controller;
 
-import com.pashonokk.dvdrental.dto.*;
+import com.pashonokk.dvdrental.dto.StaffDto;
+import com.pashonokk.dvdrental.dto.StoreDto;
+import com.pashonokk.dvdrental.dto.StoreSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.StoreService;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +37,12 @@ public class StoreRestController {
         }
         PageResponse<StoreDto> allStores = storeService.getAllStores(PageRequest.of(page, size, Sort.by(sort)));
         return ResponseEntity.ok(allStores);
+    }
+
+    @GetMapping("/{id}/staff")
+    public ResponseEntity<List<StaffDto>> getStaffByStoreId(@PathVariable Long id) {
+        List<StaffDto> listOfStaff = storeService.getStaffByStoreId(id);
+        return ResponseEntity.ok(listOfStaff);
     }
 
     @PostMapping

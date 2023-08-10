@@ -1,12 +1,15 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.StaffDto;
 import com.pashonokk.dvdrental.dto.StoreDto;
 import com.pashonokk.dvdrental.dto.StoreSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
+import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
 import com.pashonokk.dvdrental.exception.StoreWithoutAddressException;
 import com.pashonokk.dvdrental.mapper.PageMapper;
+import com.pashonokk.dvdrental.mapper.StaffMapper;
 import com.pashonokk.dvdrental.mapper.StoreMapper;
 import com.pashonokk.dvdrental.mapper.StoreSavingMapper;
 import com.pashonokk.dvdrental.repository.CityRepository;
@@ -17,7 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final CityRepository cityRepository;
     private final StoreMapper storeMapper;
+    private final StaffMapper staffMapper;
     private final PageMapper pageMapper;
     private final StoreSavingMapper storeSavingMapper;
     private static final String STORE_ERROR_MESSAGE = "Store with id %s doesn't exist";
@@ -39,6 +46,13 @@ public class StoreService {
     @Transactional(readOnly = true)
     public PageResponse<StoreDto> getAllStores(Pageable pageable) {
         return pageMapper.toPageResponse(storeRepository.findAll(pageable).map(storeMapper::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public List<StaffDto> getStaffByStoreId(Long id) {
+        return storeRepository.findStoreById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id))).getStaff()
+                .stream().map(staffMapper::toDto).toList();
     }
 
     @Transactional
@@ -56,7 +70,13 @@ public class StoreService {
 
     @Transactional
     public void deleteStore(Long id) {
-        storeRepository.delete(storeRepository.getStoreById(id).orElseThrow(()->new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id))));
+        Store store = storeRepository.getStoreById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id)));
+        Set<Staff> storeStaff = new HashSet<>(store.getStaff());
+        for(Staff staff: storeStaff){
+            staff.removeStore(store);
+        }
+        storeRepository.delete(store);
     }
 
     @Transactional

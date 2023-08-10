@@ -17,7 +17,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @EntityGraph(attributePaths = {"address", "address.city", "address.city.country"})
     Optional<Store> findById(@Param("id") Long id);
-
-    @EntityGraph(attributePaths = "address")
+    @EntityGraph(attributePaths = {"address", "staff", "staff.address"})
     Optional<Store> getStoreById(@Param("id") Long id);
+    @EntityGraph(attributePaths = {"address", "address.city", "address.city.country", "staff", "staff.address"})
+    Optional<Store> findStoreById(@Param("id") Long id);
 }

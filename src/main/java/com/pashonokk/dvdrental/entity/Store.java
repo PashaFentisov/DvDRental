@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -23,6 +26,9 @@ public class Store {
     @JoinColumn(name = "address_id")
     private Address address;
     private LocalDate lastUpdate;
+    @OneToMany(mappedBy = "store")
+    @JsonIgnore
+    private Set<Staff> staff = new HashSet<>();
 
     public void addAddress(Address address) {
         address.setStore(this);
