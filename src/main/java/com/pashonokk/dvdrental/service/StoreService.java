@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.StaffDto;
 import com.pashonokk.dvdrental.dto.StoreDto;
 import com.pashonokk.dvdrental.dto.StoreSavingDto;
@@ -8,10 +9,7 @@ import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
 import com.pashonokk.dvdrental.exception.StoreWithoutAddressException;
-import com.pashonokk.dvdrental.mapper.PageMapper;
-import com.pashonokk.dvdrental.mapper.StaffMapper;
-import com.pashonokk.dvdrental.mapper.StoreMapper;
-import com.pashonokk.dvdrental.mapper.StoreSavingMapper;
+import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.StoreRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,6 +29,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final CityRepository cityRepository;
     private final StoreMapper storeMapper;
+    private final FilmMapper filmMapper;
     private final StaffMapper staffMapper;
     private final PageMapper pageMapper;
     private final StoreSavingMapper storeSavingMapper;
@@ -53,6 +52,12 @@ public class StoreService {
         return storeRepository.findStoreById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id))).getStaff()
                 .stream().map(staffMapper::toDto).toList();
+    }
+    @Transactional(readOnly = true)
+    public List<FilmDto> getStoreFilms(Long id) {
+        Store store = storeRepository.readStoreById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id)));
+        return store.getInventories().stream().map(inventory -> filmMapper.toDto(inventory.getFilm())).toList();
     }
 
     @Transactional

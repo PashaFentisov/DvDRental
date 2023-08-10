@@ -28,4 +28,6 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 
     @Query("select f from Film f left join fetch f.actors a where f.id=:id")
     Optional<Film> findByIdWithActors(@Param("id") Long id);
+    @EntityGraph(attributePaths = {"inventories", "inventories.store", "inventories.store.address"})
+    Optional<Film> getFilmById(Long id);
 }

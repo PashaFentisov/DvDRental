@@ -14,11 +14,12 @@ import java.util.Optional;
 public interface StoreRepository extends JpaRepository<Store, Long> {
     @EntityGraph(attributePaths = {"address", "address.city", "address.city.country"})
     Page<Store> findAll(Pageable pageable);
-
     @EntityGraph(attributePaths = {"address", "address.city", "address.city.country"})
     Optional<Store> findById(@Param("id") Long id);
     @EntityGraph(attributePaths = {"address", "staff", "staff.address"})
     Optional<Store> getStoreById(@Param("id") Long id);
     @EntityGraph(attributePaths = {"address", "address.city", "address.city.country", "staff", "staff.address"})
     Optional<Store> findStoreById(@Param("id") Long id);
+    @EntityGraph(attributePaths = {"inventories", "inventories.film", "inventories.film.categories", "inventories.film.languages"})
+    Optional<Store> readStoreById(Long id);
 }

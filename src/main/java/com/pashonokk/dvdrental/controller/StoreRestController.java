@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
+import com.pashonokk.dvdrental.dto.FilmDto;
 import com.pashonokk.dvdrental.dto.StaffDto;
 import com.pashonokk.dvdrental.dto.StoreDto;
 import com.pashonokk.dvdrental.dto.StoreSavingDto;
@@ -43,6 +44,12 @@ public class StoreRestController {
     public ResponseEntity<List<StaffDto>> getStaffByStoreId(@PathVariable Long id) {
         List<StaffDto> listOfStaff = storeService.getStaffByStoreId(id);
         return ResponseEntity.ok(listOfStaff);
+    }
+
+    @GetMapping("/{id}/films")
+    public ResponseEntity<List<FilmDto>> getStoreFilms(@PathVariable Long id) {
+        List<FilmDto> storeFilms = storeService.getStoreFilms(id);
+        return ResponseEntity.ok(storeFilms);
     }
 
     @PostMapping
