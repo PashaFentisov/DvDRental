@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -28,6 +30,9 @@ public class Customer {
     @MapsId
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Rental> rentals = new ArrayList<>();
 
     public void addAddress(Address address) {
         address.setCustomer(this);

@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -35,6 +37,8 @@ public class Staff {
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
+    @OneToMany(mappedBy = "staff")
+    private List<Rental> rentals = new ArrayList<>();
 
     public void addStore(Store store) {
         store.getStaff().add(this);

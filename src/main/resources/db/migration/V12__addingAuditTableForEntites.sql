@@ -184,3 +184,18 @@ CREATE TABLE IF NOT EXISTS inventory_aud
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
+
+CREATE TABLE IF NOT EXISTS rental_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    id bigint,
+    inventory_id  BIGINT,
+    staff_id  BIGINT,
+    customer_id  BIGINT,
+    rental_date DATE,
+    return_date DATE,
+    last_update DATE,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);

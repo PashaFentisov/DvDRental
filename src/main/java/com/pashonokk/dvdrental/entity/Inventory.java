@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -25,6 +27,8 @@ public class Inventory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "film_id")
     private Film film;
+    @OneToMany(mappedBy = "inventory")
+    private List<Rental> rentals = new ArrayList<>();
     private LocalDate lastUpdate;
 
     public void addFilm(Film film) {

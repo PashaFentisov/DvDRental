@@ -81,6 +81,7 @@ public class StoreService {
         for(Staff staff: storeStaff){
             staff.removeStore(store);
         }
+        store.removeInventories(store.getInventories());
         storeRepository.delete(store);
     }
 

@@ -31,7 +31,7 @@ public class Store {
     @OneToMany(mappedBy = "store")
     @JsonIgnore
     private Set<Staff> staff = new HashSet<>();
-    @OneToMany(mappedBy = "store")
+    @OneToMany(mappedBy = "store", orphanRemoval = true)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
 
@@ -44,4 +44,11 @@ public class Store {
         this.setAddress(null);
         address.setStore(null);
     }
+
+    public void removeInventories(List<Inventory> inventories) {
+        for(Inventory inventory: inventories){
+            inventory.setStore(null);
+        }
+    }
+
 }
