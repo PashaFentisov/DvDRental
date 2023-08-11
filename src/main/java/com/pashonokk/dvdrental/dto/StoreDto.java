@@ -11,6 +11,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class StoreDto {
     private Long id;
-    private AddressDto addressDto;
+    private AddressDto address;
     private LocalDate lastUpdate;
 }

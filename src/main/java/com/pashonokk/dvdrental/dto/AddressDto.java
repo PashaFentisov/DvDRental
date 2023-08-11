@@ -17,5 +17,5 @@ public class AddressDto {
     private int postalCode;
     private LocalDate lastUpdate;
     private String phone;
-    private CityDto cityDto;
+    private CityDto city;
 }

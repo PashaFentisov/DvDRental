@@ -60,6 +60,7 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
         customer.removeRentals(customer.getRentals());
+        customer.removePayments(customer.getPayments());
         customerRepository.delete(customer);
     }
 

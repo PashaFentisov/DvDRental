@@ -16,6 +16,6 @@ public class CustomerDto {
     private String email;
     private LocalDate lastUpdate;
     private LocalDate createDate;
-    private AddressDto addressDto;
+    private AddressDto address;
     private boolean active;
 }

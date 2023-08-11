@@ -67,6 +67,7 @@ public class StaffService {
         Staff staff = staffRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, id)));
         staff.removeRentals(staff.getRentals());
+        staff.removePayments(staff.getPayments());
         staffRepository.delete(staff);
     }
 

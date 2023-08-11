@@ -199,3 +199,17 @@ CREATE TABLE IF NOT EXISTS rental_aud
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
+
+CREATE TABLE IF NOT EXISTS payment_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    id bigint,
+    amount numeric,
+    payment_date DATE,
+    rental_id  BIGINT,
+    staff_id  BIGINT,
+    customer_id  BIGINT,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);

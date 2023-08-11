@@ -19,6 +19,6 @@ public class StaffDto {
     private String password;
     private String pictureUrl;
     private LocalDate lastUpdate;
-    private AddressDto addressDto;
-    private StoreDto storeDto;
+    private AddressDto address;
+    private StoreDto store;
 }
