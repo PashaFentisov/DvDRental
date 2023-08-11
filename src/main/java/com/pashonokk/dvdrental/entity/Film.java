@@ -52,7 +52,7 @@ public class Film {
             inverseJoinColumns = @JoinColumn(name = "actor_id"))
     private Set<Actor> actors = new HashSet<>();
 
-    @OneToMany(mappedBy = "film")
+    @OneToMany(mappedBy = "film", orphanRemoval = true)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
 
@@ -102,6 +102,11 @@ public class Film {
     public void removeActor(Actor actor) {
         actor.getFilms().remove(this);
         this.actors.remove(actor);
+    }
+    public void removeInventories(List<Inventory> inventories) {
+        for(Inventory inventory: inventories){
+            inventory.setFilm(null);
+        }
     }
 
     @Override

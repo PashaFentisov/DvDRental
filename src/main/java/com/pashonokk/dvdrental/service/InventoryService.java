@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
-
     private final FilmRepository filmRepository;
     private final StoreRepository storeRepository;
     private final InventoryMapper inventoryMapper;
@@ -59,6 +58,9 @@ public class InventoryService {
 
     @Transactional
     public void deleteInventory(Long id) {
-        inventoryRepository.deleteById(id);
+        Inventory inventory = inventoryRepository.findById(id)
+                        .orElseThrow(()-> new EntityNotFoundException(String.format(INVENTORY_ERROR_MESSAGE, id)));
+        inventory.removeRentals(inventory.getRentals());
+        inventoryRepository.delete(inventory);
     }
 }

@@ -94,8 +94,9 @@ public class FilmService {
 
     @Transactional
     public void deleteFilmById(Long id) {
-        Film film = filmRepository.findById(id)
+        Film film = filmRepository.getFilmById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
+        film.removeInventories(film.getInventories());
         filmRepository.delete(film);
     }
 
