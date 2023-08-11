@@ -105,15 +105,12 @@ public class FilmService {
         Film film = filmRepository.findByIdWithCategories(filmDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, filmDto.getId())));
 
-        Optional.ofNullable(filmDto.getTitle()).ifPresent(film::setTitle);
-        Optional.ofNullable(filmDto.getDescription()).ifPresent(film::setDescription);
         Optional.ofNullable(filmDto.getReleaseYear()).ifPresent(film::setReleaseYear);
         Optional.ofNullable(filmDto.getRentalDuration()).ifPresent(film::setRentalDuration);
         Optional.ofNullable(filmDto.getRentalRate()).ifPresent(film::setRentalRate);
         Optional.ofNullable(filmDto.getLength()).ifPresent(film::setLength);
         Optional.ofNullable(filmDto.getReplacementCost()).ifPresent(film::setReplacementCost);
         Optional.ofNullable(filmDto.getRating()).ifPresent(film::setRating);
-        Optional.ofNullable(filmDto.getLastUpdate()).ifPresent(film::setLastUpdate);
         return filmMapper.toDto(film);
     }
 

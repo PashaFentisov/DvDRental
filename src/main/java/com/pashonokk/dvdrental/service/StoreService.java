@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -83,13 +82,5 @@ public class StoreService {
         }
         store.removeInventories(store.getInventories());
         storeRepository.delete(store);
-    }
-
-    @Transactional
-    public StoreDto updateSomeFieldsOfStore(StoreDto storeDto) {
-        Store store = storeRepository.getStoreById(storeDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, storeDto.getId())));
-        Optional.ofNullable(storeDto.getLastUpdate()).ifPresent(store::setLastUpdate);
-        return storeMapper.toDto(store);
     }
 }

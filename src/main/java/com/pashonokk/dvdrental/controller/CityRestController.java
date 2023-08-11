@@ -54,12 +54,4 @@ public class CityRestController {
         cityService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<CityDto> updateCity(@PathVariable Long id, @RequestBody CityDto cityDto) {
-        cityDto.setId(id);
-        CityDto updatedCity = cityService.partiallyUpdateCity(cityDto);
-        return ResponseEntity.ok(updatedCity);
-    }
 }

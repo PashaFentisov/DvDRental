@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,15 +48,5 @@ public class LanguageService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
         language.removeFilms(new HashSet<>(language.getFilms()));
         languageRepository.delete(language);
-    }
-
-    @Transactional
-    public LanguageDto updateSomeFieldsOfLanguage(LanguageDto languageDto) {
-        Language language = languageRepository.findById(languageDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, languageDto.getId())));
-
-        Optional.ofNullable(languageDto.getName()).ifPresent(language::setName);
-        Optional.ofNullable(languageDto.getLastUpdate()).ifPresent(language::setLastUpdate);
-        return languageMapper.toDto(language);
     }
 }

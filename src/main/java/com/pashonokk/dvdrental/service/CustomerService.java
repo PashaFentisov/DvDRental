@@ -69,7 +69,6 @@ public class CustomerService {
         Customer customer = customerRepository.findById(customerDto.getId())
                         .orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerDto.getId())));
         Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
-        Optional.ofNullable(customerDto.getLastUpdate()).ifPresent(customer::setLastUpdate);
         Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);
         Optional.ofNullable(customerDto.getLastName()).ifPresent(customer::setLastName);
         Optional.ofNullable(customerDto.getEmail()).ifPresent(customer::setEmail);
