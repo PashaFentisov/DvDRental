@@ -57,7 +57,10 @@ public class CustomerService {
 
     @Transactional
     public void deleteCustomer(Long id) {
-        customerRepository.delete(customerRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, id))));
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        customer.removeRentals(customer.getRentals());
+        customerRepository.delete(customer);
     }
 
     @Transactional

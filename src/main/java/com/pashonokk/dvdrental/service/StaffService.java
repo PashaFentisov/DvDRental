@@ -64,7 +64,10 @@ public class StaffService {
 
     @Transactional
     public void deleteStaff(Long id) {
-        staffRepository.deleteById(id);
+        Staff staff = staffRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, id)));
+        staff.removeRentals(staff.getRentals());
+        staffRepository.delete(staff);
     }
 
     @Transactional

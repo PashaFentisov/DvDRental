@@ -59,6 +59,11 @@ public class Staff {
         this.setAddress(null);
         address.setStaff(null);
     }
+    public void removeRentals(List<Rental> rentals) {
+        for(Rental rental: rentals){
+            rental.setStaff(null);
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

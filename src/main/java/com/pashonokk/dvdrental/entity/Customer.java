@@ -43,4 +43,10 @@ public class Customer {
         this.setAddress(null);
         address.setCustomer(null);
     }
+    public void removeRentals(List<Rental> rentals) {
+        for(Rental rental: rentals){
+            rental.setCustomer(null);
+        }
+    }
+
 }

@@ -39,4 +39,9 @@ public class Inventory {
         this.store = store;
         store.getInventories().add(this);
     }
+    public void removeRentals(List<Rental> rentals) {
+        for(Rental rental: rentals){
+            rental.setInventory(null);
+        }
+    }
 }

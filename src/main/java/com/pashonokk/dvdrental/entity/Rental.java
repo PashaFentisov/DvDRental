@@ -33,4 +33,17 @@ public class Rental {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_id")
     private Inventory inventory;
+
+    public void addCustomer(Customer customer) {
+        this.customer = customer;
+        customer.getRentals().add(this);
+    }
+    public void addStaff(Staff staff) {
+        this.staff = staff;
+        staff.getRentals().add(this);
+    }
+    public void addInventory(Inventory inventory) {
+        this.inventory = inventory;
+        inventory.getRentals().add(this);
+    }
 }
