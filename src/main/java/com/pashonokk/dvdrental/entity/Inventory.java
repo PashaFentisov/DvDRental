@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class Inventory {
     private Film film;
     @OneToMany(mappedBy = "inventory")
     private List<Rental> rentals = new ArrayList<>();
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
 
     public void addFilm(Film film) {
         this.film = film;

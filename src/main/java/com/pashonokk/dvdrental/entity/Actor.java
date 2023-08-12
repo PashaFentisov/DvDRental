@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -28,8 +28,8 @@ public class Actor {
     private String lastName;
     private String biography;
     @Column(unique = true, nullable = false, updatable = false)
-    private LocalDate birthDate;
-    private LocalDate lastUpdate;
+    private OffsetDateTime birthDate;
+    private OffsetDateTime lastUpdate;
     @ManyToMany(mappedBy = "actors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Film> films = new HashSet<>();
 

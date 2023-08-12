@@ -2,7 +2,8 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -10,9 +11,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class RentalDto {
     private Long id;
-    private LocalDate rentalDate;
-    private LocalDate returnDate;
-    private LocalDate lastUpdate;
+    private OffsetDateTime rentalDate;
+    private OffsetDateTime returnDate;
+    private OffsetDateTime lastUpdate;
     private CustomerDto customer;
     private StaffDto staff;
     private InventoryDto inventory;

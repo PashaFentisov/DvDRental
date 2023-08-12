@@ -4,9 +4,9 @@ CREATE TABLE IF NOT EXISTS rental
     inventory_id  BIGINT,
     staff_id  BIGINT,
     customer_id  BIGINT,
-    rental_date DATE,
-    return_date DATE,
-    last_update DATE,
+    rental_date timestamp,
+    return_date timestamp,
+    last_update timestamp,
     FOREIGN KEY (inventory_id) references inventory (id),
     FOREIGN KEY (staff_id) references staff (address_id),
     FOREIGN KEY (customer_id) references customer (address_id)

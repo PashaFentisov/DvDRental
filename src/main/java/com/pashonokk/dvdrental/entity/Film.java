@@ -10,7 +10,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Entity
@@ -27,7 +27,7 @@ public class Film {
     private String title;
     @Column(unique = true, nullable = false, updatable = false)
     private String description;
-    private LocalDate releaseYear;
+    private OffsetDateTime releaseYear;
     @NotAudited
     private Duration rentalDuration;
     private Double rentalRate;
@@ -35,7 +35,7 @@ public class Film {
     private Duration length;
     private Double replacementCost;
     private Double rating;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "film_language",
             joinColumns = @JoinColumn(name = "film_id"),

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 @Service
@@ -23,8 +23,8 @@ public class TokenService {
     public User validateToken(String value) {
         Token tokenByValue = tokenRepository.getTokenByValue(value)
                 .orElseThrow(() -> new EntityNotFoundException("There isn`t user with such token " + value));
-        LocalDateTime tokenExpiredTime = tokenByValue.getCreateTime().plusSeconds(tokenProperties.getDuration().getSeconds());
-        if (tokenExpiredTime.isBefore(LocalDateTime.now())) {
+        OffsetDateTime offsetDateTime = tokenByValue.getCreateTime().plusSeconds(tokenProperties.getDuration().getSeconds());
+        if (offsetDateTime.isBefore(OffsetDateTime.now())) {
             throw new TokenExpiredException("Token " + value + " is no longer valid");
         }
         return tokenByValue.getUser();

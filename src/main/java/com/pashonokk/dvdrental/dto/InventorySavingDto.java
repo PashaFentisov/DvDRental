@@ -2,7 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -13,5 +13,5 @@ public class InventorySavingDto {
     private Long id;
     private Long storeId;
     private Long filmId;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
 }

@@ -2,7 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -12,6 +12,6 @@ import java.time.LocalDate;
 public class CityDto {
     private Long id;
     private String name;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     private CountryDto country;
 }

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS address
     street VARCHAR(300),
     district VARCHAR(300),
     phone VARCHAR(300) NOT NULL,
-    last_update DATE,
+    last_update timestamp,
     FOREIGN KEY (city_id) references city (id),
     UNIQUE(postal_code, phone)
 );
