@@ -53,10 +53,4 @@ public class LanguageRestController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<LanguageDto> updateLanguage(@PathVariable Long id, @RequestBody LanguageDto languageDto) {
-        languageDto.setId(id);
-        LanguageDto updatedLanguageDto = languageService.updateSomeFieldsOfLanguage(languageDto);
-        return ResponseEntity.ok(updatedLanguageDto);
-    }
 }

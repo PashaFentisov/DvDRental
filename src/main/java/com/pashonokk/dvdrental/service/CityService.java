@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -62,20 +61,5 @@ public class CityService {
             city.removeAddresses(address);
         }
         cityRepository.deleteById(id);
-    }
-
-    @Transactional
-    public CityDto partiallyUpdateCity(CityDto cityDto) {
-        City city = cityRepository.findById(cityDto.getId())
-                .orElseThrow(()-> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityDto.getId())));
-        Optional.ofNullable(cityDto.getName()).ifPresent(city::setName);
-        Optional.ofNullable(cityDto.getLastUpdate()).ifPresent(city::setLastUpdate);
-        return cityMapper.toDto(city);
-    }
-    @Transactional
-    public void addAddressToCity(Address address, Long cityId) {
-        City city = cityRepository.findByIdWithAddressesAndCountry(cityId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityId)));
-        city.addAddress(address);
     }
 }

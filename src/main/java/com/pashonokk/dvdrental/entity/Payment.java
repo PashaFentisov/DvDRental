@@ -1,5 +1,6 @@
 package com.pashonokk.dvdrental.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -15,13 +17,12 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Audited
-public class Rental {
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate rentalDate;
-    private LocalDate returnDate;
-    private LocalDate lastUpdate;
+    private BigDecimal amount;
+    private LocalDate paymentDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -30,27 +31,20 @@ public class Rental {
     @JoinColumn(name = "staff_id")
     private Staff staff;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inventory_id")
-    private Inventory inventory;
-
-    @OneToOne(mappedBy = "rental", fetch = FetchType.LAZY)
-    private Payment payment;
-
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "rental_id")
+    private Rental rental;
 
     public void addCustomer(Customer customer) {
         this.customer = customer;
-        customer.getRentals().add(this);
+        customer.getPayments().add(this);
     }
     public void addStaff(Staff staff) {
         this.staff = staff;
-        staff.getRentals().add(this);
+        staff.getPayments().add(this);
     }
-    public void addInventory(Inventory inventory) {
-        this.inventory = inventory;
-        inventory.getRentals().add(this);
-    }
-    public void removePayment(Payment payments) {
-        payment.setRental(null);
+    public void addRental(Rental rental) {
+        this.rental = rental;
+        rental.setPayment(this);
     }
 }

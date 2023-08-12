@@ -67,6 +67,7 @@ public class StaffService {
         Staff staff = staffRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, id)));
         staff.removeRentals(staff.getRentals());
+        staff.removePayments(staff.getPayments());
         staffRepository.delete(staff);
     }
 
@@ -78,10 +79,8 @@ public class StaffService {
         Optional.ofNullable(staffDto.getLastName()).ifPresent(staff::setLastName);
         Optional.ofNullable(staffDto.getEmail()).ifPresent(staff::setEmail);
         Optional.ofNullable(staffDto.getActive()).ifPresent(staff::setActive);
-        Optional.ofNullable(staffDto.getUsername()).ifPresent(staff::setUsername);
         Optional.ofNullable(staffDto.getPassword()).ifPresent(staff::setPassword);
         Optional.ofNullable(staffDto.getPictureUrl()).ifPresent(staff::setPictureUrl);
-        Optional.ofNullable(staffDto.getLastUpdate()).ifPresent(staff::setLastUpdate);
         return staffMapper.toDto(staff);
     }
 }

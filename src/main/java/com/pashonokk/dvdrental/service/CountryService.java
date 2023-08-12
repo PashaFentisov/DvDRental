@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,15 +47,6 @@ public class CountryService {
     @Transactional
     public void deleteCountry(Long id) {
         countryRepository.deleteById(id);
-    }
-
-    @Transactional
-    public CountryDto updateCountry(CountryDto countryDto) {
-        Country country = countryRepository.findById(countryDto.getId())
-                .orElseThrow(()->new EntityNotFoundException(String.format(ERROR_MESSAGE, countryDto.getId())));
-        Optional.ofNullable(countryDto.getName()).ifPresent(country::setName);
-        Optional.ofNullable(countryDto.getLastUpdate()).ifPresent(country::setLastUpdate);
-        return countryMapper.toDto(country);
     }
 
     @Transactional(readOnly = true)

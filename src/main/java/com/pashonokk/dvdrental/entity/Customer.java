@@ -34,6 +34,9 @@ public class Customer {
     @OneToMany(mappedBy = "customer")
     private List<Rental> rentals = new ArrayList<>();
 
+    @OneToMany(mappedBy = "customer")
+    private List<Payment> payments = new ArrayList<>();
+
     public void addAddress(Address address) {
         address.setCustomer(this);
         this.setAddress(address);
@@ -46,6 +49,11 @@ public class Customer {
     public void removeRentals(List<Rental> rentals) {
         for(Rental rental: rentals){
             rental.setCustomer(null);
+        }
+    }
+    public void removePayments(List<Payment> payments) {
+        for(Payment payment: payments){
+            payment.setCustomer(null);
         }
     }
 

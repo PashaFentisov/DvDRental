@@ -53,11 +53,4 @@ public class CategoryRestController {
                 .toUri();
         return ResponseEntity.created(location).body(savedCategory);
     }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
-        categoryDto.setId(id);
-        CategoryDto updatedCategory = categoryService.partialUpdateCategory(categoryDto);
-        return ResponseEntity.ok(updatedCategory);
-    }
 }

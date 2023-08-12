@@ -29,8 +29,8 @@ public class CountryRestController {
 
     @GetMapping
     public ResponseEntity<PageResponse<CountryDto>> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
-                                                         @RequestParam(required = false, defaultValue = "10") int size,
-                                                         @RequestParam(required = false, defaultValue = "id") String sort) {
+                                                                 @RequestParam(required = false, defaultValue = "10") int size,
+                                                                 @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 countries at one time");
         }
@@ -61,10 +61,4 @@ public class CountryRestController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<CountryDto> updateCountry(@PathVariable Long id, @RequestBody CountryDto countryDto) {
-        countryDto.setId(id);
-        CountryDto updatedCountry = countryService.updateCountry(countryDto);
-        return ResponseEntity.ok(updatedCountry);
-    }
 }

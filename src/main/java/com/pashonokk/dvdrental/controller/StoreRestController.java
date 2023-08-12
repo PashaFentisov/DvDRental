@@ -68,11 +68,4 @@ public class StoreRestController {
         storeService.deleteStore(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<StoreDto> updateStore(@PathVariable Long id, @RequestBody StoreDto storeDto) {
-        storeDto.setId(id);
-        StoreDto updatedStoreDto = storeService.updateSomeFieldsOfStore(storeDto);
-        return ResponseEntity.ok(updatedStoreDto);
-    }
 }

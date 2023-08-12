@@ -40,6 +40,9 @@ public class Staff {
     @OneToMany(mappedBy = "staff")
     private List<Rental> rentals = new ArrayList<>();
 
+    @OneToMany(mappedBy = "staff")
+    private List<Payment> payments = new ArrayList<>();
+
     public void addStore(Store store) {
         store.getStaff().add(this);
         this.setStore(store);
@@ -62,6 +65,12 @@ public class Staff {
     public void removeRentals(List<Rental> rentals) {
         for(Rental rental: rentals){
             rental.setStaff(null);
+        }
+    }
+
+    public void removePayments(List<Payment> payments) {
+        for(Payment payment: payments){
+            payment.setStaff(null);
         }
     }
 

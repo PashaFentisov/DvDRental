@@ -63,11 +63,7 @@ public class ActorService {
         Actor actor = actorRepository.findById(actorDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, actorDto.getId())));
 
-        Optional.ofNullable(actorDto.getFirstName()).ifPresent(actor::setFirstName);
-        Optional.ofNullable(actorDto.getFirstName()).ifPresent(actor::setLastName);
         Optional.ofNullable(actorDto.getBiography()).ifPresent(actor::setBiography);
-        Optional.ofNullable(actorDto.getBirthDate()).ifPresent(actor::setBirthDate);
-        Optional.ofNullable(actorDto.getLastUpdate()).ifPresent(actor::setLastUpdate);
         return actorMapper.toDto(actor);
     }
 }
