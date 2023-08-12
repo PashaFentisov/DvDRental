@@ -9,7 +9,7 @@ import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal amount;
-    private LocalDate paymentDate;
+    private OffsetDateTime paymentDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;

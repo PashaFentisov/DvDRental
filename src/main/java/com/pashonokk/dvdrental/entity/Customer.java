@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +23,8 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String email;
-    private LocalDate lastUpdate;
-    private LocalDate createDate;
+    private OffsetDateTime lastUpdate;
+    private OffsetDateTime createDate;
     private boolean active;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @MapsId

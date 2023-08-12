@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +27,7 @@ public class Store {
     @MapsId
     @JoinColumn(name = "address_id")
     private Address address;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @OneToMany(mappedBy = "store")
     @JsonIgnore
     private Set<Staff> staff = new HashSet<>();

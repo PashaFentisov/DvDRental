@@ -62,7 +62,6 @@ public class ActorService {
     public ActorDto updateSomeFieldsOfActor(ActorDto actorDto) {
         Actor actor = actorRepository.findById(actorDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, actorDto.getId())));
-
         Optional.ofNullable(actorDto.getBiography()).ifPresent(actor::setBiography);
         return actorMapper.toDto(actor);
     }

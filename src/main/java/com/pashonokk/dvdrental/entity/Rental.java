@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -19,9 +19,9 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate rentalDate;
-    private LocalDate returnDate;
-    private LocalDate lastUpdate;
+    private OffsetDateTime rentalDate;
+    private OffsetDateTime returnDate;
+    private OffsetDateTime lastUpdate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;

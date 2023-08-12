@@ -2,7 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -15,7 +15,7 @@ public class AddressDto {
     private String street;
     private String district;
     private int postalCode;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     private String phone;
     private CityDto city;
 }

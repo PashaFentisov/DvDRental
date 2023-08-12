@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -21,7 +21,7 @@ public class Language {
     private Long id;
     @Column(unique = true, nullable = false, updatable = false)
     private String name;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "languages")
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();

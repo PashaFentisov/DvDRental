@@ -3,7 +3,7 @@ package com.pashonokk.dvdrental.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class PaymentDto {
     private Long id;
     private BigDecimal amount;
-    private LocalDate paymentDate;
+    private OffsetDateTime paymentDate;
     private CustomerDto customer;
     private StaffDto staff;
     private RentalDto rental;

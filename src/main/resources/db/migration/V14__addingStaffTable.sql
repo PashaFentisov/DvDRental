@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS staff
     username VARCHAR(50),
     password VARCHAR(50),
     picture_url VARCHAR(5000),
-    last_update DATE,
+    last_update timestamp,
     active BOOLEAN,
     FOREIGN KEY (address_id) references address (id),
     FOREIGN KEY (store_id) references store (address_id),

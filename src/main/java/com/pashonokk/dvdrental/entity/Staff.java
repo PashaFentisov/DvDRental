@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class Staff {
     private String username;
     private String password;
     private String pictureUrl;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @MapsId
     @JoinColumn(name = "address_id")

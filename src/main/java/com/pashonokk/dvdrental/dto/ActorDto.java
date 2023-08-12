@@ -2,7 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -14,6 +14,6 @@ public class ActorDto {
     private String firstName;
     private String lastName;
     private String biography;
-    private LocalDate birthDate;
-    private LocalDate lastUpdate;
+    private OffsetDateTime birthDate;
+    private OffsetDateTime lastUpdate;
 }

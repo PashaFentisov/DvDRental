@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS language
 (
     id          SERIAL PRIMARY KEY,
     name        VARCHAR(30) NOT NULL,
-    last_update DATE,
+    last_update timestamp,
     UNIQUE(name)
 );
 
