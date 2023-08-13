@@ -5,7 +5,6 @@ import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
-import com.pashonokk.dvdrental.exception.CustomerWithoutAddressException;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Service
@@ -45,10 +45,9 @@ public class CustomerService {
     @Transactional
     public CustomerDto addCustomer(CustomerSavingDto customerSavingDto) {
         Customer customer = customerSavingMapper.toEntity(customerSavingDto);
+        customer.setLastUpdate(OffsetDateTime.now());
         Address address = customer.getAddress();
-        if(address==null){
-            throw new CustomerWithoutAddressException("Store cannot exist without an address");
-        }
+        address.setLastUpdate(OffsetDateTime.now());
         customer.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(customerSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
         Customer savedCustomer = customerRepository.save(customer);

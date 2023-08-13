@@ -8,7 +8,6 @@ import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
-import com.pashonokk.dvdrental.exception.StoreWithoutAddressException;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.StoreRepository;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,10 +62,9 @@ public class StoreService {
     @Transactional
     public StoreDto addStore(StoreSavingDto storeSavingDto) {
         Store store = storeSavingMapper.toEntity(storeSavingDto);
+        store.setLastUpdate(OffsetDateTime.now());
         Address address = store.getAddress();
-        if(address==null){
-            throw new StoreWithoutAddressException("Store cannot exist without an address");
-        }
+        address.setLastUpdate(OffsetDateTime.now());
         store.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(storeSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
         Store savedStore = storeRepository.save(store);

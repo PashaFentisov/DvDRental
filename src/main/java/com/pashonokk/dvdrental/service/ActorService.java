@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,7 @@ public class ActorService {
     @Transactional
     public ActorDto addActor(ActorDto actorDto) {
         Actor actor = actorMapper.toEntity(actorDto);
+        actor.setLastUpdate(OffsetDateTime.now());
         Actor savedActor = actorRepository.save(actor);
         return actorMapper.toDto(savedActor);
     }

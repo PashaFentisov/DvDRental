@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -35,6 +36,8 @@ public class CountryService {
 
     @Transactional
     public CountryDto addCountry(CountryDto countryDto) {
+        Country country = countryMapper.toEntity(countryDto);
+        country.setLastUpdate(OffsetDateTime.now());
         Country savedCountry = countryRepository.save(countryMapper.toEntity(countryDto));
         return countryMapper.toDto(savedCountry);
     }

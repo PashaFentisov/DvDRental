@@ -4,11 +4,16 @@ import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CitySavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.CityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,6 +24,7 @@ import java.net.URI;
 @RequestMapping("/cities")
 public class CityRestController {
     private final CityService cityService;
+    private final Logger logger = LoggerFactory.getLogger(CityRestController.class);
 
     @GetMapping("/{id}")
     public ResponseEntity<CityDto> getCityById(@PathVariable Long id) {
@@ -38,7 +44,11 @@ public class CityRestController {
     }
 
     @PostMapping("{id}")
-    public ResponseEntity<CityDto> addCity(@PathVariable Long id, @RequestBody CitySavingDto citySavingDto) {
+    public ResponseEntity<CityDto> addCity(@PathVariable Long id, @RequestBody @Valid CitySavingDto citySavingDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         citySavingDto.setCountryId(id);
         CityDto savedCity = cityService.saveCity(citySavingDto);
         URI location = ServletUriComponentsBuilder

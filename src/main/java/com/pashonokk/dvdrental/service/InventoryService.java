@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
@@ -46,6 +48,7 @@ public class InventoryService {
     @Transactional
     public InventoryDto addInventory(InventorySavingDto inventorySavingDto) {
         Inventory inventory = inventorySavingMapper.toEntity(inventorySavingDto);
+        inventory.setLastUpdate(OffsetDateTime.now());
         Store store = storeRepository.getStoreById(inventorySavingDto.getStoreId())
                 .orElseThrow(()->new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE,inventorySavingDto.getStoreId())));
         Film film = filmRepository.findByIdWithCategoriesAndLanguages(inventorySavingDto.getFilmId())

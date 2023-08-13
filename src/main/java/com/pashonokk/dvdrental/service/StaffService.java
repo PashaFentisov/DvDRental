@@ -6,7 +6,6 @@ import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
-import com.pashonokk.dvdrental.exception.StoreWithoutAddressException;
 import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.mapper.StaffMapper;
 import com.pashonokk.dvdrental.mapper.StaffSavingMapper;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Service
@@ -48,10 +48,9 @@ public class StaffService {
     @Transactional
     public StaffDto addStaff(StaffSavingDto staffSavingDto) {
         Staff staff = staffSavingMapper.toEntity(staffSavingDto);
+        staff.setLastUpdate(OffsetDateTime.now());
         Address address = staff.getAddress();
-        if(address==null){
-            throw new StoreWithoutAddressException("Staff cannot exist without an address");
-        }
+        address.setLastUpdate(OffsetDateTime.now());
         Store store = storeRepository.findById(staffSavingDto.getStoreId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, staffSavingDto.getStoreId())));
         staff.addStore(store);

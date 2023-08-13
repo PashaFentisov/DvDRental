@@ -4,11 +4,16 @@ import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,6 +25,8 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class CustomerRestController {
     private final CustomerService customerService;
+    private final Logger logger = LoggerFactory.getLogger(CustomerRestController.class);
+
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
         CustomerDto customerDto = customerService.getCustomerById(id);
@@ -38,7 +45,11 @@ public class CustomerRestController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerDto> addCustomer(@RequestBody CustomerSavingDto customerSavingDto) {
+    public ResponseEntity<CustomerDto> addCustomer(@RequestBody @Valid CustomerSavingDto customerSavingDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         CustomerDto savedCustomer = customerService.addCustomer(customerSavingDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

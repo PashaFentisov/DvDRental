@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Service
@@ -47,6 +48,7 @@ public class CityService {
         Country country = countryRepository.findByIdWithCities(citySavingDto.getCountryId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(COUNTRY_ERROR_MESSAGE,citySavingDto.getCountryId())));
         City city = citySavingMapper.toEntity(citySavingDto);
+        city.setLastUpdate(OffsetDateTime.now());
         country.addCity(city);
         City savedCity = cityRepository.save(city);
         return cityMapper.toDto(savedCity);

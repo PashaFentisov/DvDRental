@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 
 @Service
@@ -37,6 +38,7 @@ public class LanguageService {
     @Transactional
     public LanguageDto addLanguage(LanguageDto languageDto) {
         Language language = languageMapper.toEntity(languageDto);
+        language.setLastUpdate(OffsetDateTime.now());
         Language savedLanguage = languageRepository.save(language);
         return languageMapper.toDto(savedLanguage);
 
