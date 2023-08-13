@@ -37,7 +37,7 @@ public class FilmSavingDto {
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime lastUpdate;
     private Set<Long> categoriesIds;
-    @NotNull
+    @NotNull(message = "The list of languagesIds can not be null")
     @NotEmpty(message = "The list of languagesIds must not be empty")
     private Set<Long> languagesIds;
     private Set<Long> actorsIds;

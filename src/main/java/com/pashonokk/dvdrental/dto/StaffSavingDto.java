@@ -34,7 +34,7 @@ public class StaffSavingDto {
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime lastUpdate;
     @Valid
-    @NotNull
+    @NotNull(message = "Staff`s address can`t be null")
     private AddressSavingDto addressSavingDto;
     @NotNull(message = "Store id can`t be empty or null")
     @Min(value = 0, message = "Id can`t be negative")

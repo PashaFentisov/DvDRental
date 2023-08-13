@@ -33,7 +33,7 @@ public class CustomerSavingDto {
     @ValidOffsetDateTime
     private OffsetDateTime createDate;
     @Valid
-    @NotNull
+    @NotNull(message = "Customer`s address can`t be null")
     private AddressSavingDto addressSavingDto;
     private boolean active;
 }

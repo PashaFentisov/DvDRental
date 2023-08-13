@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 public class StoreSavingDto {
     private Long id;
     @Valid
-    @NotNull
+    @NotNull(message = "Store`s address can`t be null")
     private AddressSavingDto addressSavingDto;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)

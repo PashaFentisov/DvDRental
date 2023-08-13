@@ -6,7 +6,6 @@ import com.pashonokk.dvdrental.entity.Actor;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.entity.Language;
-import com.pashonokk.dvdrental.exception.FilmWithoutLanguageException;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.ActorRepository;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
@@ -73,9 +72,6 @@ public class FilmService {
 
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
-        if (filmSavingDto.getLanguagesIds() == null) {
-            throw new FilmWithoutLanguageException("Provide a valid Language for the Film");
-        }
         List<Category> categoriesById = Collections.emptyList();
         if (filmSavingDto.getCategoriesIds() != null) {
             categoriesById = categoryRepository.findAllByIdAndFilms(filmSavingDto.getCategoriesIds());

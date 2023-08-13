@@ -22,14 +22,14 @@ public class AddressSavingDto {
     private String street;
     private String district;
     @Range(min = 1000, max = 99999, message = "Postal code must be between 1000 and 99999")
-    @NotNull
+    @NotNull(message = "Postal code can`t be null")
     private int postalCode;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime lastUpdate;
     @NotBlank(message = "Phone can`t be empty or null")
     private String phone;
-    @NotNull
-    @Min(0)
+    @NotNull(message = "City id can`t be null")
+    @Min(value = 0, message = "City id can`t be negative")
     private Long cityId;
 }
