@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class RentalService {
@@ -51,7 +53,7 @@ public class RentalService {
     @Transactional
     public RentalDto addRental(RentalSavingDto rentalSavingDto) {
         Rental rental = rentalSavingMapper.toEntity(rentalSavingDto);
-
+        rental.setLastUpdate(OffsetDateTime.now());
         Staff staff = staffRepository.findById(rentalSavingDto.getStaffId())
                 .orElseThrow(()->new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, rentalSavingDto.getStaffId())));
 

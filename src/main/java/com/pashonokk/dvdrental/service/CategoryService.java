@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 
 @Service
@@ -43,7 +44,9 @@ public class CategoryService {
 
     @Transactional
     public CategoryDto addCategory(CategoryDto categoryDto) {
-        Category savedCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
+        Category category = categoryMapper.toEntity(categoryDto);
+        category.setLastUpdate(OffsetDateTime.now());
+        Category savedCategory = categoryRepository.save(category);
         return categoryMapper.toDto(savedCategory);
     }
 

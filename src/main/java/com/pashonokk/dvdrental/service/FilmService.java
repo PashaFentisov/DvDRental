@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -85,6 +86,7 @@ public class FilmService {
         }
         List<Language> languagesById = languageRepository.findAllByIdAndFilms(filmSavingDto.getLanguagesIds());
         Film film = filmSavingMapper.toEntity(filmSavingDto);
+        film.setLastUpdate(OffsetDateTime.now());
         film.addCategory(categoriesById);
         film.addLanguage(languagesById);
         film.addActor(actorsByIds);
