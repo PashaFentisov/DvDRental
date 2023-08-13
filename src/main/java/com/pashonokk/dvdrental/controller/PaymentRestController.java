@@ -4,11 +4,16 @@ import com.pashonokk.dvdrental.dto.PaymentDto;
 import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.PaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,6 +24,8 @@ import java.net.URI;
 @RequestMapping("/payments")
 public class PaymentRestController {
     private final PaymentService paymentService;
+    private final Logger logger = LoggerFactory.getLogger(PaymentRestController.class);
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentDto> getPaymentById(@PathVariable Long id) {
@@ -38,7 +45,11 @@ public class PaymentRestController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentDto> addPayment(@RequestBody PaymentSavingDto paymentSavingDto) {
+    public ResponseEntity<PaymentDto> addPayment(@RequestBody @Valid PaymentSavingDto paymentSavingDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         PaymentDto savedPayment = paymentService.addPayment(paymentSavingDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

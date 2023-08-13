@@ -3,11 +3,16 @@ package com.pashonokk.dvdrental.controller;
 import com.pashonokk.dvdrental.dto.LanguageDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.LanguageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -18,6 +23,8 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class LanguageRestController {
     private final LanguageService languageService;
+    private final Logger logger = LoggerFactory.getLogger(LanguageRestController.class);
+
 
     @GetMapping
     public ResponseEntity<PageResponse<LanguageDto>> getLanguages(@RequestParam(required = false, defaultValue = "0") int page,
@@ -37,7 +44,11 @@ public class LanguageRestController {
     }
 
     @PostMapping
-    public ResponseEntity<LanguageDto> addLanguage(@RequestBody LanguageDto languageDto) {
+    public ResponseEntity<LanguageDto> addLanguage(@RequestBody @Valid LanguageDto languageDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         LanguageDto savedLanguage = languageService.addLanguage(languageDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

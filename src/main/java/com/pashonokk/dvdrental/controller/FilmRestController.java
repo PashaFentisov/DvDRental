@@ -3,11 +3,16 @@ package com.pashonokk.dvdrental.controller;
 import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.FilmService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,6 +24,8 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmRestController {
     private final FilmService filmService;
+    private final Logger logger = LoggerFactory.getLogger(FilmRestController.class);
+
 
     @GetMapping
     public ResponseEntity<PageResponse<FilmDto>> getFilms(@RequestParam(required = false, defaultValue = "0") int page,
@@ -62,7 +69,11 @@ public class FilmRestController {
     }
 
     @PostMapping
-    public ResponseEntity<FilmDto> addFilm(@RequestBody FilmSavingDto filmSavingDto) {
+    public ResponseEntity<FilmDto> addFilm(@RequestBody @Valid FilmSavingDto filmSavingDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         FilmDto savedFilm = filmService.addFilm(filmSavingDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
