@@ -1,11 +1,14 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.AuthorizationToken;
 import com.pashonokk.dvdrental.dto.EmailDto;
+import com.pashonokk.dvdrental.dto.JwtAuthorizationResponse;
 import com.pashonokk.dvdrental.dto.UserDto;
 import com.pashonokk.dvdrental.entity.Role;
 import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
 import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
+import com.pashonokk.dvdrental.exception.AuthenticationException;
 import com.pashonokk.dvdrental.exception.UserExistsException;
 import com.pashonokk.dvdrental.mapper.UserMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
@@ -13,11 +16,14 @@ import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
 
 
 @Service
@@ -34,7 +40,7 @@ public class UserService{
     private final AuthenticationManager authenticationManager;
 
 
-    public String saveRegisteredUser(UserDto userDto) {
+    public void saveRegisteredUser(UserDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
             throw new UserExistsException("User with email " + userDto.getEmail() + " already exists");
         }
@@ -44,18 +50,22 @@ public class UserService{
         user.setRole(roleUser);
         Token token = new Token();
         token.addUser(user);
-        User savedUser = userRepository.save(user);
-        String generatedToken = jwtService.generateToken(savedUser);
+        userRepository.save(user);
         EmailDto emailDto = createEmailDto(user.getEmail(), token.getValue());
         applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
-        return generatedToken;
     }
 
-    public String signIn(UserDto userDto) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
+    public JwtAuthorizationResponse authorize(UserDto userDto) {
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
+        } catch (BadCredentialsException e) {
+            throw new AuthenticationException("Email or password is wrong, try again");
+        }
         User user = userRepository.findUserByEmail(userDto.getEmail())
                 .orElseThrow(()->new UsernameNotFoundException("User with email " + userDto.getEmail() + " doesn`t exist"));
-        return jwtService.generateToken(user);
+        String token = jwtService.generateToken(user);
+        OffsetDateTime expiresAt = jwtService.getExpiration(token);
+        return new JwtAuthorizationResponse(new AuthorizationToken(token, expiresAt), user.getRole().getName());
     }
 
     public void confirmUserEmail(String token) {

@@ -5,15 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.*;
+import java.util.*;
 import java.util.function.Function;
 
 
@@ -41,6 +38,10 @@ public class JwtService {
     }
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+        extraClaims.put("roles", roles);
         Date expiration = Date.from(LocalDateTime.now().plusMinutes(jwtProperties.getExpiration().toMinutes())
                 .atZone(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
@@ -53,11 +54,13 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return getExpiration(token).before(new Date());
+        return getExpiration(token).isBefore(OffsetDateTime.now());
     }
 
-    private Date getExpiration(String token) {
-        return getClaim(token, Claims::getExpiration);
+    public OffsetDateTime getExpiration(String token) {
+        Date date = getClaim(token, Claims::getExpiration);
+        Instant instant = date.toInstant();
+        return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 
     private Claims getAllClaims(String token) {
