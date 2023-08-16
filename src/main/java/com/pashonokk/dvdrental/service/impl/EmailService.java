@@ -1,6 +1,7 @@
-package com.pashonokk.dvdrental.service;
+package com.pashonokk.dvdrental.service.impl;
 
 import com.pashonokk.dvdrental.dto.EmailDto;
+import com.pashonokk.dvdrental.service.NotificationService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;

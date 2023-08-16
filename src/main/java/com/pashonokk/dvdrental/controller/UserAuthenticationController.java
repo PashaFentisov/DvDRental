@@ -9,26 +9,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/register")
-public class UserRegisterController {
+@RequestMapping("/auth")
+public class UserAuthenticationController {
     private final UserService userService;
 
     @GetMapping
-    public String register(Model model) {
+    public String auth(Model model) {
         model.addAttribute("userDto", new UserDto());
-        return "register";
+        return "auth";
     }
 
     @PostMapping
     @ResponseBody
-    public String register(@Valid @ModelAttribute UserDto userDto, Errors errors) {
+    public String auth(@Valid @ModelAttribute UserDto userDto, Errors errors) {
         if (errors.hasErrors()) {
-            return "register";
+            return "auth";
         }
-        String jwt = userService.saveRegisteredUser(userDto);
-        return "Confirming letter was sent to your email, here is your jwt " + jwt;
+        return userService.signIn(userDto);
     }
 }
