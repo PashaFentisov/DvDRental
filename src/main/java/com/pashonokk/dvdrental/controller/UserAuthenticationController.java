@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,11 @@ public class UserAuthenticationController {
 
 
     @PostMapping
-    public JwtAuthorizationResponse authorization(@RequestBody @Valid UserDto userDto, Errors errors) {
+    public ResponseEntity<JwtAuthorizationResponse> authorization(@RequestBody @Valid UserDto userDto, Errors errors) {
         if(errors.hasErrors()){
             errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
             throw new EntityValidationException("Validation failed", errors);
         }
-        return userService.authorize(userDto);
+        return ResponseEntity.ok(userService.authorize(userDto));
     }
 }

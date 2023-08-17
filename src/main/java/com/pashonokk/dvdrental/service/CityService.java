@@ -3,7 +3,6 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CitySavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
-import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Country;
 import com.pashonokk.dvdrental.mapper.CityMapper;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -58,10 +56,7 @@ public class CityService {
     public void deleteById(Long id) {
         City city = cityRepository.findByIdWithAddresses(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, id)));
-        Set<Address> addresses = city.getAddresses();
-        for(Address address: addresses){
-            city.removeAddresses(address);
-        }
+        city.removeAddresses(city.getAddresses());
         cityRepository.deleteById(id);
     }
 }

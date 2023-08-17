@@ -33,10 +33,10 @@ public class City {
         this.addresses.add(address);
         address.setCity(this);
     }
-
-    public void removeAddresses(Address address) {
-        this.addresses.remove(address);
-        address.setCity(null);
+    public void removeAddresses(Set<Address> addresses) {
+        for(Address address: addresses){
+            address.setCity(null);
+        }
     }
 
     @Override

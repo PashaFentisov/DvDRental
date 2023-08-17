@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role implements GrantedAuthority {
@@ -23,14 +23,15 @@ public class Role implements GrantedAuthority {
     @OneToMany(mappedBy = "role", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter(AccessLevel.PRIVATE)
     private Set<User> users = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "role_permission",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> permissions = new HashSet<>();
 
-    public void addUser(User user) {
-        this.users.add(user);
-        user.setRole(this);
-    }
-
-    public void removeUser(User user) {
-        this.users.remove(user);
+    public void removePermission(Permission permission) {
+        permission.getRoles().remove(this);
+        this.permissions.remove(permission);
     }
 
     @Override
