@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.Set;
 @ToString(exclude = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Set;
 @ToString(exclude = "roles")
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

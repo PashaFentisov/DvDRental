@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@Audited
 public class Token {
     @Id
     private Long userId;
