@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Audited
-public class Role{
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,11 +30,6 @@ public class Role{
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @Setter(AccessLevel.PRIVATE)
     private Set<Permission> permissions = new HashSet<>();
-
-    public void removePermission(Permission permission) {
-        this.permissions.remove(permission);
-        permission.getRoles().remove(this);
-    }
 
     @Override
     public boolean equals(Object o) {
