@@ -34,15 +34,19 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "rental_id")
     private Rental rental;
+    private Boolean isDeleted;
+
 
     public void addCustomer(Customer customer) {
         this.customer = customer;
         customer.getPayments().add(this);
     }
+
     public void addStaff(Staff staff) {
         this.staff = staff;
         staff.getPayments().add(this);
     }
+
     public void addRental(Rental rental) {
         this.rental = rental;
         rental.setPayment(this);

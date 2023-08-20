@@ -25,15 +25,11 @@ public class Country {
     @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.ALL)
     @Setter(AccessLevel.PRIVATE)
     private Set<City> cities = new HashSet<>();
+    private Boolean isDeleted;
 
     public void addCity(City city) {
         this.cities.add(city);
         city.setCountry(this);
-    }
-
-    public void removeCity(City city) {
-        this.cities.remove(city);
-        city.setCountry(null);
     }
 
     @Override

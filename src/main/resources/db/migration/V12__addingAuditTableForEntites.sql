@@ -18,6 +18,7 @@ CREATE TABLE customer_aud
     last_update timestamp,
     create_date timestamp,
     active      boolean,
+    is_deleted boolean,
     PRIMARY KEY (address_id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -34,6 +35,7 @@ CREATE TABLE address_aud
     district     VARCHAR(300),
     phone        VARCHAR(300),
     last_update  timestamp,
+    is_deleted boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -46,6 +48,7 @@ CREATE TABLE city_aud
     name        VARCHAR(50),
     last_update timestamp,
     country_id  BIGINT,
+    is_deleted boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -57,6 +60,7 @@ CREATE TABLE country_aud
     id          bigint,
     name        VARCHAR(50),
     last_update timestamp,
+    is_deleted boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -71,6 +75,7 @@ CREATE TABLE actor_aud
     biography   TEXT,
     birth_date  timestamp,
     last_update timestamp,
+    is_deleted  boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -89,6 +94,7 @@ CREATE TABLE film_aud
     replacement_cost DOUBLE PRECISION,
     rating           DOUBLE PRECISION,
     last_update      timestamp,
+    is_deleted boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -100,6 +106,7 @@ CREATE TABLE language_aud
     id          bigint,
     name        VARCHAR(30),
     last_update timestamp,
+    is_deleted boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -111,6 +118,7 @@ CREATE TABLE category_aud
     id          bigint,
     name        VARCHAR(30),
     last_update timestamp,
+    is_deleted boolean,
     PRIMARY KEY (id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
@@ -151,6 +159,7 @@ CREATE TABLE IF NOT EXISTS store_aud
     revtype     smallint,
     address_id  BIGINT,
     last_update timestamp,
+    is_deleted boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (address_id, rev)
 );
@@ -169,6 +178,7 @@ CREATE TABLE IF NOT EXISTS staff_aud
     picture_url VARCHAR(5000),
     last_update timestamp,
     active BOOLEAN,
+    is_deleted boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (address_id, rev)
 );
@@ -181,6 +191,7 @@ CREATE TABLE IF NOT EXISTS inventory_aud
     store_id  BIGINT,
     film_id  BIGINT,
     last_update timestamp,
+    is_deleted boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
@@ -196,6 +207,8 @@ CREATE TABLE IF NOT EXISTS rental_aud
     rental_date timestamp,
     return_date timestamp,
     last_update timestamp,
+    is_deleted boolean,
+
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
@@ -210,6 +223,7 @@ CREATE TABLE IF NOT EXISTS payment_aud
     rental_id  BIGINT,
     staff_id  BIGINT,
     customer_id  BIGINT,
+    is_deleted boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
@@ -220,6 +234,7 @@ CREATE TABLE IF NOT EXISTS permission_aud
     revtype     smallint,
     id bigint,
     name             VARCHAR(100),
+    is_deleted boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );

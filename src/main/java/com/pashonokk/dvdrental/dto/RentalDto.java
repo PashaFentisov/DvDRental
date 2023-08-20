@@ -17,4 +17,6 @@ public class RentalDto {
     private CustomerDto customer;
     private StaffDto staff;
     private InventoryDto inventory;
+    private Boolean isDeleted;
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.annotation.ValidOffsetDateTime;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -41,4 +42,7 @@ public class FilmSavingDto {
     @NotEmpty(message = "The list of languagesIds must not be empty")
     private Set<Long> languagesIds;
     private Set<Long> actorsIds;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted = false;
+
 }

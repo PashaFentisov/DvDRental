@@ -74,7 +74,7 @@ public class PaymentService {
     public void deletePayment(Long id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(()->new EntityNotFoundException(String.format(PAYMENT_ERROR_MESSAGE, id)));
-        paymentRepository.delete(payment);
+        payment.setIsDeleted(true);
     }
 
 }

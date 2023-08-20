@@ -6,7 +6,6 @@ import com.pashonokk.dvdrental.dto.StoreDto;
 import com.pashonokk.dvdrental.dto.StoreSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
-import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.CityRepository;
@@ -18,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -75,11 +72,8 @@ public class StoreService {
     public void deleteStore(Long id) {
         Store store = storeRepository.getStoreById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, id)));
-        Set<Staff> storeStaff = new HashSet<>(store.getStaff());
-        for(Staff staff: storeStaff){
-            staff.removeStore(store);
-        }
-        store.removeInventories(store.getInventories());
-        storeRepository.delete(store);
+        store.setIsDeleted(true);
+        store.getAddress().setIsDeleted(true);
+
     }
 }

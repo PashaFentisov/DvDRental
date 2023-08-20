@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -35,19 +34,19 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategoryById(Long id) {
-        Category category = categoryRepository.findByIdWithFilms(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        category.removeFilms(new HashSet<>(category.getFilms()));
-        categoryRepository.deleteById(id);
-    }
-
-    @Transactional
     public CategoryDto addCategory(CategoryDto categoryDto) {
         Category category = categoryMapper.toEntity(categoryDto);
+        category.setIsDeleted(false);
         category.setLastUpdate(OffsetDateTime.now());
         Category savedCategory = categoryRepository.save(category);
         return categoryMapper.toDto(savedCategory);
+    }
+
+    @Transactional
+    public void deleteCategoryById(Long id) {
+        Category category = categoryRepository.findByIdWithFilms(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        category.setIsDeleted(true);
     }
 
 }

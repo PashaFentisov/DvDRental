@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.annotation.ValidOffsetDateTime;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -36,4 +37,7 @@ public class CustomerSavingDto {
     @NotNull(message = "Customer`s address can`t be null")
     private AddressSavingDto addressSavingDto;
     private boolean active;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted = false;
+
 }

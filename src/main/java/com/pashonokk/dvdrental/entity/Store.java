@@ -32,21 +32,12 @@ public class Store {
     @JsonIgnore
     @Setter(AccessLevel.PRIVATE)
     private List<Inventory> inventories = new ArrayList<>();
+    private Boolean isDeleted;
+
 
     public void addAddress(Address address) {
         address.setStore(this);
         this.setAddress(address);
-    }
-
-    public void removeAddress(Address address) {
-        this.setAddress(null);
-        address.setStore(null);
-    }
-
-    public void removeInventories(List<Inventory> inventories) {
-        for(Inventory inventory: inventories){
-            inventory.setStore(null);
-        }
     }
 
 }

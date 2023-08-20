@@ -2,6 +2,8 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -10,5 +12,5 @@ import lombok.*;
 public class JwtAuthorizationResponse {
     private AuthorizationToken authorizationToken;
     private String role;
-    //todo додати поле permissions
+    private List<String> permissions;
 }

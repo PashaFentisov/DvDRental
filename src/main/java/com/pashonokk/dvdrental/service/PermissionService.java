@@ -52,6 +52,8 @@ public class PermissionService {
 
     @Transactional
     public void deletePermission(Long id) {
-        permissionRepository.deleteById(id);
+        Permission permission = permissionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PERMISSION_ERROR_MESSAGE, id)));
+        permission.setIsDeleted(true);
     }
 }

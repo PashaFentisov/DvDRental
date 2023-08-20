@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -39,4 +40,7 @@ public class StaffSavingDto {
     @NotNull(message = "Store id can`t be empty or null")
     @Min(value = 0, message = "Id can`t be negative")
     private Long storeId;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted = false;
+
 }

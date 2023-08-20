@@ -26,12 +26,7 @@ public class Category {
     @ManyToMany(mappedBy = "categories", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
-
-    public void removeFilms(Set<Film> films) {
-        for(Film film: films){
-            film.removeCategory(this);
-        }
-    }
+    private Boolean isDeleted;
 
     @Override
     public boolean equals(Object o) {

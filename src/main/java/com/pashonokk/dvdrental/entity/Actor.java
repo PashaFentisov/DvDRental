@@ -30,6 +30,7 @@ public class Actor {
     @ManyToMany(mappedBy = "actors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
+    private Boolean isDeleted;
 
     @Override
     public boolean equals(Object o) {
@@ -42,11 +43,5 @@ public class Actor {
     @Override
     public int hashCode() {
         return Objects.hash(firstName, lastName, birthDate);
-    }
-
-    public void removeFilms(Set<Film> films) {
-        for(Film film: films){
-            film.removeActor(this);
-        }
     }
 }

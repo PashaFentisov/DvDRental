@@ -14,4 +14,5 @@ public class InventoryDto {
     private StoreDto store;
     private FilmDto film;
     private OffsetDateTime lastUpdate;
+    private Boolean isDeleted;
 }

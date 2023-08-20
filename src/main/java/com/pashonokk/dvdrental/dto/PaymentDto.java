@@ -17,4 +17,6 @@ public class PaymentDto {
     private CustomerDto customer;
     private StaffDto staff;
     private RentalDto rental;
+    private Boolean isDeleted;
+
 }

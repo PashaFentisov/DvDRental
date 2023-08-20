@@ -18,4 +18,5 @@ public class CustomerDto {
     private OffsetDateTime createDate;
     private AddressDto address;
     private boolean active;
+    private Boolean isDeleted;
 }

@@ -36,24 +36,10 @@ public class Customer {
     @Setter(AccessLevel.PRIVATE)
     private List<Payment> payments = new ArrayList<>();
 
+    private Boolean isDeleted;
+
     public void addAddress(Address address) {
         address.setCustomer(this);
         this.setAddress(address);
     }
-
-    public void removeAddress(Address address) {
-        this.setAddress(null);
-        address.setCustomer(null);
-    }
-    public void removeRentals(List<Rental> rentals) {
-        for(Rental rental: rentals){
-            rental.setCustomer(null);
-        }
-    }
-    public void removePayments(List<Payment> payments) {
-        for(Payment payment: payments){
-            payment.setCustomer(null);
-        }
-    }
-
 }

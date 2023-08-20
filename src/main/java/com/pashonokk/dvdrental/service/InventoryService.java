@@ -63,7 +63,6 @@ public class InventoryService {
     public void deleteInventory(Long id) {
         Inventory inventory = inventoryRepository.findById(id)
                         .orElseThrow(()-> new EntityNotFoundException(String.format(INVENTORY_ERROR_MESSAGE, id)));
-        inventory.removeRentals(inventory.getRentals());
-        inventoryRepository.delete(inventory);
+        inventory.setIsDeleted(true);
     }
 }

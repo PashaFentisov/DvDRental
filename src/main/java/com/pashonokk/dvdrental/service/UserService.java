@@ -18,12 +18,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 
 @Service
@@ -65,7 +67,8 @@ public class UserService{
                 .orElseThrow(()->new UsernameNotFoundException("User with email " + userDto.getEmail() + " doesn`t exist"));
         String token = jwtService.generateToken(user);
         OffsetDateTime expiresAt = jwtService.getExpiration(token);
-        return new JwtAuthorizationResponse(new AuthorizationToken(token, expiresAt), user.getRole().getName());
+        List<String> permissions = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        return new JwtAuthorizationResponse(new AuthorizationToken(token, expiresAt), user.getRole().getName(), permissions);
     }
 
     public void confirmUserEmail(String token) {

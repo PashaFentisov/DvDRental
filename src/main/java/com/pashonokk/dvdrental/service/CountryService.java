@@ -37,6 +37,7 @@ public class CountryService {
     @Transactional
     public CountryDto addCountry(CountryDto countryDto) {
         Country country = countryMapper.toEntity(countryDto);
+        country.setIsDeleted(false);
         country.setLastUpdate(OffsetDateTime.now());
         Country savedCountry = countryRepository.save(countryMapper.toEntity(countryDto));
         return countryMapper.toDto(savedCountry);
@@ -49,7 +50,9 @@ public class CountryService {
 
     @Transactional
     public void deleteCountry(Long id) {
-        countryRepository.deleteById(id);
+        Country country = countryRepository.findByIdWithCities(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        country.setIsDeleted(true);
     }
 
     @Transactional(readOnly = true)

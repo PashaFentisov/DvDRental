@@ -13,4 +13,5 @@ public class PermissionDto {
     private Long id;
     private String name;
     private Set<String> roleNames;
+    private Boolean isDeleted;
 }

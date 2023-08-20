@@ -18,4 +18,6 @@ public class AddressDto {
     private OffsetDateTime lastUpdate;
     private String phone;
     private CityDto city;
+    private Boolean isDeleted;
+
 }

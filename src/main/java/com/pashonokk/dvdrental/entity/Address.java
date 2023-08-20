@@ -41,7 +41,7 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")
     private City city;
-
+    private Boolean isDeleted;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

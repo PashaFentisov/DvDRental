@@ -74,8 +74,7 @@ public class RentalService {
     public void deleteRental(Long id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(()->new EntityNotFoundException(String.format(RENTAL_ERROR_MESSAGE, id)));
-        rental.removePayment(rental.getPayment());
-        rentalRepository.delete(rental);
+        rental.setIsDeleted(true);
     }
 
 }

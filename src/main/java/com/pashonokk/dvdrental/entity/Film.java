@@ -57,6 +57,8 @@ public class Film {
     @Setter(AccessLevel.PRIVATE)
     private List<Inventory> inventories = new ArrayList<>();
 
+    private Boolean isDeleted;
+
 
     public void addCategory(Category category) {
         categories.add(category);
@@ -67,10 +69,6 @@ public class Film {
         for (Category category : categories) {
             addCategory(category);
         }
-    }
-    public void removeCategory(Category category) {
-        this.categories.remove(category);
-        category.getFilms().remove(this);
     }
 
     public void addLanguage(Language language) {
@@ -84,11 +82,6 @@ public class Film {
         }
     }
 
-    public void removeLanguage(Language language) {
-        language.getFilms().remove(this);
-        this.languages.remove(language);
-    }
-
     public void addActor(Actor actor) {
         actor.getFilms().add(this);
         this.actors.add(actor);
@@ -97,16 +90,6 @@ public class Film {
     public void addActor(List<Actor> actors) {
         for (Actor actor : actors) {
             addActor(actor);
-        }
-    }
-
-    public void removeActor(Actor actor) {
-        actor.getFilms().remove(this);
-        this.actors.remove(actor);
-    }
-    public void removeInventories(List<Inventory> inventories) {
-        for(Inventory inventory: inventories){
-            inventory.setFilm(null);
         }
     }
 

@@ -24,6 +24,8 @@ public class Permission implements GrantedAuthority {
     @Column(unique = true, nullable = false, updatable = false)
     private String name;
 
+    private Boolean isDeleted;
+
     @ManyToMany(mappedBy = "permissions")
     @Setter(AccessLevel.PRIVATE)
     private Set<Role> roles = new HashSet<>();
@@ -38,13 +40,6 @@ public class Permission implements GrantedAuthority {
             addRole(role);
         }
     }
-
-    public void removeRoles(Set<Role> roles) {
-        for(Role role: roles){
-            role.removePermission(this);
-        }
-    }
-
 
     @Override
     public boolean equals(Object o) {
