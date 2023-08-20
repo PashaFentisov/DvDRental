@@ -74,11 +74,10 @@ public class StaffService {
     public StaffDto updateSomeFieldsOfStaff(StaffDto staffDto) {
         Staff staff = staffRepository.findById(staffDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, staffDto.getId())));
-        Optional.ofNullable(staffDto.getFirstName()).ifPresent(staff::setFirstName);
-        Optional.ofNullable(staffDto.getLastName()).ifPresent(staff::setLastName);
-        Optional.ofNullable(staffDto.getEmail()).ifPresent(staff::setEmail);
-        Optional.ofNullable(staffDto.getActive()).ifPresent(staff::setActive);
-        Optional.ofNullable(staffDto.getPassword()).ifPresent(staff::setPassword);
+        Optional.ofNullable(staffDto.getContactInfo().getFirstName()).ifPresent(staff.getContactInfo()::setFirstName);
+        Optional.ofNullable(staffDto.getContactInfo().getLastName()).ifPresent(staff.getContactInfo()::setLastName);
+        Optional.ofNullable(staffDto.getContactInfo().getEmail()).ifPresent(staff.getContactInfo()::setEmail);
+        Optional.ofNullable(staffDto.getContactInfo().getIsActive()).ifPresent(staff.getContactInfo()::setIsActive);
         Optional.ofNullable(staffDto.getPictureUrl()).ifPresent(staff::setPictureUrl);
         return staffMapper.toDto(staff);
     }

@@ -11,12 +11,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class StaffDto {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Boolean active;
-    private String username;
-    private String password;
+    private ContactInfoDto contactInfo;
     private String pictureUrl;
     private OffsetDateTime lastUpdate;
     private AddressDto address;

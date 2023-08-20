@@ -17,12 +17,10 @@ import java.util.List;
 public class Customer {
     @Id
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
     private OffsetDateTime lastUpdate;
     private OffsetDateTime createDate;
-    private boolean active;
+    @Embedded
+    private ContactInfo contactInfo;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @MapsId
     @JoinColumn(name = "address_id")
@@ -35,7 +33,6 @@ public class Customer {
     @OneToMany(mappedBy = "customer")
     @Setter(AccessLevel.PRIVATE)
     private List<Payment> payments = new ArrayList<>();
-
     private Boolean isDeleted;
 
     public void addAddress(Address address) {

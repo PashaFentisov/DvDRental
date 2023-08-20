@@ -6,7 +6,6 @@ import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -19,17 +18,9 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class StaffSavingDto {
     private Long id;
-    @NotBlank(message = "Staff`s first name can`t be empty or null")
-    private String firstName;
-    @NotBlank(message = "Actor`s last name can`t be empty or null")
-    private String lastName;
-    @NotBlank(message = "Actor`s email can`t be empty or null")
-    private String email;
-    private boolean active;
-    @NotBlank(message = "Actor`s username can`t be empty or null")
-    private String username;
-    @NotBlank(message = "Actor`s password can`t be empty or null")
-    private String password;
+    @Valid
+    @NotNull(message = "Staff`s contact info can`t be null")
+    private ContactInfoDto contactInfo;
     private String pictureUrl;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)

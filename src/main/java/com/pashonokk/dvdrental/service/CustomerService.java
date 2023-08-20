@@ -49,7 +49,7 @@ public class CustomerService {
         Address address = customer.getAddress();
         address.setLastUpdate(OffsetDateTime.now());
         customer.addAddress(address);
-        cityRepository.findByIdWithAddressesAndCountry(customerSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
+        cityRepository.findByIdWithAddressesAndCountry(customerSavingDto.getAddress().getCityId()).ifPresent(city->city.addAddress(address));
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toDto(savedCustomer);
     }
@@ -66,10 +66,10 @@ public class CustomerService {
     public CustomerDto partialUpdateCustomer(CustomerDto customerDto) {
         Customer customer = customerRepository.findById(customerDto.getId())
                         .orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerDto.getId())));
-        Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
+        Optional.ofNullable(customerDto.getContactInfo().getFirstName()).ifPresent(customer.getContactInfo()::setFirstName);
         Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);
-        Optional.ofNullable(customerDto.getLastName()).ifPresent(customer::setLastName);
-        Optional.ofNullable(customerDto.getEmail()).ifPresent(customer::setEmail);
+        Optional.ofNullable(customerDto.getContactInfo().getLastName()).ifPresent(customer.getContactInfo()::setLastName);
+        Optional.ofNullable(customerDto.getContactInfo().getEmail()).ifPresent(customer.getContactInfo()::setEmail);
         return customerMapper.toDto(customer);
     }
 }
