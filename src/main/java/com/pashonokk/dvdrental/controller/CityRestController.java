@@ -34,8 +34,8 @@ public class CityRestController {
 
     @GetMapping
     public ResponseEntity<PageResponse<CityDto>> getCities(@RequestParam(required = false, defaultValue = "0") int page,
-                                                   @RequestParam(required = false, defaultValue = "10") int size,
-                                                   @RequestParam(required = false, defaultValue = "id") String sort) {
+                                                           @RequestParam(required = false, defaultValue = "10") int size,
+                                                           @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 cities at one time");
         }
@@ -46,7 +46,7 @@ public class CityRestController {
     @PostMapping("{id}")
     public ResponseEntity<CityDto> addCity(@PathVariable Long id, @RequestBody @Valid CitySavingDto citySavingDto, Errors errors) {
         if(errors.hasErrors()){
-            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            errors.getFieldErrors().forEach(er -> logger.error(er.getDefaultMessage()));
             throw new EntityValidationException("Validation failed", errors);
         }
         citySavingDto.setCountryId(id);

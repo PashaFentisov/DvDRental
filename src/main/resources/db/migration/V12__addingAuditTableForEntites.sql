@@ -213,3 +213,60 @@ CREATE TABLE IF NOT EXISTS payment_aud
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
+
+CREATE TABLE IF NOT EXISTS permission_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    id bigint,
+    name             VARCHAR(100),
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);
+
+CREATE TABLE IF NOT EXISTS role_permission_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    role_id     BIGINT,
+    permission_id BIGINT,
+    PRIMARY KEY (role_id, permission_id, rev),
+    FOREIGN KEY (rev) REFERENCES revinfo (rev)
+);
+
+CREATE TABLE IF NOT EXISTS role_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    id bigint,
+    name VARCHAR(30),
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);
+
+CREATE TABLE IF NOT EXISTS users_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    id bigint,
+    email VARCHAR(50),
+    password VARCHAR(256),
+    role_id  BIGINT,
+    is_verified BOOLEAN,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);
+
+CREATE TABLE IF NOT EXISTS token_aud
+(
+    rev         integer     NOT NULL,
+    revtype     smallint,
+    user_id  BIGINT,
+    value VARCHAR(300),
+    create_time timestamp,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (user_id, rev)
+);
+
+
+

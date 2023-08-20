@@ -6,6 +6,3 @@ CREATE TABLE IF NOT EXISTS token
     FOREIGN KEY (user_id) references users (id),
     PRIMARY KEY (user_id)
 );
-
-ALTER TABLE users
-    ADD COLUMN is_verified BOOLEAN;

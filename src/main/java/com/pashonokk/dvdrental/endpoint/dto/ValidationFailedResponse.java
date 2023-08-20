@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 @Getter
 public class ValidationFailedResponse extends BaseResponse {
-    private List<String> errorMessages;
+    private final List<String> errorMessages;
     public ValidationFailedResponse(String message, List<String> errorMessages) {
         super(Status.FAIL, message);
         this.errorMessages = errorMessages;
