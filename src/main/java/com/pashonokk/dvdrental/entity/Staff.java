@@ -41,36 +41,17 @@ public class Staff {
     @OneToMany(mappedBy = "staff")
     @Setter(AccessLevel.PRIVATE)
     private List<Payment> payments = new ArrayList<>();
+    private Boolean isDeleted;
 
     public void addStore(Store store) {
         store.getStaff().add(this);
         this.setStore(store);
     }
 
-    public void removeStore(Store store) {
-        store.getStaff().remove(this);
-        this.setStore(null);
-    }
 
     public void addAddress(Address address) {
         address.setStaff(this);
         this.setAddress(address);
-    }
-
-    public void removeAddress(Address address) {
-        this.setAddress(null);
-        address.setStaff(null);
-    }
-    public void removeRentals(List<Rental> rentals) {
-        for(Rental rental: rentals){
-            rental.setStaff(null);
-        }
-    }
-
-    public void removePayments(List<Payment> payments) {
-        for(Payment payment: payments){
-            payment.setStaff(null);
-        }
     }
 
     @Override

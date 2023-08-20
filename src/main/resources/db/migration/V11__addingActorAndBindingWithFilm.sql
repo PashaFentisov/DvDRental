@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS actor
     biography   TEXT        NOT NULL,
     birth_date  timestamp,
     last_update timestamp,
+    is_deleted   boolean,
     UNIQUE (first_name, last_name, birth_date)
 );
 

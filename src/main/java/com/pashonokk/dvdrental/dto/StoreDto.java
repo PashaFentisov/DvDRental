@@ -13,4 +13,6 @@ public class StoreDto {
     private Long id;
     private AddressDto address;
     private OffsetDateTime lastUpdate;
+    private Boolean isDeleted;
+
 }

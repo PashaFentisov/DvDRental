@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.annotation.ValidOffsetDateTime;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -37,4 +38,7 @@ public class RentalSavingDto {
     @NotNull(message = "Inventory id can`t be empty or null")
     @Min(value = 0, message = "Id can`t be negative")
     private Long inventoryId;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted = false;
+
 }

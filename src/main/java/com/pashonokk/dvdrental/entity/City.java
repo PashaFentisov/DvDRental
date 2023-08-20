@@ -28,15 +28,11 @@ public class City {
     @OneToMany(mappedBy = "city", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter(AccessLevel.PRIVATE)
     private Set<Address> addresses = new HashSet<>();
+    private Boolean isDeleted;
 
     public void addAddress(Address address) {
         this.addresses.add(address);
         address.setCity(this);
-    }
-    public void removeAddresses(Set<Address> addresses) {
-        for(Address address: addresses){
-            address.setCity(null);
-        }
     }
 
     @Override

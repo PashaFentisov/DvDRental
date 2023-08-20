@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,4 +33,6 @@ public class AddressSavingDto {
     @NotNull(message = "City id can`t be null")
     @Min(value = 0, message = "City id can`t be negative")
     private Long cityId;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted = false;
 }

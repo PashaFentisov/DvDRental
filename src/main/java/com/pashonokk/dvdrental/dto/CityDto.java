@@ -14,4 +14,5 @@ public class CityDto {
     private String name;
     private OffsetDateTime lastUpdate;
     private CountryDto country;
+    private Boolean isDeleted;
 }

@@ -21,4 +21,6 @@ public class StaffDto {
     private OffsetDateTime lastUpdate;
     private AddressDto address;
     private StoreDto store;
+    private Boolean isDeleted;
+
 }

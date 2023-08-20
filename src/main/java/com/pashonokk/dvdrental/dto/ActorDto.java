@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.annotation.ValidOffsetDateTime;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -28,4 +29,6 @@ public class ActorDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime lastUpdate;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted;
 }

@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -21,4 +22,6 @@ public class CitySavingDto {
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     private OffsetDateTime lastUpdate;
     private Long countryId;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted;
 }

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS rental
     rental_date timestamp,
     return_date timestamp,
     last_update timestamp,
+    is_deleted boolean,
     FOREIGN KEY (inventory_id) references inventory (id),
     FOREIGN KEY (staff_id) references staff (address_id),
     FOREIGN KEY (customer_id) references customer (address_id)

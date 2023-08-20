@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -65,15 +66,16 @@ public class ActorRestController {
         return ResponseEntity.created(location).body(savedActor);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteActor(@PathVariable Long id) {
-        actorService.deleteActorById(id);
-        return ResponseEntity.noContent().build();
-    }
     @PatchMapping("/{id}")
     public ResponseEntity<ActorDto> updateActor(@PathVariable Long id, @RequestBody ActorDto actorDto) {
         actorDto.setId(id);
         ActorDto updatedActorDto = actorService.updateSomeFieldsOfActor(actorDto);
         return ResponseEntity.ok(updatedActorDto);
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).DELETE_ACCESS)")
+    public ResponseEntity<Object> deleteActor(@PathVariable Long id) {
+        actorService.deleteActorById(id);
+        return ResponseEntity.noContent().build();
     }
 }

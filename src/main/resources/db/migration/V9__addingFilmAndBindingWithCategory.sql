@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS film
     replacement_cost DOUBLE PRECISION,
     rating           DOUBLE PRECISION,
     last_update      timestamp,
+    is_deleted boolean,
     UNIQUE (title, description)
 );
 

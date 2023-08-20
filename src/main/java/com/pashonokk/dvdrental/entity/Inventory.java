@@ -30,18 +30,16 @@ public class Inventory {
     @OneToMany(mappedBy = "inventory")
     private List<Rental> rentals = new ArrayList<>();
     private OffsetDateTime lastUpdate;
+    private Boolean isDeleted;
+
 
     public void addFilm(Film film) {
         this.film = film;
         film.getInventories().add(this);
     }
+
     public void addStore(Store store) {
         this.store = store;
         store.getInventories().add(this);
-    }
-    public void removeRentals(List<Rental> rentals) {
-        for(Rental rental: rentals){
-            rental.setInventory(null);
-        }
     }
 }

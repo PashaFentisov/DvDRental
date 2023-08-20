@@ -24,4 +24,5 @@ public class FilmDto {
     private OffsetDateTime lastUpdate;
     private Set<CategoryDto> categories;
     private Set<LanguageDto> languages;
+    private Boolean isDeleted;
 }

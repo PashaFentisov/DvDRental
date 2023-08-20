@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -89,16 +90,17 @@ public class FilmRestController {
         return ResponseEntity.created(URI.create("localhost:10000/films/" + updatedFilmDto.getId())).body(updatedFilmDto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteFilm(@PathVariable Long id) {
-        filmService.deleteFilmById(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<FilmDto> updateFilm(@PathVariable Long id, @RequestBody FilmDto filmDto) {
         filmDto.setId(id);
         FilmDto updatedFilmDto = filmService.updateSomeFieldsOfFilm(filmDto);
         return ResponseEntity.ok(updatedFilmDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).DELETE_ACCESS)")
+    public ResponseEntity<Object> deleteFilm(@PathVariable Long id) {
+        filmService.deleteFilmById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,16 +48,10 @@ public class ActorService {
     @Transactional
     public ActorDto addActor(ActorDto actorDto) {
         Actor actor = actorMapper.toEntity(actorDto);
+        actor.setIsDeleted(false);
         actor.setLastUpdate(OffsetDateTime.now());
         Actor savedActor = actorRepository.save(actor);
         return actorMapper.toDto(savedActor);
-    }
-    @Transactional
-    public void deleteActorById(Long id) {
-        Actor actor = actorRepository.findByIdWithFilms(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        actor.removeFilms(new HashSet<>(actor.getFilms()));
-        actorRepository.delete(actor);
     }
     @Transactional
     public ActorDto updateSomeFieldsOfActor(ActorDto actorDto) {
@@ -66,5 +59,11 @@ public class ActorService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, actorDto.getId())));
         Optional.ofNullable(actorDto.getBiography()).ifPresent(actor::setBiography);
         return actorMapper.toDto(actor);
+    }
+    @Transactional
+    public void deleteActorById(Long id) {
+        Actor actor = actorRepository.findByIdWithFilms(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        actor.setIsDeleted(true);
     }
 }

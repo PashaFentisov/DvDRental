@@ -25,11 +25,7 @@ public class Language {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "languages")
     @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
-    public void removeFilms(Set<Film> films) {
-        for(Film film: films){
-            film.removeLanguage(this);
-        }
-    }
+    private Boolean isDeleted;
 
     @Override
     public boolean equals(Object o) {

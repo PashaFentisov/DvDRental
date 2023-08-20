@@ -56,7 +56,6 @@ public class CityService {
     public void deleteById(Long id) {
         City city = cityRepository.findByIdWithAddresses(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, id)));
-        city.removeAddresses(city.getAddresses());
-        cityRepository.deleteById(id);
+        city.setIsDeleted(true);
     }
 }

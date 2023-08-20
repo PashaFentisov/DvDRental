@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS staff
     picture_url VARCHAR(5000),
     last_update timestamp,
     active BOOLEAN,
+    is_deleted boolean,
     FOREIGN KEY (address_id) references address (id),
     FOREIGN KEY (store_id) references store (address_id),
     UNIQUE (username),
