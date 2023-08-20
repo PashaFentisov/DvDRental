@@ -2,10 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
@@ -33,6 +30,7 @@ public class Store {
     private Set<Staff> staff = new HashSet<>();
     @OneToMany(mappedBy = "store", orphanRemoval = true)
     @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     private List<Inventory> inventories = new ArrayList<>();
 
     public void addAddress(Address address) {

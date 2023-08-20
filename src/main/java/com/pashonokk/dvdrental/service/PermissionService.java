@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -53,9 +52,6 @@ public class PermissionService {
 
     @Transactional
     public void deletePermission(Long id) {
-        Permission permission = permissionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(PERMISSION_ERROR_MESSAGE, id)));
-        permission.removeRoles(new HashSet<>(permission.getRoles()));
-        permissionRepository.delete(permission);
+        permissionRepository.deleteById(id);
     }
 }

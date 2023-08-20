@@ -1,10 +1,7 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
@@ -31,6 +28,7 @@ public class Actor {
     private OffsetDateTime birthDate;
     private OffsetDateTime lastUpdate;
     @ManyToMany(mappedBy = "actors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
 
     @Override

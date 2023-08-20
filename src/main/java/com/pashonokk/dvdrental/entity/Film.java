@@ -2,10 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -40,20 +37,24 @@ public class Film {
     @JoinTable(name = "film_language",
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id"))
+    @Setter(AccessLevel.PRIVATE)
     private Set<Language> languages = new HashSet<>();
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "film_category",
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @Setter(AccessLevel.PRIVATE)
     private Set<Category> categories = new HashSet<>();
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "film_actor",
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id"))
+    @Setter(AccessLevel.PRIVATE)
     private Set<Actor> actors = new HashSet<>();
 
     @OneToMany(mappedBy = "film", orphanRemoval = true)
     @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
     private List<Inventory> inventories = new ArrayList<>();
 
 

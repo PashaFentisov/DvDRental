@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Audited
-public class Permission {
+public class Permission implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +25,7 @@ public class Permission {
     private String name;
 
     @ManyToMany(mappedBy = "permissions")
+    @Setter(AccessLevel.PRIVATE)
     private Set<Role> roles = new HashSet<>();
 
     public void addRole(Role role) {
@@ -43,6 +45,7 @@ public class Permission {
         }
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,5 +57,10 @@ public class Permission {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String getAuthority() {
+        return name;
     }
 }
