@@ -18,8 +18,6 @@ import java.util.Objects;
 public class Staff {
     @Id
     private Long id;
-    @Embedded
-    private ContactInfo contactInfo;
     private String pictureUrl;
     private OffsetDateTime lastUpdate;
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
@@ -54,11 +52,11 @@ public class Staff {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Staff staff = (Staff) o;
-        return contactInfo.equals(staff.contactInfo);
+        return address.equals(staff.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contactInfo);
+        return Objects.hash(address);
     }
 }

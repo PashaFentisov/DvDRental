@@ -1,16 +1,14 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.dto.AuthorizationToken;
-import com.pashonokk.dvdrental.dto.EmailDto;
-import com.pashonokk.dvdrental.dto.JwtAuthorizationResponse;
-import com.pashonokk.dvdrental.dto.UserDto;
+import com.pashonokk.dvdrental.dto.*;
+import com.pashonokk.dvdrental.entity.Customer;
 import com.pashonokk.dvdrental.entity.Role;
 import com.pashonokk.dvdrental.entity.Token;
 import com.pashonokk.dvdrental.entity.User;
 import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
 import com.pashonokk.dvdrental.exception.AuthenticationException;
 import com.pashonokk.dvdrental.exception.UserExistsException;
-import com.pashonokk.dvdrental.mapper.UserMapper;
+import com.pashonokk.dvdrental.mapper.UserCustomerSavingMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,20 +33,23 @@ public class UserService{
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
-    private final UserMapper userMapper;
+    private final CustomerService customerService;
+    private final UserCustomerSavingMapper userMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
 
-    public void saveRegisteredUser(UserDto userDto) {
+    public void saveRegisteredUser(UserCustomerSavingDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
             throw new UserExistsException("User with email " + userDto.getEmail() + " already exists");
         }
         User user = userMapper.toEntity(userDto);
+        Customer customer = constructAndSaveCustomer(userDto);
+        customer.addUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Role roleUser = roleRepository.findRoleByName("ROLE_USER");
+        Role roleUser = roleRepository.findRoleByName("ROLE_CUSTOMER");
         user.setRole(roleUser);
         Token token = new Token();
         token.addUser(user);
@@ -57,7 +58,11 @@ public class UserService{
         applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
     }
 
-    public JwtAuthorizationResponse authorize(UserDto userDto) {
+    private Customer constructAndSaveCustomer(UserCustomerSavingDto userDto) {
+        return customerService.addCustomer(userDto.getAddress());
+    }
+
+    public JwtAuthorizationResponse authorize(UserAuthorizationDto userDto) {
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
         } catch (BadCredentialsException e) {

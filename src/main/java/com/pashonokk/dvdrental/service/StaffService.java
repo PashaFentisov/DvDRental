@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -74,11 +73,11 @@ public class StaffService {
     public StaffDto updateSomeFieldsOfStaff(StaffDto staffDto) {
         Staff staff = staffRepository.findById(staffDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, staffDto.getId())));
-        Optional.ofNullable(staffDto.getContactInfo().getFirstName()).ifPresent(staff.getContactInfo()::setFirstName);
-        Optional.ofNullable(staffDto.getContactInfo().getLastName()).ifPresent(staff.getContactInfo()::setLastName);
-        Optional.ofNullable(staffDto.getContactInfo().getEmail()).ifPresent(staff.getContactInfo()::setEmail);
-        Optional.ofNullable(staffDto.getContactInfo().getIsActive()).ifPresent(staff.getContactInfo()::setIsActive);
-        Optional.ofNullable(staffDto.getPictureUrl()).ifPresent(staff::setPictureUrl);
+//        Optional.ofNullable(staffDto.getContactInfo().getFirstName()).ifPresent(staff::setFirstName);
+//        Optional.ofNullable(staffDto.getContactInfo().getLastName()).ifPresent(staff::setLastName);
+//        Optional.ofNullable(staffDto.getContactInfo().getEmail()).ifPresent(staff::setEmail);
+//        Optional.ofNullable(staffDto.getContactInfo().getIsActive()).ifPresent(staff.getContactInfo()::setIsActive);
+//        Optional.ofNullable(staffDto.getPictureUrl()).ifPresent(staff::setPictureUrl);
         return staffMapper.toDto(staff);
     }
 }

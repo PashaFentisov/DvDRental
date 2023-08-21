@@ -12,7 +12,6 @@ import lombok.ToString;
 public class ContactInfo {
     private String firstName;
     private String lastName;
-    private String email;
     private Boolean isActive;
     private String username;
 }

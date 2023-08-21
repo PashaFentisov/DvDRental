@@ -11,7 +11,6 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class CustomerDto {
     private Long id;
-    private ContactInfoDto contactInfo;
     private OffsetDateTime lastUpdate;
     private OffsetDateTime createDate;
     private AddressDto address;
