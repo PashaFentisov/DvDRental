@@ -1,12 +1,12 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.dto.CustomerDto;
-import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
-import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +24,8 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CityRepository cityRepository;
     private final CustomerMapper customerMapper;
+    private final AddressSavingMapper addressSavingMapper;
     private final PageMapper pageMapper;
-    private final CustomerSavingMapper customerSavingMapper;
     private static final String ERROR_MESSAGE = "Customer with id %s doesn't exist";
 
 
@@ -43,15 +42,16 @@ public class CustomerService {
     }
 
     @Transactional
-    public CustomerDto addCustomer(CustomerSavingDto customerSavingDto) {
-        Customer customer = customerSavingMapper.toEntity(customerSavingDto);
+    public Customer addCustomer(AddressSavingDto addressSavingDto) {
+        Customer customer = new Customer();
         customer.setLastUpdate(OffsetDateTime.now());
-        Address address = customer.getAddress();
+        customer.setCreateDate(OffsetDateTime.now());
+        customer.setIsDeleted(false);
+        Address address = addressSavingMapper.toEntity(addressSavingDto);
         address.setLastUpdate(OffsetDateTime.now());
         customer.addAddress(address);
-        cityRepository.findByIdWithAddressesAndCountry(customerSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
-        Customer savedCustomer = customerRepository.save(customer);
-        return customerMapper.toDto(savedCustomer);
+        cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));
+        return customer;
     }
 
     @Transactional
@@ -60,16 +60,5 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
         customer.setIsDeleted(true);
         customer.getAddress().setIsDeleted(true);
-    }
-
-    @Transactional
-    public CustomerDto partialUpdateCustomer(CustomerDto customerDto) {
-        Customer customer = customerRepository.findById(customerDto.getId())
-                        .orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerDto.getId())));
-        Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
-        Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);
-        Optional.ofNullable(customerDto.getLastName()).ifPresent(customer::setLastName);
-        Optional.ofNullable(customerDto.getEmail()).ifPresent(customer::setEmail);
-        return customerMapper.toDto(customer);
     }
 }

@@ -1,16 +1,12 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.dto.AuthorizationToken;
-import com.pashonokk.dvdrental.dto.EmailDto;
-import com.pashonokk.dvdrental.dto.JwtAuthorizationResponse;
-import com.pashonokk.dvdrental.dto.UserDto;
-import com.pashonokk.dvdrental.entity.Role;
-import com.pashonokk.dvdrental.entity.Token;
-import com.pashonokk.dvdrental.entity.User;
+import com.pashonokk.dvdrental.dto.*;
+import com.pashonokk.dvdrental.entity.*;
 import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
 import com.pashonokk.dvdrental.exception.AuthenticationException;
 import com.pashonokk.dvdrental.exception.UserExistsException;
-import com.pashonokk.dvdrental.mapper.UserMapper;
+import com.pashonokk.dvdrental.mapper.UserCustomerSavingMapper;
+import com.pashonokk.dvdrental.mapper.UserStaffSavingMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,20 +31,28 @@ public class UserService{
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
-    private final UserMapper userMapper;
+    private final CustomerService customerService;
+    private final StaffService staffService;
+    private final UserCustomerSavingMapper userCustomerSavingMapper;
+    private final UserStaffSavingMapper userStaffSavingMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private static final String USER_EXISTS_ERROR_MESSAGE = "User with email %s already exists";
 
-    public void saveRegisteredUser(UserDto userDto) {
+
+
+    public void saveRegisteredCustomerUser(UserCustomerSavingDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
-            throw new UserExistsException("User with email " + userDto.getEmail() + " already exists");
+            throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
-        User user = userMapper.toEntity(userDto);
+        User user = userCustomerSavingMapper.toEntity(userDto);
+        Customer customer = customerService.addCustomer(userDto.getAddress());  //todo rename addCustomer
+        customer.addUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Role roleUser = roleRepository.findRoleByName("ROLE_USER");
+        Role roleUser = roleRepository.findRoleByName("ROLE_CUSTOMER");
         user.setRole(roleUser);
         Token token = new Token();
         token.addUser(user);
@@ -57,7 +61,24 @@ public class UserService{
         applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
     }
 
-    public JwtAuthorizationResponse authorize(UserDto userDto) {
+    public void saveRegisteredStaffUser(UserStaffSavingDto userDto) {
+        if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
+            throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
+        }
+        User user = userStaffSavingMapper.toEntity(userDto);
+        Staff staff = staffService.addStaff(userDto);
+        staff.addUser(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role roleUser = roleRepository.findRoleByName("ROLE_STAFF");
+        user.setRole(roleUser);
+        Token token = new Token();
+        token.addUser(user);
+        userRepository.save(user);
+        EmailDto emailDto = createEmailDto(user.getEmail(), token.getValue());
+        applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
+    }
+
+    public JwtAuthorizationResponse authorize(UserAuthorizationDto userDto) {
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
         } catch (BadCredentialsException e) {

@@ -18,19 +18,15 @@ import java.util.Objects;
 public class Staff {
     @Id
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Boolean active;
-    @Column(unique = true, nullable = false, updatable = false)
-    private String username;
-    private String password;
     private String pictureUrl;
     private OffsetDateTime lastUpdate;
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @MapsId
     @JoinColumn(name = "address_id")
     private Address address;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
@@ -43,15 +39,24 @@ public class Staff {
     private List<Payment> payments = new ArrayList<>();
     private Boolean isDeleted;
 
+    public Staff(String pictureUrl, OffsetDateTime lastUpdate, Boolean isDeleted) {
+        this.pictureUrl = pictureUrl;
+        this.lastUpdate = lastUpdate;
+        this.isDeleted = isDeleted;
+    }
+
     public void addStore(Store store) {
         store.getStaff().add(this);
         this.setStore(store);
     }
-
-
     public void addAddress(Address address) {
         address.setStaff(this);
         this.setAddress(address);
+    }
+
+    public void addUser(User user) {
+        user.setStaff(this);
+        this.setUser(user);
     }
 
     @Override
@@ -59,11 +64,11 @@ public class Staff {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Staff staff = (Staff) o;
-        return username.equals(staff.username);
+        return address.equals(staff.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username);
+        return Objects.hash(address);
     }
 }
