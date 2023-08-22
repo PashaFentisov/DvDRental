@@ -30,7 +30,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/users/register/customer", "/authorization", "/confirmEmail/{token}")
+                .requestMatchers("/users/register/customer", "/authorization", "/confirmEmail/{token}", "/users/register/customer")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

@@ -1,6 +1,7 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.UserCustomerSavingDto;
+import com.pashonokk.dvdrental.dto.UserStaffSavingDto;
 import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.UserService;
 import jakarta.validation.Valid;
@@ -25,18 +26,18 @@ public class UserRegisterController {
             errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
             throw new EntityValidationException("Validation failed", errors);
         }
-        userService.saveRegisteredUser(userDto);
+        userService.saveRegisteredCustomerUser(userDto);
         return "Confirming letter was sent to your email";
     }
 
     @PostMapping("/register/staff")
     @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).SAVE_STAFF_ACCESS)")
-    public String registerUserStaff(@RequestBody @Valid UserCustomerSavingDto userDto, Errors errors) {
+    public String registerUserStaff(@RequestBody @Valid UserStaffSavingDto userDto, Errors errors) {
         if(errors.hasErrors()){
             errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
             throw new EntityValidationException("Validation failed", errors);
         }
-        userService.saveRegisteredUser(userDto);
+        userService.saveRegisteredStaffUser(userDto);
         return "Confirming letter was sent to your email";
     }
 }

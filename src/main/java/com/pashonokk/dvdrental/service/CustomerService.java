@@ -48,6 +48,7 @@ public class CustomerService {
         customer.setCreateDate(OffsetDateTime.now());
         customer.setIsDeleted(false);
         Address address = addressSavingMapper.toEntity(addressSavingDto);
+        address.setLastUpdate(OffsetDateTime.now());
         customer.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));
         return customer;

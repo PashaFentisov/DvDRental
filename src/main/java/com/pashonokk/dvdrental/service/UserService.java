@@ -1,14 +1,12 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.*;
-import com.pashonokk.dvdrental.entity.Customer;
-import com.pashonokk.dvdrental.entity.Role;
-import com.pashonokk.dvdrental.entity.Token;
-import com.pashonokk.dvdrental.entity.User;
+import com.pashonokk.dvdrental.entity.*;
 import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
 import com.pashonokk.dvdrental.exception.AuthenticationException;
 import com.pashonokk.dvdrental.exception.UserExistsException;
 import com.pashonokk.dvdrental.mapper.UserCustomerSavingMapper;
+import com.pashonokk.dvdrental.mapper.UserStaffSavingMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,19 +32,24 @@ public class UserService{
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
     private final CustomerService customerService;
-    private final UserCustomerSavingMapper userMapper;
+    private final StaffService staffService;
+    private final UserCustomerSavingMapper userCustomerSavingMapper;
+    private final UserStaffSavingMapper userStaffSavingMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private static final String USER_EXISTS_ERROR_MESSAGE = "User with email %s already exists";
 
-    public void saveRegisteredUser(UserCustomerSavingDto userDto) {
+
+
+    public void saveRegisteredCustomerUser(UserCustomerSavingDto userDto) {
         if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
-            throw new UserExistsException("User with email " + userDto.getEmail() + " already exists");
+            throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
-        User user = userMapper.toEntity(userDto);
-        Customer customer = constructAndSaveCustomer(userDto);
+        User user = userCustomerSavingMapper.toEntity(userDto);
+        Customer customer = customerService.addCustomer(userDto.getAddress());  //todo rename addCustomer
         customer.addUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepository.findRoleByName("ROLE_CUSTOMER");
@@ -58,8 +61,21 @@ public class UserService{
         applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
     }
 
-    private Customer constructAndSaveCustomer(UserCustomerSavingDto userDto) {
-        return customerService.addCustomer(userDto.getAddress());
+    public void saveRegisteredStaffUser(UserStaffSavingDto userDto) {
+        if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
+            throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
+        }
+        User user = userStaffSavingMapper.toEntity(userDto);
+        Staff staff = staffService.addStaff(userDto);
+        staff.addUser(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role roleUser = roleRepository.findRoleByName("ROLE_STAFF");
+        user.setRole(roleUser);
+        Token token = new Token();
+        token.addUser(user);
+        userRepository.save(user);
+        EmailDto emailDto = createEmailDto(user.getEmail(), token.getValue());
+        applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
     }
 
     public JwtAuthorizationResponse authorize(UserAuthorizationDto userDto) {

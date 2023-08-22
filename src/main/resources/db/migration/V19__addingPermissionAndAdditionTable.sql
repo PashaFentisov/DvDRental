@@ -16,5 +16,8 @@ CREATE TABLE IF NOT EXISTS role_permission
 );
 
 insert into permission (name, is_deleted)values ('DELETE_ACCESS', false);
+insert into permission (name, is_deleted)values ('SAVE_STAFF_ACCESS', false);
 insert into role_permission(role_id, permission_id)values (1, 1);
 insert into role_permission(role_id, permission_id)values (2, 1);
+insert into role_permission(role_id, permission_id)values (1, 2);
+

@@ -172,6 +172,7 @@ CREATE TABLE IF NOT EXISTS staff_aud
     revtype     smallint,
     address_id  BIGINT,
     store_id    BIGINT,
+    user_id    BIGINT,
     picture_url VARCHAR(5000),
     last_update timestamp,
     is_deleted  boolean,

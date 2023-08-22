@@ -24,6 +24,9 @@ public class Staff {
     @MapsId
     @JoinColumn(name = "address_id")
     private Address address;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
@@ -36,15 +39,24 @@ public class Staff {
     private List<Payment> payments = new ArrayList<>();
     private Boolean isDeleted;
 
+    public Staff(String pictureUrl, OffsetDateTime lastUpdate, Boolean isDeleted) {
+        this.pictureUrl = pictureUrl;
+        this.lastUpdate = lastUpdate;
+        this.isDeleted = isDeleted;
+    }
+
     public void addStore(Store store) {
         store.getStaff().add(this);
         this.setStore(store);
     }
-
-
     public void addAddress(Address address) {
         address.setStaff(this);
         this.setAddress(address);
+    }
+
+    public void addUser(User user) {
+        user.setStaff(this);
+        this.setUser(user);
     }
 
     @Override

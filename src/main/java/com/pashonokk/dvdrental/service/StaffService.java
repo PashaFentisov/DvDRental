@@ -1,14 +1,14 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.StaffDto;
-import com.pashonokk.dvdrental.dto.StaffSavingDto;
+import com.pashonokk.dvdrental.dto.UserStaffSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
+import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.mapper.StaffMapper;
-import com.pashonokk.dvdrental.mapper.StaffSavingMapper;
 import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.StaffRepository;
 import com.pashonokk.dvdrental.repository.StoreRepository;
@@ -28,7 +28,7 @@ public class StaffService {
     private final StoreRepository storeRepository;
     private final StaffMapper staffMapper;
     private final PageMapper pageMapper;
-    private final StaffSavingMapper staffSavingMapper;
+    private final AddressSavingMapper addressSavingMapper;
     private static final String STAFF_ERROR_MESSAGE = "Staff with id %s doesn't exist";
     private static final String STORE_ERROR_MESSAGE = "Store with id %s doesn't exist";
 
@@ -45,19 +45,16 @@ public class StaffService {
     }
 
     @Transactional
-    public StaffDto addStaff(StaffSavingDto staffSavingDto) {
-        Staff staff = staffSavingMapper.toEntity(staffSavingDto);
-        staff.setLastUpdate(OffsetDateTime.now());
-        Address address = staff.getAddress();
+    public Staff addStaff(UserStaffSavingDto userDto) {
+        Staff staff = new Staff(userDto.getPictureUrl(), OffsetDateTime.now(), false);
+        Address address = addressSavingMapper.toEntity(userDto.getAddress());
         address.setLastUpdate(OffsetDateTime.now());
-        Store store = storeRepository.findById(staffSavingDto.getStoreId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, staffSavingDto.getStoreId())));
+        Store store = storeRepository.findById(userDto.getStoreId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, userDto.getStoreId())));
         staff.addStore(store);
         staff.addAddress(address);
-        cityRepository.findByIdWithAddressesAndCountry(staffSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
-
-        Staff savedStaff = staffRepository.save(staff);
-        return staffMapper.toDto(savedStaff);
+        cityRepository.findByIdWithAddressesAndCountry(userDto.getAddress().getCityId()).ifPresent(city->city.addAddress(address));
+        return staff;
     }
 
     @Transactional

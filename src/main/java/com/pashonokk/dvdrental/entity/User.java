@@ -34,6 +34,8 @@ public class User implements UserDetails {
     private Token token;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Customer customer;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Staff staff;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
