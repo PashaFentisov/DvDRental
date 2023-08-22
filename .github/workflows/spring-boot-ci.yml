@@ -3,10 +3,10 @@ name: Build and Test Spring Boot App
 on:
   pull_request:
     branches:
-      - main # adjust with the name of your target branch if it's not "main"
+      - develop # adjust with the name of your target branch if it's not "main"
   push:
     branches:
-      - main
+      - develop
 jobs:
   build:
     runs-on: ubuntu-latest
