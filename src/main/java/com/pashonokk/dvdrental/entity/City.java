@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -21,15 +21,16 @@ public class City {
     private Long id;
     @Column(unique = true, nullable = false, updatable = false)
     private String name;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "countryId", unique = true, nullable = false, updatable = false)
     private Country country;
     @OneToMany(mappedBy = "city", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Setter(AccessLevel.PRIVATE)
     private Set<Address> addresses = new HashSet<>();
+    private Boolean isDeleted;
 
-    public City(String name, LocalDate lastUpdate) {
+    public City(String name, OffsetDateTime lastUpdate) {
         this.name = name;
         this.lastUpdate = lastUpdate;
     }
@@ -37,11 +38,6 @@ public class City {
     public void addAddress(Address address) {
         this.addresses.add(address);
         address.setCity(this);
-    }
-
-    public void removeAddresses(Address address) {
-        this.addresses.remove(address);
-        address.setCity(null);
     }
 
     @Override

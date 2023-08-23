@@ -31,14 +31,9 @@ public class AddressService {
         Address address = addressRepository.findById(addressDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ADDRESS_ERROR_MESSAGE, addressDto.getId())));
         Optional.ofNullable(addressDto.getDistrict()).ifPresent(address::setDistrict);
-        Optional.ofNullable(addressDto.getPhone()).ifPresent(address::setPhone);
-        Optional.ofNullable(addressDto.getLastUpdate()).ifPresent(address::setLastUpdate);
         Optional.ofNullable(addressDto.getStreet()).ifPresent(address::setStreet);
         if (addressDto.getHouseNumber() != 0) {
             address.setHouseNumber(addressDto.getHouseNumber());
-        }
-        if (addressDto.getPostalCode() != 0) {
-            address.setPostalCode(addressDto.getPostalCode());
         }
         return addressMapper.toDto(address);
     }

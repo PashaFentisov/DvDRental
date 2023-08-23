@@ -1,7 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.StaffDto;
-import com.pashonokk.dvdrental.dto.StaffSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.StaffService;
@@ -9,10 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,27 +34,17 @@ public class StaffRestController {
         return ResponseEntity.ok(allStaff);
     }
 
-    @PostMapping
-    public ResponseEntity<StaffDto> addStaff(@RequestBody StaffSavingDto staffSavingDto) {
-        StaffDto savedStaff = staffService.addStaff(staffSavingDto);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedStaff.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(savedStaff);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteStaff(@PathVariable Long id) {
-        staffService.deleteStaff(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<StaffDto> updateStaff(@PathVariable Long id, @RequestBody StaffDto staffDto) {
         staffDto.setId(id);
         StaffDto updatedStaffDto = staffService.updateSomeFieldsOfStaff(staffDto);
         return ResponseEntity.ok(updatedStaffDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).DELETE_ACCESS)")
+    public ResponseEntity<Object> deleteStaff(@PathVariable Long id) {
+        staffService.deleteStaff(id);
+        return ResponseEntity.noContent().build();
     }
 }

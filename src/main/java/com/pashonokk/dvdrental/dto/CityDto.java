@@ -2,7 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -12,10 +12,11 @@ import java.time.LocalDate;
 public class CityDto {
     private Long id;
     private String name;
-    private LocalDate lastUpdate;
-    private CountryDto countryDto;
+    private OffsetDateTime lastUpdate;
+    private CountryDto country;
+    private Boolean isDeleted;
 
-    public CityDto(String name, LocalDate lastUpdate) {
+    public CityDto(String name, OffsetDateTime lastUpdate) {
         this.name = name;
         this.lastUpdate = lastUpdate;
     }

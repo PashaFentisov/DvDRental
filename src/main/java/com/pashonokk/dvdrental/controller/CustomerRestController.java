@@ -1,7 +1,6 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.CustomerDto;
-import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.service.CustomerService;
@@ -9,10 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 
 @RestController
@@ -20,6 +17,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class CustomerRestController {
     private final CustomerService customerService;
+
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
         CustomerDto customerDto = customerService.getCustomerById(id);
@@ -37,27 +35,11 @@ public class CustomerRestController {
         return ResponseEntity.ok(allCustomers);
     }
 
-    @PostMapping
-    public ResponseEntity<CustomerDto> addCustomer(@RequestBody CustomerSavingDto customerSavingDto) {
-        CustomerDto savedCustomer = customerService.addCustomer(customerSavingDto);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedCustomer.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(savedCustomer);
-    }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).DELETE_ACCESS)")
     public ResponseEntity<Object> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
-        customerDto.setId(id);
-        CustomerDto updatedCustomerDto = customerService.partialUpdateCustomer(customerDto);
-        return ResponseEntity.ok(updatedCustomerDto);
     }
 }

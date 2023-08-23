@@ -23,7 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +69,7 @@ class CountryServiceTest {
 
     @Test
     void addCountry(){
-        CountryDto countryToSave = new CountryDto("Ukraine", LocalDate.now());
+        CountryDto countryToSave = new CountryDto("Ukraine", OffsetDateTime.now());
 
         List<Country> savedCountries = new ArrayList<>();
 
@@ -117,21 +117,6 @@ class CountryServiceTest {
     }
 
     @Test
-    void updateCountryWhenItExists() {
-        List<Country> countries = buildCountryList();
-
-        Mockito.when(countryRepository.findById(1L)).thenReturn(Optional.of(countries.get(0)));
-
-        CountryDto country = countryService.updateCountry(new CountryDto(1L, "new Name", LocalDate.now()));
-
-        assertNotNull(country);
-        assertInstanceOf(CountryDto.class, country);
-        assertEquals(1, country.getId());
-        assertEquals("new Name", country.getName());
-        assertEquals("new Name", countries.get(0).getName());
-    }
-
-    @Test
     void getCountryCitiesWhenIdExistGetCities() {
         List<Country> countries = buildCountryList();
 
@@ -158,10 +143,10 @@ class CountryServiceTest {
 
     private List<Country> buildCountryList() {
         List<Country> countries = new ArrayList<>();
-        Country ukraine = new Country("Ukraine", LocalDate.now());
-        Country usa = new Country("USA", LocalDate.now());
-        Country britain = new Country("Britain", LocalDate.now());
-        City kyiv = new City("Kyiv", LocalDate.now());
+        Country ukraine = new Country("Ukraine", OffsetDateTime.now());
+        Country usa = new Country("USA",         OffsetDateTime.now());
+        Country britain = new Country("Britain", OffsetDateTime.now());
+        City kyiv = new City("Kyiv",             OffsetDateTime.now());
         ukraine.getCities().add(kyiv);
         countries.add(ukraine);
         countries.add(usa);

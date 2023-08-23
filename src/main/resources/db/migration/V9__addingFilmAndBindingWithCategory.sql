@@ -3,13 +3,14 @@ CREATE TABLE IF NOT EXISTS film
     id               SERIAL PRIMARY KEY,
     title            VARCHAR(100)  NOT NULL,
     description      VARCHAR(5000) NOT NULL,
-    release_year     DATE,
+    release_year     timestamp,
     rental_duration  NUMERIC,
     rental_rate      DOUBLE PRECISION,
     length           NUMERIC,
     replacement_cost DOUBLE PRECISION,
     rating           DOUBLE PRECISION,
-    last_update      DATE,
+    last_update      timestamp,
+    is_deleted boolean,
     UNIQUE (title, description)
 );
 

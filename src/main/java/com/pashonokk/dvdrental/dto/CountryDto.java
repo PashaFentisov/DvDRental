@@ -1,8 +1,13 @@
 package com.pashonokk.dvdrental.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.pashonokk.dvdrental.util.CustomOffsetDateTimeDeserializer;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -11,10 +16,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CountryDto {
     private Long id;
+    @NotBlank(message = "Country name can`t be empty or null")
     private String name;
-    private LocalDate lastUpdate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
+    private OffsetDateTime lastUpdate;
+    @AssertFalse(message = "You can`t set isDeleted as true")
+    private Boolean isDeleted;
 
-    public CountryDto(String name, LocalDate lastUpdate) {
+    public CountryDto(String name, OffsetDateTime lastUpdate) {
         this.name = name;
         this.lastUpdate = lastUpdate;
     }

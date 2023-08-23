@@ -3,7 +3,6 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CitySavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
-import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.City;
 import com.pashonokk.dvdrental.entity.Country;
 import com.pashonokk.dvdrental.mapper.CityMapper;
@@ -17,8 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.Set;
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +46,7 @@ public class CityService {
         Country country = countryRepository.findByIdWithCities(citySavingDto.getCountryId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(COUNTRY_ERROR_MESSAGE,citySavingDto.getCountryId())));
         City city = citySavingMapper.toEntity(citySavingDto);
+        city.setLastUpdate(OffsetDateTime.now());
         country.addCity(city);
         City savedCity = cityRepository.save(city);
         return cityMapper.toDto(savedCity);
@@ -57,25 +56,6 @@ public class CityService {
     public void deleteById(Long id) {
         City city = cityRepository.findByIdWithAddresses(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, id)));
-        Set<Address> addresses = city.getAddresses();
-        for(Address address: addresses){
-            city.removeAddresses(address);
-        }
-        cityRepository.deleteById(id);
-    }
-
-    @Transactional
-    public CityDto partiallyUpdateCity(CityDto cityDto) {
-        City city = cityRepository.findById(cityDto.getId())
-                .orElseThrow(()-> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityDto.getId())));
-        Optional.ofNullable(cityDto.getName()).ifPresent(city::setName);
-        Optional.ofNullable(cityDto.getLastUpdate()).ifPresent(city::setLastUpdate);
-        return cityMapper.toDto(city);
-    }
-    @Transactional
-    public void addAddressToCity(Address address, Long cityId) {
-        City city = cityRepository.findByIdWithAddressesAndCountry(cityId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(CITY_ERROR_MESSAGE, cityId)));
-        city.addAddress(address);
+        city.setIsDeleted(true);
     }
 }

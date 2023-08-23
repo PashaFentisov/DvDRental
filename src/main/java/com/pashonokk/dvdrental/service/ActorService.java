@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,26 +48,22 @@ public class ActorService {
     @Transactional
     public ActorDto addActor(ActorDto actorDto) {
         Actor actor = actorMapper.toEntity(actorDto);
+        actor.setIsDeleted(false);
+        actor.setLastUpdate(OffsetDateTime.now());
         Actor savedActor = actorRepository.save(actor);
         return actorMapper.toDto(savedActor);
-    }
-    @Transactional
-    public void deleteActorById(Long id) {
-        Actor actor = actorRepository.findByIdWithFilms(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        actor.removeFilms(new HashSet<>(actor.getFilms()));
-        actorRepository.delete(actor);
     }
     @Transactional
     public ActorDto updateSomeFieldsOfActor(ActorDto actorDto) {
         Actor actor = actorRepository.findById(actorDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, actorDto.getId())));
-
-        Optional.ofNullable(actorDto.getFirstName()).ifPresent(actor::setFirstName);
-        Optional.ofNullable(actorDto.getFirstName()).ifPresent(actor::setLastName);
         Optional.ofNullable(actorDto.getBiography()).ifPresent(actor::setBiography);
-        Optional.ofNullable(actorDto.getBirthDate()).ifPresent(actor::setBirthDate);
-        Optional.ofNullable(actorDto.getLastUpdate()).ifPresent(actor::setLastUpdate);
         return actorMapper.toDto(actor);
+    }
+    @Transactional
+    public void deleteActorById(Long id) {
+        Actor actor = actorRepository.findByIdWithFilms(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        actor.setIsDeleted(true);
     }
 }

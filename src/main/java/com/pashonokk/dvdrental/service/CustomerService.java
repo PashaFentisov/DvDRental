@@ -1,13 +1,12 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.AddressSavingDto;
 import com.pashonokk.dvdrental.dto.CustomerDto;
-import com.pashonokk.dvdrental.dto.CustomerSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
-import com.pashonokk.dvdrental.exception.CustomerWithoutAddressException;
+import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
-import com.pashonokk.dvdrental.mapper.CustomerSavingMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.repository.CityRepository;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
@@ -17,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +24,8 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CityRepository cityRepository;
     private final CustomerMapper customerMapper;
+    private final AddressSavingMapper addressSavingMapper;
     private final PageMapper pageMapper;
-    private final CustomerSavingMapper customerSavingMapper;
     private static final String ERROR_MESSAGE = "Customer with id %s doesn't exist";
 
 
@@ -43,32 +42,23 @@ public class CustomerService {
     }
 
     @Transactional
-    public CustomerDto addCustomer(CustomerSavingDto customerSavingDto) {
-        Customer customer = customerSavingMapper.toEntity(customerSavingDto);
-        Address address = customer.getAddress();
-        if(address==null){
-            throw new CustomerWithoutAddressException("Store cannot exist without an address");
-        }
+    public Customer constructCustomer(AddressSavingDto addressSavingDto) {
+        Customer customer = new Customer();
+        customer.setLastUpdate(OffsetDateTime.now());
+        customer.setCreateDate(OffsetDateTime.now());
+        customer.setIsDeleted(false);
+        Address address = addressSavingMapper.toEntity(addressSavingDto);
+        address.setLastUpdate(OffsetDateTime.now());
         customer.addAddress(address);
-        cityRepository.findByIdWithAddressesAndCountry(customerSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
-        Customer savedCustomer = customerRepository.save(customer);
-        return customerMapper.toDto(savedCustomer);
+        cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));
+        return customer;
     }
 
     @Transactional
     public void deleteCustomer(Long id) {
-        customerRepository.delete(customerRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, id))));
-    }
-
-    @Transactional
-    public CustomerDto partialUpdateCustomer(CustomerDto customerDto) {
-        Customer customer = customerRepository.findById(customerDto.getId())
-                        .orElseThrow(()-> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerDto.getId())));
-        Optional.ofNullable(customerDto.getFirstName()).ifPresent(customer::setFirstName);
-        Optional.ofNullable(customerDto.getLastUpdate()).ifPresent(customer::setLastUpdate);
-        Optional.ofNullable(customerDto.getCreateDate()).ifPresent(customer::setCreateDate);
-        Optional.ofNullable(customerDto.getLastName()).ifPresent(customer::setLastName);
-        Optional.ofNullable(customerDto.getEmail()).ifPresent(customer::setEmail);
-        return customerMapper.toDto(customer);
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        customer.setIsDeleted(true);
+        customer.getAddress().setIsDeleted(true);
     }
 }

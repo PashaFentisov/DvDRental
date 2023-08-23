@@ -2,14 +2,13 @@ package com.pashonokk.dvdrental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,18 +24,20 @@ public class Store {
     @MapsId
     @JoinColumn(name = "address_id")
     private Address address;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @OneToMany(mappedBy = "store")
     @JsonIgnore
     private Set<Staff> staff = new HashSet<>();
+    @OneToMany(mappedBy = "store", orphanRemoval = true)
+    @JsonIgnore
+    @Setter(AccessLevel.PRIVATE)
+    private List<Inventory> inventories = new ArrayList<>();
+    private Boolean isDeleted;
+
 
     public void addAddress(Address address) {
         address.setStore(this);
         this.setAddress(address);
     }
 
-    public void removeAddress(Address address) {
-        this.setAddress(null);
-        address.setStore(null);
-    }
 }

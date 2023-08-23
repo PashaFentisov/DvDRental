@@ -12,8 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Optional;
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +37,8 @@ public class LanguageService {
     @Transactional
     public LanguageDto addLanguage(LanguageDto languageDto) {
         Language language = languageMapper.toEntity(languageDto);
+        language.setIsDeleted(false);
+        language.setLastUpdate(OffsetDateTime.now());
         Language savedLanguage = languageRepository.save(language);
         return languageMapper.toDto(savedLanguage);
 
@@ -47,17 +48,6 @@ public class LanguageService {
     public void deleteLanguageById(Long id) {
         Language language = languageRepository.findByIdWithFilms(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        language.removeFilms(new HashSet<>(language.getFilms()));
-        languageRepository.delete(language);
-    }
-
-    @Transactional
-    public LanguageDto updateSomeFieldsOfLanguage(LanguageDto languageDto) {
-        Language language = languageRepository.findById(languageDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, languageDto.getId())));
-
-        Optional.ofNullable(languageDto.getName()).ifPresent(language::setName);
-        Optional.ofNullable(languageDto.getLastUpdate()).ifPresent(language::setLastUpdate);
-        return languageMapper.toDto(language);
+        language.setIsDeleted(true);
     }
 }

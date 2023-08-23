@@ -2,7 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -11,14 +11,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class StaffDto {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Boolean active;
-    private String username;
-    private String password;
+    private ContactInfoDto contactInfo;
     private String pictureUrl;
-    private LocalDate lastUpdate;
-    private AddressDto addressDto;
-    private StoreDto storeDto;
+    private OffsetDateTime lastUpdate;
+    private AddressDto address;
+    private StoreDto store;
+    private Boolean isDeleted;
+
 }

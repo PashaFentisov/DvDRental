@@ -4,11 +4,17 @@ import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.CountryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,6 +26,7 @@ import java.util.List;
 @RequestMapping("/countries")
 public class CountryRestController {
     private final CountryService countryService;
+    private final Logger logger = LoggerFactory.getLogger(CountryRestController.class);
 
     @GetMapping("{id}")
     public ResponseEntity<CountryDto> getCountry(@PathVariable Long id) {
@@ -29,8 +36,8 @@ public class CountryRestController {
 
     @GetMapping
     public ResponseEntity<PageResponse<CountryDto>> getCountries(@RequestParam(required = false, defaultValue = "0") int page,
-                                                         @RequestParam(required = false, defaultValue = "10") int size,
-                                                         @RequestParam(required = false, defaultValue = "id") String sort) {
+                                                                 @RequestParam(required = false, defaultValue = "10") int size,
+                                                                 @RequestParam(required = false, defaultValue = "id") String sort) {
         if (size > 100) {
             throw new BigSizeException("You can get maximum 100 countries at one time");
         }
@@ -45,7 +52,11 @@ public class CountryRestController {
     }
 
     @PostMapping
-    public ResponseEntity<CountryDto> addCountry(@RequestBody CountryDto countryDto) {
+    public ResponseEntity<CountryDto> addCountry(@RequestBody @Valid CountryDto countryDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         CountryDto savedCountry = countryService.addCountry(countryDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -56,15 +67,10 @@ public class CountryRestController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).DELETE_ACCESS)")
     public ResponseEntity<Object> deleteCountry(@PathVariable Long id) {
         countryService.deleteCountry(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<CountryDto> updateCountry(@PathVariable Long id, @RequestBody CountryDto countryDto) {
-        countryDto.setId(id);
-        CountryDto updatedCountry = countryService.updateCountry(countryDto);
-        return ResponseEntity.ok(updatedCountry);
-    }
 }

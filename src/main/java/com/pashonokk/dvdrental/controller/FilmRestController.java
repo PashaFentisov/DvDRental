@@ -1,16 +1,19 @@
 package com.pashonokk.dvdrental.controller;
 
-import com.pashonokk.dvdrental.dto.ActorDto;
-import com.pashonokk.dvdrental.dto.CategoryDto;
-import com.pashonokk.dvdrental.dto.FilmDto;
-import com.pashonokk.dvdrental.dto.FilmSavingDto;
+import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
+import com.pashonokk.dvdrental.exception.EntityValidationException;
 import com.pashonokk.dvdrental.service.FilmService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,6 +25,8 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmRestController {
     private final FilmService filmService;
+    private final Logger logger = LoggerFactory.getLogger(FilmRestController.class);
+
 
     @GetMapping
     public ResponseEntity<PageResponse<FilmDto>> getFilms(@RequestParam(required = false, defaultValue = "0") int page,
@@ -58,8 +63,18 @@ public class FilmRestController {
         return ResponseEntity.ok(filmsActors);
     }
 
+    @GetMapping("/{id}/stores")
+    public ResponseEntity<List<StoreDto>> getFilmStores(@PathVariable Long id) {
+        List<StoreDto> filmStores = filmService.getFilmStores(id);
+        return ResponseEntity.ok(filmStores);
+    }
+
     @PostMapping
-    public ResponseEntity<FilmDto> addFilm(@RequestBody FilmSavingDto filmSavingDto) {
+    public ResponseEntity<FilmDto> addFilm(@RequestBody @Valid FilmSavingDto filmSavingDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
         FilmDto savedFilm = filmService.addFilm(filmSavingDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -75,16 +90,17 @@ public class FilmRestController {
         return ResponseEntity.created(URI.create("localhost:10000/films/" + updatedFilmDto.getId())).body(updatedFilmDto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteFilm(@PathVariable Long id) {
-        filmService.deleteFilmById(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<FilmDto> updateFilm(@PathVariable Long id, @RequestBody FilmDto filmDto) {
         filmDto.setId(id);
         FilmDto updatedFilmDto = filmService.updateSomeFieldsOfFilm(filmDto);
         return ResponseEntity.ok(updatedFilmDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).DELETE_ACCESS)")
+    public ResponseEntity<Object> deleteFilm(@PathVariable Long id) {
+        filmService.deleteFilmById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -4,8 +4,9 @@ CREATE TABLE IF NOT EXISTS actor
     first_name  VARCHAR(30) NOT NULL,
     last_name   VARCHAR(30) NOT NULL,
     biography   TEXT        NOT NULL,
-    birth_date  DATE,
-    last_update DATE,
+    birth_date  timestamp,
+    last_update timestamp,
+    is_deleted   boolean,
     UNIQUE (first_name, last_name, birth_date)
 );
 

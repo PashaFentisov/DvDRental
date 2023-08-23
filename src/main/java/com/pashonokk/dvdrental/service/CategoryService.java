@@ -12,8 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Optional;
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -35,26 +34,19 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategoryById(Long id) {
-        Category category = categoryRepository.findByIdWithFilms(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
-        category.removeFilms(new HashSet<>(category.getFilms()));
-        categoryRepository.deleteById(id);
-    }
-
-    @Transactional
     public CategoryDto addCategory(CategoryDto categoryDto) {
-        Category savedCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
+        Category category = categoryMapper.toEntity(categoryDto);
+        category.setIsDeleted(false);
+        category.setLastUpdate(OffsetDateTime.now());
+        Category savedCategory = categoryRepository.save(category);
         return categoryMapper.toDto(savedCategory);
     }
 
     @Transactional
-    public CategoryDto partialUpdateCategory(CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(categoryDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, categoryDto.getId())));
-        Optional.ofNullable(categoryDto.getName()).ifPresent(category::setName);
-        Optional.ofNullable(categoryDto.getLastUpdate()).ifPresent(category::setLastUpdate);
-        return categoryMapper.toDto(category);
+    public void deleteCategoryById(Long id) {
+        Category category = categoryRepository.findByIdWithFilms(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        category.setIsDeleted(true);
     }
 
 }

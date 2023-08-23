@@ -1,13 +1,10 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -28,10 +25,12 @@ public class Actor {
     private String lastName;
     private String biography;
     @Column(unique = true, nullable = false, updatable = false)
-    private LocalDate birthDate;
-    private LocalDate lastUpdate;
+    private OffsetDateTime birthDate;
+    private OffsetDateTime lastUpdate;
     @ManyToMany(mappedBy = "actors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Setter(AccessLevel.PRIVATE)
     private Set<Film> films = new HashSet<>();
+    private Boolean isDeleted;
 
     @Override
     public boolean equals(Object o) {
@@ -44,11 +43,5 @@ public class Actor {
     @Override
     public int hashCode() {
         return Objects.hash(firstName, lastName, birthDate);
-    }
-
-    public void removeFilms(Set<Film> films) {
-        for(Film film: films){
-            film.removeActor(this);
-        }
     }
 }

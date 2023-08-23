@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
@@ -26,7 +26,7 @@ public class Address {
     private String district;
     @Column(unique = true, nullable = false, updatable = false)
     private int postalCode;
-    private LocalDate lastUpdate;
+    private OffsetDateTime lastUpdate;
     @Column(unique = true, nullable = false, updatable = false)
     private String phone;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
@@ -41,7 +41,7 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")
     private City city;
-
+    private Boolean isDeleted;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

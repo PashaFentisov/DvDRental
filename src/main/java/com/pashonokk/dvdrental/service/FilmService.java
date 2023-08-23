@@ -1,15 +1,11 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.dto.ActorDto;
-import com.pashonokk.dvdrental.dto.CategoryDto;
-import com.pashonokk.dvdrental.dto.FilmDto;
-import com.pashonokk.dvdrental.dto.FilmSavingDto;
+import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Actor;
 import com.pashonokk.dvdrental.entity.Category;
 import com.pashonokk.dvdrental.entity.Film;
 import com.pashonokk.dvdrental.entity.Language;
-import com.pashonokk.dvdrental.exception.FilmWithoutLanguageException;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.ActorRepository;
 import com.pashonokk.dvdrental.repository.CategoryRepository;
@@ -21,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +31,7 @@ public class FilmService {
     private final LanguageRepository languageRepository;
     private final ActorRepository actorRepository;
     private final FilmMapper filmMapper;
+    private final StoreMapper storeMapper;
     private final CategoryMapper categoryMapper;
     private final ActorMapper actorMapper;
     private final FilmSavingMapper filmSavingMapper;
@@ -65,12 +63,15 @@ public class FilmService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
         return film.getActors().stream().map(actorMapper::toDto).toList();
     }
+    @Transactional(readOnly = true)
+    public List<StoreDto> getFilmStores(Long id) {
+        Film film = filmRepository.getFilmById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
+        return film.getInventories().stream().map(inventory -> storeMapper.toDto(inventory.getStore())).toList();
+    }
 
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
-        if (filmSavingDto.getLanguagesIds() == null) {
-            throw new FilmWithoutLanguageException("Provide a valid Language for the Film");
-        }
         List<Category> categoriesById = Collections.emptyList();
         if (filmSavingDto.getCategoriesIds() != null) {
             categoriesById = categoryRepository.findAllByIdAndFilms(filmSavingDto.getCategoriesIds());
@@ -81,6 +82,7 @@ public class FilmService {
         }
         List<Language> languagesById = languageRepository.findAllByIdAndFilms(filmSavingDto.getLanguagesIds());
         Film film = filmSavingMapper.toEntity(filmSavingDto);
+        film.setLastUpdate(OffsetDateTime.now());
         film.addCategory(categoriesById);
         film.addLanguage(languagesById);
         film.addActor(actorsByIds);
@@ -90,9 +92,9 @@ public class FilmService {
 
     @Transactional
     public void deleteFilmById(Long id) {
-        Film film = filmRepository.findById(id)
+        Film film = filmRepository.getFilmById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, id)));
-        filmRepository.delete(film);
+        film.setIsDeleted(true);
     }
 
     @Transactional
@@ -100,15 +102,12 @@ public class FilmService {
         Film film = filmRepository.findByIdWithCategories(filmDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, filmDto.getId())));
 
-        Optional.ofNullable(filmDto.getTitle()).ifPresent(film::setTitle);
-        Optional.ofNullable(filmDto.getDescription()).ifPresent(film::setDescription);
         Optional.ofNullable(filmDto.getReleaseYear()).ifPresent(film::setReleaseYear);
         Optional.ofNullable(filmDto.getRentalDuration()).ifPresent(film::setRentalDuration);
         Optional.ofNullable(filmDto.getRentalRate()).ifPresent(film::setRentalRate);
         Optional.ofNullable(filmDto.getLength()).ifPresent(film::setLength);
         Optional.ofNullable(filmDto.getReplacementCost()).ifPresent(film::setReplacementCost);
         Optional.ofNullable(filmDto.getRating()).ifPresent(film::setRating);
-        Optional.ofNullable(filmDto.getLastUpdate()).ifPresent(film::setLastUpdate);
         return filmMapper.toDto(film);
     }
 
