@@ -39,7 +39,7 @@ public class CountryService {
         Country country = countryMapper.toEntity(countryDto);
         country.setIsDeleted(false);
         country.setLastUpdate(OffsetDateTime.now());
-        Country savedCountry = countryRepository.save(countryMapper.toEntity(countryDto));
+        Country savedCountry = countryRepository.save(country);
         return countryMapper.toDto(savedCountry);
     }
 

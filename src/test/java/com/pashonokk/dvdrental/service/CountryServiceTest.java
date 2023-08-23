@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,10 +36,14 @@ import static org.mockito.ArgumentMatchers.any;
 class CountryServiceTest {
     @Mock
     CountryRepository countryRepository;
-    CountryMapper countryMapper = Mockito.spy(Mappers.getMapper(CountryMapper.class));
+    @Spy
+    CountryMapper countryMapper = Mappers.getMapper(CountryMapper.class);
     PageMapper pageMapper = new PageMapperImpl();
-    CityMapper cityMapper = Mockito.spy(Mappers.getMapper(CityMapper.class));
+    @Spy
+    CityMapper cityMapper = Mappers.getMapper(CityMapper.class);
     CountryService countryService;
+    private static final Long ID = 1L;
+
 
     @BeforeEach
     void countryServiceInit() {
@@ -49,9 +54,9 @@ class CountryServiceTest {
     void getCountryWhenRealIdThenOk() {
         List<Country> countries = buildCountryList();
 
-        Mockito.when(countryRepository.findById(1L)).thenReturn(Optional.of(countries.get(0)));
+        Mockito.when(countryRepository.findById(ID)).thenReturn(Optional.of(countries.get(0)));
 
-        CountryDto country = countryService.getCountry(1L);
+        CountryDto country = countryService.getCountry(ID);
 
         assertNotNull(country);
         assertInstanceOf(CountryDto.class, country);
@@ -61,19 +66,18 @@ class CountryServiceTest {
 
     @Test
     void getCountryWhenIdDoesntExistThenThrowException() {
-        Mockito.when(countryRepository.findById(4L)).thenReturn(Optional.empty());
-        Mockito.when(countryMapper.toDto(any())).thenReturn(null);
-        var entityNotFoundException = assertThrows(EntityNotFoundException.class, () -> countryService.getCountry(4L));
-        assertEquals("Country with id 4 doesn't exist", entityNotFoundException.getMessage());
+        Mockito.when(countryRepository.findById(ID)).thenReturn(Optional.empty());
+        var entityNotFoundException = assertThrows(EntityNotFoundException.class, () -> countryService.getCountry(ID));
+        assertEquals("Country with id 1 doesn't exist", entityNotFoundException.getMessage());
     }
 
     @Test
-    void addCountry(){
+    void addCountry() {
         CountryDto countryToSave = new CountryDto("Ukraine", OffsetDateTime.now());
 
         List<Country> savedCountries = new ArrayList<>();
 
-        Mockito.when(countryRepository.save(any())).thenAnswer(invocation->{
+        Mockito.when(countryRepository.save(any())).thenAnswer(invocation -> {
             Country a = invocation.getArgument(0);
             a.setId(1L);
             savedCountries.add(a);
@@ -85,11 +89,13 @@ class CountryServiceTest {
         assertEquals(1, savedCountries.size());
         assertEquals("Ukraine", savedCountryDto.getName());
         assertEquals(1, savedCountryDto.getId());
+        assertFalse(savedCountryDto.getIsDeleted());
+        assertNotNull(savedCountryDto.getLastUpdate());
     }
 
     @Test
     void getCountries() {
-        Page<Country> pageOfCountries = getPageOfCountries(1, 1);
+        Page<Country> pageOfCountries = getPageOfCountries();
         Mockito.when(countryRepository.findAll(Mockito.any(Pageable.class))).thenReturn(pageOfCountries);
 
         PageResponse<CountryDto> countries = countryService.getCountries(PageRequest.of(1, 1));
@@ -100,53 +106,59 @@ class CountryServiceTest {
         assertEquals(1, countries.getPageSize());
     }
 
-    private Page<Country> getPageOfCountries(int pageNumber, int pageSize) {
+    private Page<Country> getPageOfCountries() {
         List<Country> countryList = buildCountryList();
-        return new PageImpl<>(countryList, PageRequest.of(pageNumber, pageSize), countryList.size());
+        return new PageImpl<>(countryList, PageRequest.of(1, 1), countryList.size());
     }
 
-    @Test
-    void deleteCountry() {
-    }
-
-    @Test
-    void updateCountryWhenItDoesntExist() {
-        Mockito.when(countryRepository.findById(4L)).thenReturn(Optional.empty());
-        var entityNotFoundException = assertThrows(EntityNotFoundException.class, () -> countryService.getCountry(4L));
-        assertEquals("Country with id 4 doesn't exist", entityNotFoundException.getMessage());
-    }
 
     @Test
     void getCountryCitiesWhenIdExistGetCities() {
         List<Country> countries = buildCountryList();
 
-        Mockito.when(countryRepository.findByIdWithCities(1L)).thenReturn(Optional.of(countries.get(0)));
+        Mockito.when(countryRepository.findByIdWithCities(ID)).thenReturn(Optional.of(countries.get(0)));
         Mockito.when(cityMapper.toDto(any())).thenAnswer(invocation -> {
             City dto = invocation.getArgument(0);
             return new CityDto(dto.getName(), dto.getLastUpdate());
         });
 
-        List<CityDto> countryCities = countryService.getCountryCities(1L);
+        List<CityDto> countryCities = countryService.getCountryCities(ID);
 
         assertNotNull(countryCities);
         assertEquals(countries.get(0).getCities().size(), countryCities.size());
         assertEquals("Kyiv", countryCities.get(0).getName());
     }
+    @Test
+    void deleteCountryWhenIdExistsIsDeletedTrue() {
+        List<Country> countries = buildCountryList();
+
+        Mockito.when(countryRepository.findByIdWithCities(ID)).thenReturn(Optional.of(countries.get(0)));
+
+        countryService.deleteCountry(ID);
+        assertTrue(countries.get(0).getIsDeleted());
+    }
+
+    @Test
+    void deleteCountryWhenIdDoesntExistThrowException() {
+        Mockito.when(countryRepository.findByIdWithCities(ID)).thenReturn(Optional.empty());
+        var entityNotFoundException = assertThrows(EntityNotFoundException.class, () -> countryService.deleteCountry(ID));
+        assertEquals("Country with id 1 doesn't exist", entityNotFoundException.getMessage());
+    }
 
     @Test
     void getCountryCitiesWhenIdDoesntExistThrowException() {
-        Mockito.when(countryRepository.findByIdWithCities(4L)).thenReturn(Optional.empty());
-        var entityNotFoundException = assertThrows(EntityNotFoundException.class, () -> countryService.getCountryCities(4L));
+        Mockito.when(countryRepository.findByIdWithCities(ID)).thenReturn(Optional.empty());
+        var entityNotFoundException = assertThrows(EntityNotFoundException.class, () -> countryService.getCountryCities(ID));
         Mockito.verifyNoInteractions(cityMapper);
-        assertEquals("Country with id 4 doesn't exist", entityNotFoundException.getMessage());
+        assertEquals("Country with id 1 doesn't exist", entityNotFoundException.getMessage());
     }
 
     private List<Country> buildCountryList() {
         List<Country> countries = new ArrayList<>();
         Country ukraine = new Country("Ukraine", OffsetDateTime.now());
-        Country usa = new Country("USA",         OffsetDateTime.now());
+        Country usa = new Country("USA", OffsetDateTime.now());
         Country britain = new Country("Britain", OffsetDateTime.now());
-        City kyiv = new City("Kyiv",             OffsetDateTime.now());
+        City kyiv = new City("Kyiv", OffsetDateTime.now());
         ukraine.getCities().add(kyiv);
         countries.add(ukraine);
         countries.add(usa);
