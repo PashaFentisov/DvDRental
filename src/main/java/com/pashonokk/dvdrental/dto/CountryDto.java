@@ -23,4 +23,9 @@ public class CountryDto {
     private OffsetDateTime lastUpdate;
     @AssertFalse(message = "You can`t set isDeleted as true")
     private Boolean isDeleted;
+
+    public CountryDto(String name, OffsetDateTime lastUpdate) {
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
 }

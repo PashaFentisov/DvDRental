@@ -49,7 +49,7 @@ public class UserService{
             throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
         User user = userCustomerSavingMapper.toEntity(userDto);
-        Customer customer = customerService.addCustomer(userDto.getAddress());  //todo rename addCustomer
+        Customer customer = customerService.constructCustomer(userDto.getAddress());
         customer.addUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepository.findRoleByName("ROLE_CUSTOMER");
@@ -66,7 +66,7 @@ public class UserService{
             throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
         User user = userStaffSavingMapper.toEntity(userDto);
-        Staff staff = staffService.addStaff(userDto);
+        Staff staff = staffService.constructStaff(userDto);
         staff.addUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepository.findRoleByName("ROLE_STAFF");

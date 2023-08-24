@@ -15,4 +15,9 @@ public class CityDto {
     private OffsetDateTime lastUpdate;
     private CountryDto country;
     private Boolean isDeleted;
+
+    public CityDto(String name, OffsetDateTime lastUpdate) {
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
 }

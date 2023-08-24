@@ -42,7 +42,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer addCustomer(AddressSavingDto addressSavingDto) {
+    public Customer constructCustomer(AddressSavingDto addressSavingDto) {
         Customer customer = new Customer();
         customer.setLastUpdate(OffsetDateTime.now());
         customer.setCreateDate(OffsetDateTime.now());

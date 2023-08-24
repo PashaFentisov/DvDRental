@@ -27,6 +27,11 @@ public class Country {
     private Set<City> cities = new HashSet<>();
     private Boolean isDeleted;
 
+    public Country(String name, OffsetDateTime lastUpdate){
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
+
     public void addCity(City city) {
         this.cities.add(city);
         city.setCountry(this);

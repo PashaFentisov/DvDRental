@@ -30,6 +30,11 @@ public class City {
     private Set<Address> addresses = new HashSet<>();
     private Boolean isDeleted;
 
+    public City(String name, OffsetDateTime lastUpdate) {
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
+
     public void addAddress(Address address) {
         this.addresses.add(address);
         address.setCity(this);
