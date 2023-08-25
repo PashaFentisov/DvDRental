@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AddressSavingDto {
     private Long id;
     private int houseNumber;

@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Audited
+@ToString(exclude = "user")
 public class Token {
     @Id
     private Long userId;
