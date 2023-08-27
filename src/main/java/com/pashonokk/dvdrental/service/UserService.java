@@ -45,7 +45,7 @@ public class UserService{
 
 
     public void saveRegisteredCustomerUser(UserCustomerSavingDto userDto) {
-        if (userRepository.findUserIdByEmail(userDto.getEmail()) != null) {
+        if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
         User user = userCustomerSavingMapper.toEntity(userDto);
