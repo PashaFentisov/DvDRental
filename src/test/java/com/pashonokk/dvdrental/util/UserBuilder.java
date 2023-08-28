@@ -11,11 +11,11 @@ import java.util.Random;
 import java.util.UUID;
 
 public class UserBuilder {
-    private final static Faker faker = new Faker(Locale.ENGLISH);
-    private final static Random random = new Random();
+    private final static Faker FAKER = new Faker(Locale.ENGLISH);
+    private final static Random RANDOM = new Random();
     public static UserCustomerSavingDto constructUserCustomerDto() {
         return UserCustomerSavingDto.builder()
-                .email(String.format("%s%s.ua@gmail.com", faker.name().firstName(), faker.number().digit()))
+                .email(String.format("%s%s.ua@gmail.com", FAKER.name().firstName(), FAKER.number().digit()))
                 .password(UUID.randomUUID().toString().substring(24))
                 .contactInfo(constructContactInfo())
                 .address(constructAddress())
@@ -24,32 +24,31 @@ public class UserBuilder {
 
     public static UserStaffSavingDto constructUserStaffDto() {
         return UserStaffSavingDto.builder()
-                .email(String.format("%s.ua@gmail.com", UUID.randomUUID().toString().substring(0, 5)))
-                .password("1234567890")
+                .email(String.format("%s%s.ua@gmail.com", FAKER.name().firstName(), FAKER.number().digit()))
+                .password(UUID.randomUUID().toString().substring(24))
                 .contactInfo(constructContactInfo())
                 .address(constructAddress())
-                .pictureUrl("url")
-                .storeId(1L)
+                .pictureUrl(FAKER.internet().url())
                 .build();
     }
 
-    private static ContactInfoDto constructContactInfo() {
+    public static ContactInfoDto constructContactInfo() {
         return ContactInfoDto.builder()
-                .firstName(faker.name().firstName())
-                .lastName(faker.name().lastName())
-                .username(faker.name().username())
-                .isActive(faker.bool().bool())
+                .firstName(FAKER.name().firstName())
+                .lastName(FAKER.name().lastName())
+                .username(FAKER.name().username())
+                .isActive(FAKER.bool().bool())
                 .build();
     }
 
-    private static AddressSavingDto constructAddress() {
+    public static AddressSavingDto constructAddress() {
         return AddressSavingDto
                 .builder()
-                .phone(faker.phoneNumber().cellPhone())
-                .district(faker.address().state())
-                .street(faker.address().streetAddress())
-                .houseNumber(Integer.parseInt(faker.address().buildingNumber()))
-                .postalCode(random.nextInt(1001, 99999))
+                .phone(FAKER.phoneNumber().cellPhone())
+                .district(FAKER.address().state())
+                .street(FAKER.address().streetAddress())
+                .houseNumber(Integer.parseInt(FAKER.address().buildingNumber()))
+                .postalCode(RANDOM.nextInt(1001, 99999))
                 .cityId(1L)
                 .build();
     }
