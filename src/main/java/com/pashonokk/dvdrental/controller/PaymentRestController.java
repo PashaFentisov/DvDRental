@@ -48,7 +48,7 @@ public class PaymentRestController {
     }
 
     @PostMapping
-//    @PreAuthorize()
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).PAYMENT_CREATE_ACCESS)")
     public ResponseEntity<PaymentDto> addPayment(@RequestBody @Valid PaymentSavingDto paymentSavingDto, Errors errors,
                                                  @AuthenticationPrincipal User user) {
         if(errors.hasErrors()){

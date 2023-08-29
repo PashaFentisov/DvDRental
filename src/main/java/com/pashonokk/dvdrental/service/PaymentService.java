@@ -26,7 +26,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;  //todo check these things
+    private final CustomerRepository customerRepository;
     private final PaymentMapper paymentMapper;
     private final PageMapper pageMapper;
     private static final String INVENTORY_ERROR_MESSAGE = "Inventory with film id %s and store id %s doesn't exist";
