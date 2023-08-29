@@ -12,7 +12,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"customer", "staff"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Audited

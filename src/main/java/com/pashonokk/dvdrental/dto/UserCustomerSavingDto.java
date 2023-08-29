@@ -12,6 +12,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserCustomerSavingDto {
     @Email(message = "You entered wrong email")
     private String email;

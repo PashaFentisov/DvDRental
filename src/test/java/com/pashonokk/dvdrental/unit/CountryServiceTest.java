@@ -1,4 +1,4 @@
-package com.pashonokk.dvdrental.service;
+package com.pashonokk.dvdrental.unit;
 
 import com.pashonokk.dvdrental.dto.CityDto;
 import com.pashonokk.dvdrental.dto.CountryDto;
@@ -10,6 +10,7 @@ import com.pashonokk.dvdrental.mapper.CountryMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
 import com.pashonokk.dvdrental.mapper.impl.PageMapperImpl;
 import com.pashonokk.dvdrental.repository.CountryRepository;
+import com.pashonokk.dvdrental.service.CountryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
