@@ -32,8 +32,8 @@ class UserRegisterControllerTest {
     }
 
     @Test
-    @DisplayName("Register customer when it exists then throw UserExistsException")
-    void registerUserCustomerWhenUserExistsThrowException() {
+    @DisplayName("Register customer when it exists then 400")
+    void registerUserCustomerWhenUserExistsThenFail() {
         UserCustomerSavingDto userCustomerSavingDto = UserBuilder.constructUserCustomerDto();
         testRestTemplate.postForEntity("/users/register/customer", userCustomerSavingDto, String.class);
 
@@ -78,4 +78,64 @@ class UserRegisterControllerTest {
         assertEquals(HttpStatus.OK, createdStaffResponse.getStatusCode());
         assertEquals("Confirming letter was sent to your email", createdStaffResponse.getBody());
     }
+
+    @Test
+    @DisplayName("Register staff when it exists then return 400")
+    void registerStaffWhenExistsThenFail() {
+        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaffDto();
+        StoreSavingDto store = StoreBuilder.constructStoreSavingDto();
+        String jwtToken = authorizeAndGetToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + jwtToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<StoreSavingDto> requestEntity = new HttpEntity<>(store, headers);
+        ResponseEntity<StoreDto> createdStoreResponse = testRestTemplate.exchange(
+                "/stores",
+                HttpMethod.POST,
+                requestEntity,
+                StoreDto.class
+        );
+        userStaffSavingDto.setStoreId(Objects.requireNonNull(createdStoreResponse.getBody()).getId());
+        HttpEntity<UserStaffSavingDto> staffHttpEntity = new HttpEntity<>(userStaffSavingDto, headers);
+        testRestTemplate.exchange("/users/register/staff", HttpMethod.POST, staffHttpEntity, String.class);
+
+        ResponseEntity<String> failCreatingStaffResponse = testRestTemplate.exchange(
+                "/users/register/staff",
+                HttpMethod.POST,
+                staffHttpEntity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, failCreatingStaffResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Register staff when unauthorized then return 403")
+    void registerStaffWhenUnauthorizedThenFail() {
+        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaffDto();
+        StoreSavingDto store = StoreBuilder.constructStoreSavingDto();
+        String jwtToken = authorizeAndGetToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + jwtToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<StoreSavingDto> requestEntity = new HttpEntity<>(store, headers);
+        ResponseEntity<StoreDto> createdStoreResponse = testRestTemplate.exchange(
+                "/stores",
+                HttpMethod.POST,
+                requestEntity,
+                StoreDto.class
+        );
+        userStaffSavingDto.setStoreId(Objects.requireNonNull(createdStoreResponse.getBody()).getId());
+        HttpEntity<UserStaffSavingDto> staffHttpEntity = new HttpEntity<>(userStaffSavingDto);
+
+        ResponseEntity<String> createdStaffResponse = testRestTemplate.exchange(
+                "/users/register/staff",
+                HttpMethod.POST,
+                staffHttpEntity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, createdStaffResponse.getStatusCode());
+    }
+
 }
