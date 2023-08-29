@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS payment_aud
     rental_id    BIGINT,
     staff_id     BIGINT,
     customer_id  BIGINT,
-    is_deleted   boolean,
+    is_closed   boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );

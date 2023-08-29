@@ -7,9 +7,10 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EmailDto {
     private String to;
-    public static final String FROM = System.getenv("EMAIL_FROM");
+    private String from;
     private String cc;
     private String bcc;
     private String body;

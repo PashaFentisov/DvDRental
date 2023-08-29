@@ -5,10 +5,13 @@ import com.pashonokk.dvdrental.entity.*;
 import com.pashonokk.dvdrental.event.UserRegistrationCompletedEvent;
 import com.pashonokk.dvdrental.exception.AuthenticationException;
 import com.pashonokk.dvdrental.exception.UserExistsException;
+import com.pashonokk.dvdrental.mapper.CustomerMapper;
+import com.pashonokk.dvdrental.mapper.StaffMapper;
 import com.pashonokk.dvdrental.mapper.UserCustomerSavingMapper;
 import com.pashonokk.dvdrental.mapper.UserStaffSavingMapper;
 import com.pashonokk.dvdrental.repository.RoleRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
+import com.pashonokk.dvdrental.util.SendGridProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,12 +42,16 @@ public class UserService{
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final StaffMapper staffMapper;
+    private final CustomerMapper customerMapper;
+
+    private final SendGridProperties sendGridProperties;
 
     private static final String USER_EXISTS_ERROR_MESSAGE = "User with email %s already exists";
 
 
 
-    public void saveRegisteredCustomerUser(UserCustomerSavingDto userDto) {
+    public CustomerDto saveRegisteredCustomerUser(UserCustomerSavingDto userDto) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
@@ -59,9 +66,10 @@ public class UserService{
         userRepository.save(user);
         EmailDto emailDto = createEmailDto(user.getEmail(), token.getValue());
         applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
+        return customerMapper.toDto(user.getCustomer());
     }
 
-    public void saveRegisteredStaffUser(UserStaffSavingDto userDto) {
+    public StaffDto saveRegisteredStaffUser(UserStaffSavingDto userDto) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
@@ -76,6 +84,7 @@ public class UserService{
         userRepository.save(user);
         EmailDto emailDto = createEmailDto(user.getEmail(), token.getValue());
         applicationEventPublisher.publishEvent(new UserRegistrationCompletedEvent(emailDto));
+        return staffMapper.toDto(user.getStaff());
     }
 
     public JwtAuthorizationResponse authorize(UserAuthorizationDto userDto) {
@@ -98,11 +107,12 @@ public class UserService{
     }
 
     private EmailDto createEmailDto(String userEmail, String tokenValue) {
-        EmailDto emailDto = new EmailDto();
-        emailDto.setTo(userEmail);
-        emailDto.setBody(tokenValue);
-        emailDto.setSubject("Follow this link to confirm your email");
-        return emailDto;
+        return EmailDto.builder()
+                .from(sendGridProperties.getEmailFrom())
+                .to(userEmail)
+                .body(tokenValue)
+                .subject("Follow this link to confirm your email")
+                .build();
     }
 
 }

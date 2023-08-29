@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"rentals", "payments"})
 @Audited
 public class Customer {
     @Id

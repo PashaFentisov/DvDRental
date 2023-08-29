@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "store")
 @Audited
 public class Staff {
     @Id

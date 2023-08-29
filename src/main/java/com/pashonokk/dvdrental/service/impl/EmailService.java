@@ -29,7 +29,7 @@ public class EmailService implements NotificationService {
     }
 
     private Mail prepareMail(EmailDto emailDto) {
-        Email fromEmail = new Email(EmailDto.FROM);
+        Email fromEmail = new Email(emailDto.getFrom());
 
         Email toEmail = new Email(emailDto.getTo());
 
