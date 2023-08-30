@@ -19,6 +19,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FilmSavingDto {
     private Long id;
     @NotBlank(message = "Title can`t be empty or null")
@@ -29,7 +30,6 @@ public class FilmSavingDto {
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer.class)
     @ValidOffsetDateTime
     private OffsetDateTime releaseYear;
-    private Duration rentalDuration;
     private Double rentalRate;
     private Duration length;
     private Double replacementCost;

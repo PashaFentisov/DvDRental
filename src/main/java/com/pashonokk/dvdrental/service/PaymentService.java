@@ -49,7 +49,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentDto addPayment(PaymentSavingDto paymentSavingDto, String email) {
+    public PaymentDto createPayment(PaymentSavingDto paymentSavingDto, String email) {
         User user = userRepository.findUserByEmail(email).orElseThrow(EntityNotFoundException::new);
         Staff staff = user.getStaff();
 

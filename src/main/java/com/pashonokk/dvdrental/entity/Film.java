@@ -25,8 +25,6 @@ public class Film {
     @Column(unique = true, nullable = false, updatable = false)
     private String description;
     private OffsetDateTime releaseYear;
-    @NotAudited
-    private Duration rentalDuration;
     private Double rentalRate;
     @NotAudited
     private Duration length;

@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS film
     title            VARCHAR(100)  NOT NULL,
     description      VARCHAR(5000) NOT NULL,
     release_year     timestamp,
-    rental_duration  NUMERIC,
     rental_rate      DOUBLE PRECISION,
     length           NUMERIC,
     replacement_cost DOUBLE PRECISION,

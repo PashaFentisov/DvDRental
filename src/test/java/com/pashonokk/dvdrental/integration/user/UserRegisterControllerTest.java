@@ -34,7 +34,7 @@ class UserRegisterControllerTest {
     @Test
     @DisplayName("Register customer when it doesn`t exist then save")
     void registerCustomerWhenDoesntExistThenSave() {
-        UserCustomerSavingDto userCustomerSavingDto = UserBuilder.constructUserCustomerDto();
+        UserCustomerSavingDto userCustomerSavingDto = UserBuilder.constructUserCustomer();
 
         ResponseEntity<CustomerDto> response = testRestTemplate.postForEntity("/users/register/customer", userCustomerSavingDto, CustomerDto.class);
         String location = String.format("http://localhost:%s/customers/%s", port,
@@ -53,7 +53,7 @@ class UserRegisterControllerTest {
     @Test
     @DisplayName("Register customer when it exists then 400")
     void registerUserCustomerWhenUserExistsThenFail() {
-        UserCustomerSavingDto userCustomerSavingDto = UserBuilder.constructUserCustomerDto();
+        UserCustomerSavingDto userCustomerSavingDto = UserBuilder.constructUserCustomer();
         testRestTemplate.postForEntity("/users/register/customer", userCustomerSavingDto, String.class);
 
         ResponseEntity<String> response = testRestTemplate.postForEntity("/users/register/customer", userCustomerSavingDto, String.class);
@@ -66,8 +66,8 @@ class UserRegisterControllerTest {
     @Test
     @DisplayName("Register staff when it doesn't exist then save")
     void registerStaffWhenDoesntExistThenSave() {
-        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaffDto();
-        StoreSavingDto store = StoreBuilder.constructStoreSavingDto();
+        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaff();
+        StoreSavingDto store = StoreBuilder.constructStore();
         HttpHeaders headers = constructHttpHeaders();
         Long saveStoreId = saveStore(store, headers);
         userStaffSavingDto.setStoreId(Objects.requireNonNull(saveStoreId));
@@ -96,8 +96,8 @@ class UserRegisterControllerTest {
     @Test
     @DisplayName("Register staff when it exists then return 400")
     void registerStaffWhenExistsThenFail() {
-        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaffDto();
-        StoreSavingDto store = StoreBuilder.constructStoreSavingDto();
+        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaff();
+        StoreSavingDto store = StoreBuilder.constructStore();
         HttpHeaders headers = constructHttpHeaders();
         Long saveStoreId = saveStore(store, headers);
         userStaffSavingDto.setStoreId(Objects.requireNonNull(saveStoreId));
@@ -118,8 +118,8 @@ class UserRegisterControllerTest {
     @Test
     @DisplayName("Register staff when unauthorized then return 403")
     void registerStaffWhenUnauthorizedThenFail() {
-        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaffDto();
-        StoreSavingDto store = StoreBuilder.constructStoreSavingDto();
+        UserStaffSavingDto userStaffSavingDto = UserBuilder.constructUserStaff();
+        StoreSavingDto store = StoreBuilder.constructStore();
         HttpHeaders headers = constructHttpHeaders();
         Long saveStoreId = saveStore(store, headers);
         userStaffSavingDto.setStoreId(Objects.requireNonNull(saveStoreId));

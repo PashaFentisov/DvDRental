@@ -49,13 +49,13 @@ public class PaymentRestController {
 
     @PostMapping
     @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).PAYMENT_CREATE_ACCESS)")
-    public ResponseEntity<PaymentDto> addPayment(@RequestBody @Valid PaymentSavingDto paymentSavingDto, Errors errors,
-                                                 @AuthenticationPrincipal User user) {
+    public ResponseEntity<PaymentDto> createPayment(@RequestBody @Valid PaymentSavingDto paymentSavingDto, Errors errors,
+                                                    @AuthenticationPrincipal User user) {
         if(errors.hasErrors()){
             errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
             throw new EntityValidationException("Validation failed", errors);
         }
-        PaymentDto savedPayment = paymentService.addPayment(paymentSavingDto, user.getUsername());
+        PaymentDto savedPayment = paymentService.createPayment(paymentSavingDto, user.getUsername());
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

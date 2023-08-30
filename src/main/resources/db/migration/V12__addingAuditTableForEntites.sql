@@ -90,7 +90,6 @@ CREATE TABLE film_aud
     title            VARCHAR(100),
     description      VARCHAR(5000),
     release_year     timestamp,
-    rental_duration  NUMERIC,
     rental_rate      DOUBLE PRECISION,
     length           NUMERIC,
     replacement_cost DOUBLE PRECISION,

@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PaymentSavingDto {
     private Long id;
     @NotNull(message = "Customer id can`t be empty or null")
@@ -25,4 +26,5 @@ public class PaymentSavingDto {
     @NotNull(message = "Customer id can`t be empty or null")
     @Min(value = 0, message = "Id can`t be negative")
     private Long storeId;
+
 }

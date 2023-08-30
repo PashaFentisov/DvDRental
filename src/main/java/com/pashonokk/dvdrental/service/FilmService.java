@@ -103,7 +103,6 @@ public class FilmService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(FILM_ERROR_MESSAGE, filmDto.getId())));
 
         Optional.ofNullable(filmDto.getReleaseYear()).ifPresent(film::setReleaseYear);
-        Optional.ofNullable(filmDto.getRentalDuration()).ifPresent(film::setRentalDuration);
         Optional.ofNullable(filmDto.getRentalRate()).ifPresent(film::setRentalRate);
         Optional.ofNullable(filmDto.getLength()).ifPresent(film::setLength);
         Optional.ofNullable(filmDto.getReplacementCost()).ifPresent(film::setReplacementCost);
