@@ -46,10 +46,8 @@ class PaymentRestControllerTest {
 
         FilmSavingDto film = FilmBuilder.constructFilm();
         film.setLanguagesIds(Set.of(savedLanguageId));
+        film.setStoreId(savedStoreId);
         savedFilmId = saveFilm(film, headersWithToken);
-
-        InventorySavingDto inventory = InventoryBuilder.constructInventorySavingDto(savedFilmId, savedStoreId);
-        saveInventory(inventory, headersWithToken);
 
         UserCustomerSavingDto customer = UserBuilder.constructUserCustomer();
         savedCustomerId = saveCustomer(customer);
@@ -176,16 +174,6 @@ class PaymentRestControllerTest {
     private Long saveCustomer(UserCustomerSavingDto customer) {
         ResponseEntity<CustomerDto> response = testRestTemplate.postForEntity("/users/register/customer", customer, CustomerDto.class);
         return Objects.requireNonNull(response.getBody()).getId();
-    }
-
-    private void saveInventory(InventorySavingDto inventory, HttpHeaders headers) {
-        HttpEntity<InventorySavingDto> requestEntity = new HttpEntity<>(inventory, headers);
-        testRestTemplate.exchange(
-                "/inventories",
-                HttpMethod.POST,
-                requestEntity,
-                InventoryDto.class
-        );
     }
 
     private void saveStaff(UserStaffSavingDto staff, HttpHeaders headers) {

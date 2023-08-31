@@ -2,15 +2,9 @@ package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
-import com.pashonokk.dvdrental.entity.Actor;
-import com.pashonokk.dvdrental.entity.Category;
-import com.pashonokk.dvdrental.entity.Film;
-import com.pashonokk.dvdrental.entity.Language;
+import com.pashonokk.dvdrental.entity.*;
 import com.pashonokk.dvdrental.mapper.*;
-import com.pashonokk.dvdrental.repository.ActorRepository;
-import com.pashonokk.dvdrental.repository.CategoryRepository;
-import com.pashonokk.dvdrental.repository.FilmRepository;
-import com.pashonokk.dvdrental.repository.LanguageRepository;
+import com.pashonokk.dvdrental.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +23,7 @@ public class FilmService {
     private final PageMapper pageMapper;
     private final CategoryRepository categoryRepository;
     private final LanguageRepository languageRepository;
+    private final StoreRepository storeRepository;
     private final ActorRepository actorRepository;
     private final FilmMapper filmMapper;
     private final StoreMapper storeMapper;
@@ -36,6 +31,7 @@ public class FilmService {
     private final ActorMapper actorMapper;
     private final FilmSavingMapper filmSavingMapper;
     private static final String FILM_ERROR_MESSAGE = "Film with id %s doesn't exist";
+    private static final String STORE_ERROR_MESSAGE = "Store with id %s doesn't exist";
     private static final String CATEGORY_ERROR_MESSAGE = "Category with id %s doesn't exist";
 
     @Transactional(readOnly = true)
@@ -72,6 +68,8 @@ public class FilmService {
 
     @Transactional
     public FilmDto addFilm(FilmSavingDto filmSavingDto) {
+        Store store = storeRepository.findStoreById(filmSavingDto.getStoreId())
+                .orElseThrow(()->new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, filmSavingDto.getStoreId())));
         List<Category> categoriesById = Collections.emptyList();
         if (filmSavingDto.getCategoriesIds() != null) {
             categoriesById = categoryRepository.findAllByIdAndFilms(filmSavingDto.getCategoriesIds());
@@ -81,7 +79,10 @@ public class FilmService {
             actorsByIds = actorRepository.findAllByIdAndFilms(filmSavingDto.getActorsIds());
         }
         List<Language> languagesById = languageRepository.findAllByIdAndFilms(filmSavingDto.getLanguagesIds());
+        Inventory inventory = new Inventory(OffsetDateTime.now(), false, true);
+        inventory.addStore(store);
         Film film = filmSavingMapper.toEntity(filmSavingDto);
+        inventory.addFilm(film);
         film.setLastUpdate(OffsetDateTime.now());
         film.addCategory(categoriesById);
         film.addLanguage(languagesById);

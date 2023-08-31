@@ -46,6 +46,7 @@ public class PermissionService {
         Permission permission = permissionSavingMapper.toEntity(permissionSavingDto);
         List<Role> rolesById = roleRepository.findAllByIdAndPermissions(permissionSavingDto.getRoleIds());
         permission.addRoles(rolesById);
+        permission.setIsDeleted(false);
         Permission savedPermission = permissionRepository.save(permission);
         return permissionMapper.toDto(savedPermission);
     }

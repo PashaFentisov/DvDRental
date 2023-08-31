@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,6 +18,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Page<Inventory> findAll(Pageable pageable);
     @EntityGraph(attributePaths = {"store", "store.address", "film", "film.categories", "film.languages"})
     Optional<Inventory> findById(Long id);
-    @Query("Select i from Inventory i where i.film.id=:filmId and i.store.id=:storeId")
-    Optional<Inventory> findByFilmAndStore(@Param("filmId") Long filmId, @Param("storeId")Long storeId);
+    @Query("Select i from Inventory i where i.film.id=:filmId and i.store.id=:storeId and i.isAvailable=true")
+    List<Inventory> findByFilmAndStore(@Param("filmId") Long filmId, @Param("storeId")Long storeId);
 }

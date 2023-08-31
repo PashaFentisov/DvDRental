@@ -50,7 +50,7 @@ public class Film {
     @Setter(AccessLevel.PRIVATE)
     private Set<Actor> actors = new HashSet<>();
 
-    @OneToMany(mappedBy = "film", orphanRemoval = true)
+    @OneToMany(mappedBy = "film", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonIgnore
     @Setter(AccessLevel.PRIVATE)
     private List<Inventory> inventories = new ArrayList<>();

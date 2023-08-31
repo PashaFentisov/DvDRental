@@ -60,8 +60,10 @@ public class StoreService {
     public StoreDto addStore(StoreSavingDto storeSavingDto) {
         Store store = storeSavingMapper.toEntity(storeSavingDto);
         store.setLastUpdate(OffsetDateTime.now());
+        store.setIsDeleted(false);
         Address address = store.getAddress();
         address.setLastUpdate(OffsetDateTime.now());
+        address.setIsDeleted(false);
         store.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(storeSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
         Store savedStore = storeRepository.save(store);

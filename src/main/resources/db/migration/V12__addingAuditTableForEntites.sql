@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS inventory_aud
     film_id     BIGINT,
     last_update timestamp,
     is_deleted  boolean,
+    is_available boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );

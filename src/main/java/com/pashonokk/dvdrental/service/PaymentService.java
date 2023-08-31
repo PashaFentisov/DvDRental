@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,16 +51,20 @@ public class PaymentService {
 
     @Transactional
     public PaymentDto createPayment(PaymentSavingDto paymentSavingDto, String email) {
-        User user = userRepository.findUserByEmail(email).orElseThrow(EntityNotFoundException::new);
-        Staff staff = user.getStaff();
-
+        Staff staff = userRepository.findUserByEmail(email).orElseThrow(EntityNotFoundException::new).getStaff();
+        Inventory inventory;
         Customer customer = customerRepository.findCustomerById(paymentSavingDto.getCustomerId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CUSTOMER_ERROR_MESSAGE, paymentSavingDto.getCustomerId())));
 
-        Inventory inventory = inventoryRepository
-                .findByFilmAndStore(paymentSavingDto.getFilmId(), paymentSavingDto.getStoreId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(INVENTORY_ERROR_MESSAGE, paymentSavingDto.getFilmId(), paymentSavingDto.getStoreId())));
+        List<Inventory> inventories = inventoryRepository
+                .findByFilmAndStore(paymentSavingDto.getFilmId(), paymentSavingDto.getStoreId());
+        if (inventories.isEmpty()) {
+            throw new EntityNotFoundException(String.format(INVENTORY_ERROR_MESSAGE, paymentSavingDto.getFilmId(),
+                                                                                     paymentSavingDto.getStoreId()));
+        }else{
+            inventory = inventories.get(0);
+            inventory.setIsAvailable(false);
+        }
 
         Rental rental = Rental.builder()
                 .rentalDate(OffsetDateTime.now())

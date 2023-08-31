@@ -54,6 +54,7 @@ public class RentalService {
     public RentalDto addRental(RentalSavingDto rentalSavingDto) {
         Rental rental = rentalSavingMapper.toEntity(rentalSavingDto);
         rental.setLastUpdate(OffsetDateTime.now());
+        rental.setIsDeleted(false);
         Staff staff = staffRepository.findById(rentalSavingDto.getStaffId())
                 .orElseThrow(()->new EntityNotFoundException(String.format(STAFF_ERROR_MESSAGE, rentalSavingDto.getStaffId())));
 
