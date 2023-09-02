@@ -15,7 +15,7 @@
     <description>DvDRental</description>
     <properties>
         <java.version>17</java.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-lang3.version>3.13.0</commons-lang3.version>
         <sendgrid-java.version>4.9.3</sendgrid-java.version>
         <reflections.version>0.10.2</reflections.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
