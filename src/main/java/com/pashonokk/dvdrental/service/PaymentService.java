@@ -52,29 +52,12 @@ public class PaymentService {
     @Transactional
     public PaymentDto createPayment(PaymentSavingDto paymentSavingDto, String email) {
         Staff staff = userRepository.findUserByEmail(email).orElseThrow(EntityNotFoundException::new).getStaff();
-        Inventory inventory;
         Customer customer = customerRepository.findCustomerById(paymentSavingDto.getCustomerId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CUSTOMER_ERROR_MESSAGE, paymentSavingDto.getCustomerId())));
 
-        List<Inventory> inventories = inventoryRepository
-                .findByFilmAndStore(paymentSavingDto.getFilmId(), paymentSavingDto.getStoreId());
-        if (inventories.isEmpty()) {
-            throw new EntityNotFoundException(String.format(INVENTORY_ERROR_MESSAGE, paymentSavingDto.getFilmId(),
-                                                                                     paymentSavingDto.getStoreId()));
-        }else{
-            inventory = inventories.get(0);
-            inventory.setIsAvailable(false);
-        }
+        Inventory inventory = getInventory(paymentSavingDto, staff);
 
-        Rental rental = Rental.builder()
-                .rentalDate(OffsetDateTime.now())
-                .returnDate(OffsetDateTime.now().plusDays(paymentSavingDto.getRentalDays()))
-                .lastUpdate(OffsetDateTime.now())
-                .isDeleted(false)
-                .inventory(inventory)
-                .customer(customer)
-                .staff(staff)
-                .build();
+        Rental rental = buildRental(paymentSavingDto, staff, inventory, customer);
         BigDecimal amount = price.multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
         Payment payment = new Payment(amount, OffsetDateTime.now().plusDays(paymentSavingDto.getRentalDays()), false);
 
@@ -84,6 +67,32 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
         return paymentMapper.toDto(savedPayment);
+    }
+
+    private Inventory getInventory(PaymentSavingDto paymentSavingDto, Staff staff) {
+        Inventory inventory;
+        List<Inventory> inventories = inventoryRepository
+                .findByFilmAndStore(paymentSavingDto.getFilmId(), staff.getStore().getId());
+        if (inventories.isEmpty()) {
+            throw new EntityNotFoundException(String.format(INVENTORY_ERROR_MESSAGE, paymentSavingDto.getFilmId(),
+                                                                                     staff.getStore().getId()));
+        }else{
+            inventory = inventories.get(0);
+            inventory.setIsAvailable(false);
+        }
+        return inventory;
+    }
+
+    private static Rental buildRental(PaymentSavingDto paymentSavingDto, Staff staff, Inventory inventory, Customer customer) {
+        return Rental.builder()
+                .rentalDate(OffsetDateTime.now())
+                .returnDate(OffsetDateTime.now().plusDays(paymentSavingDto.getRentalDays()))
+                .lastUpdate(OffsetDateTime.now())
+                .isDeleted(false)
+                .inventory(inventory)
+                .customer(customer)
+                .staff(staff)
+                .build();
     }
 
     @Transactional
