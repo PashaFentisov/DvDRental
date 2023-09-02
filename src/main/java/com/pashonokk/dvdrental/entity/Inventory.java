@@ -31,7 +31,13 @@ public class Inventory {
     private List<Rental> rentals = new ArrayList<>();
     private OffsetDateTime lastUpdate;
     private Boolean isDeleted;
+    private Boolean isAvailable;
 
+    public Inventory(OffsetDateTime lastUpdate, Boolean isDeleted, Boolean isAvailable) {
+        this.lastUpdate = lastUpdate;
+        this.isDeleted = isDeleted;
+        this.isAvailable = isAvailable;
+    }
 
     public void addFilm(Film film) {
         this.film = film;

@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LanguageDto {
     private Long id;
     @NotBlank(message = "Language`s name can`t be empty or null")

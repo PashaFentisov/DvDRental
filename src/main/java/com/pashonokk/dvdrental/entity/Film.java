@@ -25,8 +25,6 @@ public class Film {
     @Column(unique = true, nullable = false, updatable = false)
     private String description;
     private OffsetDateTime releaseYear;
-    @NotAudited
-    private Duration rentalDuration;
     private Double rentalRate;
     @NotAudited
     private Duration length;
@@ -52,7 +50,7 @@ public class Film {
     @Setter(AccessLevel.PRIVATE)
     private Set<Actor> actors = new HashSet<>();
 
-    @OneToMany(mappedBy = "film", orphanRemoval = true)
+    @OneToMany(mappedBy = "film", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonIgnore
     @Setter(AccessLevel.PRIVATE)
     private List<Inventory> inventories = new ArrayList<>();

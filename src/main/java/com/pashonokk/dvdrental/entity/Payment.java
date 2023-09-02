@@ -31,11 +31,16 @@ public class Payment {
     @JoinColumn(name = "staff_id")
     private Staff staff;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false,cascade = CascadeType.ALL)
     @JoinColumn(name = "rental_id")
     private Rental rental;
-    private Boolean isDeleted;
+    private Boolean isClosed;
 
+    public Payment(BigDecimal amount, OffsetDateTime paymentDate, Boolean isClosed) {
+        this.amount = amount;
+        this.paymentDate = paymentDate;
+        this.isClosed = isClosed;
+    }
 
     public void addCustomer(Customer customer) {
         this.customer = customer;

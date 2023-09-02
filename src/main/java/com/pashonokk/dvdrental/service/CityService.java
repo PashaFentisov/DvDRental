@@ -47,6 +47,7 @@ public class CityService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(COUNTRY_ERROR_MESSAGE,citySavingDto.getCountryId())));
         City city = citySavingMapper.toEntity(citySavingDto);
         city.setLastUpdate(OffsetDateTime.now());
+        city.setIsDeleted(false);
         country.addCity(city);
         City savedCity = cityRepository.save(city);
         return cityMapper.toDto(savedCity);

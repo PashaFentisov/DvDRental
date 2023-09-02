@@ -14,9 +14,6 @@ public class PaymentDto {
     private Long id;
     private BigDecimal amount;
     private OffsetDateTime paymentDate;
-    private CustomerDto customer;
-    private StaffDto staff;
-    private RentalDto rental;
-    private Boolean isDeleted;
+    private Boolean isClosed;
 
 }

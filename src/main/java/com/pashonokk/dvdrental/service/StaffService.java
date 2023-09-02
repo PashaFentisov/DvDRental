@@ -50,6 +50,7 @@ public class StaffService {
         Staff staff = new Staff(userDto.getPictureUrl(), OffsetDateTime.now(), false);
         Address address = addressSavingMapper.toEntity(userDto.getAddress());
         address.setLastUpdate(OffsetDateTime.now());
+        address.setIsDeleted(false);
         Store store = storeRepository.findById(userDto.getStoreId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, userDto.getStoreId())));
         staff.addStore(store);

@@ -15,6 +15,7 @@ import java.time.OffsetDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class InventorySavingDto {
     private Long id;
     @NotNull(message = "Store id has to exist")

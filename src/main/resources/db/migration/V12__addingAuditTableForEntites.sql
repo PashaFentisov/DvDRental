@@ -90,7 +90,6 @@ CREATE TABLE film_aud
     title            VARCHAR(100),
     description      VARCHAR(5000),
     release_year     timestamp,
-    rental_duration  NUMERIC,
     rental_rate      DOUBLE PRECISION,
     length           NUMERIC,
     replacement_cost DOUBLE PRECISION,
@@ -189,6 +188,7 @@ CREATE TABLE IF NOT EXISTS inventory_aud
     film_id     BIGINT,
     last_update timestamp,
     is_deleted  boolean,
+    is_available boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS payment_aud
     rental_id    BIGINT,
     staff_id     BIGINT,
     customer_id  BIGINT,
-    is_deleted   boolean,
+    is_closed   boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );

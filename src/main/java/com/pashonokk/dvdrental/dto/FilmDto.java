@@ -16,7 +16,6 @@ public class FilmDto {
     private String title;
     private String description;
     private OffsetDateTime releaseYear;
-    private Duration rentalDuration;
     private Double rentalRate;
     private Duration length;
     private Double replacementCost;
