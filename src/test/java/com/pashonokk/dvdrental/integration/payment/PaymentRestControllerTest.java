@@ -64,7 +64,7 @@ class PaymentRestControllerTest {
     @DisplayName("Create Payment when everything is correct then save")
     void createPaymentWhenCorrectThenSave() {
         HttpHeaders staffTokenHeaders = init();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedStoreId, savedCustomerId);
+        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         ResponseEntity<PaymentDto> savedPaymentResponse = testRestTemplate.exchange(
@@ -89,7 +89,7 @@ class PaymentRestControllerTest {
     @Test
     @DisplayName("Create Payment when unauthorized then 403")
     void createPaymentWhenUnauthorizedThenFail() {
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedStoreId, savedCustomerId);
+        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment);
 
         ResponseEntity<PaymentDto> savedPaymentResponse = testRestTemplate.exchange(
@@ -108,7 +108,7 @@ class PaymentRestControllerTest {
     @DisplayName("Create Payment when customer doesnt exist then return 400")
     void createPaymentWhenCustomerDoesntExistThenFail() {
         HttpHeaders staffTokenHeaders = init();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedStoreId, savedCustomerId+1);
+        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId+1);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         ResponseEntity<String> savedPaymentResponse = testRestTemplate.exchange(
@@ -129,7 +129,7 @@ class PaymentRestControllerTest {
     @DisplayName("Create Payment when inventory doesnt exist then return 400")
     void createPaymentWhenInventoryDoesntExistThenFail() {
         HttpHeaders staffTokenHeaders = init();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId+1, savedStoreId+1, savedCustomerId);
+        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId+1, savedCustomerId);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         ResponseEntity<String> savedPaymentResponse = testRestTemplate.exchange(
@@ -141,7 +141,7 @@ class PaymentRestControllerTest {
 
         BaseResponse failureResponse = objectMapper.readValue(savedPaymentResponse.getBody(), BaseResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST, savedPaymentResponse.getStatusCode());
-        assertEquals(String.format("Inventory with film id %s and store id %s doesn't exist", savedFilmId+1, savedStoreId+1), failureResponse.getMessage());
+        assertEquals(String.format("Inventory with film id %s and store id %s doesn't exist", savedFilmId+1, savedStoreId), failureResponse.getMessage());
     }
     private HttpHeaders constructAdminHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
