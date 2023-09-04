@@ -52,11 +52,6 @@ CREATE TRIGGER update_last_update_trigger
 EXECUTE FUNCTION update_last_update_function();
 
 CREATE TRIGGER update_last_update_trigger
-    BEFORE UPDATE ON payment
-    FOR EACH ROW
-EXECUTE FUNCTION update_last_update_function();
-
-CREATE TRIGGER update_last_update_trigger
     BEFORE UPDATE ON rental
     FOR EACH ROW
 EXECUTE FUNCTION update_last_update_function();

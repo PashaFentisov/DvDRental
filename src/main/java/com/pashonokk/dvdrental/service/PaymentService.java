@@ -1,5 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
+import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
+import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.dto.PaymentDto;
 import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
@@ -10,16 +12,19 @@ import com.pashonokk.dvdrental.repository.CustomerRepository;
 import com.pashonokk.dvdrental.repository.InventoryRepository;
 import com.pashonokk.dvdrental.repository.PaymentRepository;
 import com.pashonokk.dvdrental.repository.UserRepository;
+import com.pashonokk.dvdrental.util.PaymentProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +38,7 @@ public class PaymentService {
     private static final String INVENTORY_ERROR_MESSAGE = "Inventory with film id %s and store id %s doesn't exist";
     private static final String CUSTOMER_ERROR_MESSAGE = "Customer with id %s doesn't exist";
     private static final String PAYMENT_ERROR_MESSAGE = "Payment with id %s doesn't exist";
-    @Value("${dvd.oneday.price}")
-    private BigDecimal price;
+    private final PaymentProperties paymentProperties;
 
 
     @Transactional(readOnly = true)
@@ -58,7 +62,7 @@ public class PaymentService {
         Inventory inventory = getInventory(paymentSavingDto, staff);
 
         Rental rental = buildRental(paymentSavingDto, staff, inventory, customer);
-        BigDecimal amount = price.multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
+        BigDecimal amount = paymentProperties.getPrice().multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
         Payment payment = new Payment(amount, OffsetDateTime.now().plusDays(paymentSavingDto.getRentalDays()), false);
 
         payment.addCustomer(customer);
@@ -96,9 +100,54 @@ public class PaymentService {
     }
 
     @Transactional
+    public ClosedPaymentResponse closePayment(PaymentClosingDto paymentClosingDto) {
+        Payment payment = paymentRepository.findOpenPayments(paymentClosingDto.getCustomerId())
+                .stream()
+                .filter(p -> Objects.equals(p.getRental().getInventory().getFilm().getId(), paymentClosingDto.getFilmId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Payment doesn`t exists, something is wrong"));
+
+        Rental rental = payment.getRental();
+        Inventory inventory = rental.getInventory();
+
+        inventory.setIsAvailable(true);
+        payment.setIsClosed(true);
+        rental.setIsDeleted(true);
+
+        BigDecimal totalAmount = payment.getAmount();
+        if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){
+            totalAmount = countTotalAmountWithFine(payment);
+        }
+
+        return buildClosedPaymentResponse(payment, totalAmount, inventory, rental);
+    }
+
+    private ClosedPaymentResponse buildClosedPaymentResponse(Payment payment, BigDecimal totalAmount, Inventory inventory, Rental rental) {
+        long extraDays = 0;
+        if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){
+            extraDays = Period.between(payment.getPaymentDate().toLocalDate(), LocalDate.now()).getDays();
+        }
+        return ClosedPaymentResponse.builder()
+                .customerId(payment.getCustomer().getId())
+                .filmId(inventory.getFilm().getId())
+                .extraDays(extraDays)
+                .fineAmount(totalAmount.subtract(payment.getAmount()))
+                .storeId(inventory.getStore().getId())
+                .totalAmount(totalAmount)
+                .rentalDate(rental.getRentalDate())
+                .returnDate(OffsetDateTime.now())
+                .build();
+    }
+
+    private BigDecimal countTotalAmountWithFine(Payment payment) {
+        int extraDays = Period.between(payment.getPaymentDate().toLocalDate(), LocalDate.now()).getDays();
+        return payment.getAmount().add(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)));
+    }
+
+    @Transactional
     public void deletePayment(Long id) {
         Payment payment = paymentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(PAYMENT_ERROR_MESSAGE, id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PAYMENT_ERROR_MESSAGE, id))); // todo can be deleted
         payment.setIsClosed(true);
     }
 
