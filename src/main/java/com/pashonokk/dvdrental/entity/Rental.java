@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "payment")
 @Audited
 @Builder
 public class Rental {
@@ -38,19 +38,4 @@ public class Rental {
 
     private Boolean isDeleted;
 
-
-    public void addCustomer(Customer customer) {
-        this.customer = customer;
-        customer.getRentals().add(this);
-    }
-
-    public void addStaff(Staff staff) {
-        this.staff = staff;
-        staff.getRentals().add(this);
-    }
-
-    public void addInventory(Inventory inventory) {
-        this.inventory = inventory;
-        inventory.getRentals().add(this);
-    }
 }

@@ -1,5 +1,7 @@
 package com.pashonokk.dvdrental.controller;
 
+import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
+import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.dto.PaymentDto;
 import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
@@ -62,6 +64,17 @@ public class PaymentRestController {
                 .buildAndExpand(savedPayment.getId())
                 .toUri();
         return ResponseEntity.created(location).body(savedPayment);
+    }
+
+    @PostMapping("/close")
+    @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).PAYMENT_CLOSE_ACCESS)")
+    public ResponseEntity<ClosedPaymentResponse> closePayment(@RequestBody @Valid PaymentClosingDto paymentClosingDto, Errors errors) {
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
+            throw new EntityValidationException("Validation failed", errors);
+        }
+        ClosedPaymentResponse closedPayment = paymentService.closePayment(paymentClosingDto);
+        return ResponseEntity.ok(closedPayment);
     }
 
     @DeleteMapping("/{id}")

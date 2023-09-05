@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS payment
     FOREIGN KEY (customer_id) references customer (address_id)
 );
 
-CREATE INDEX idx_payment_is_closed ON payment(is_closed);
+CREATE INDEX idx_payment_is_closed ON payment(is_closed, customer_id);
