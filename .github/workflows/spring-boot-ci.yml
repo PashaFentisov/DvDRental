@@ -1,4 +1,4 @@
-name: Build and Test Spring Boot App
+name: Build and Test DvdRental App
 
 on:
   pull_request:
