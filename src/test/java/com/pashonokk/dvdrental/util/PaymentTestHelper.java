@@ -1,42 +1,26 @@
-package com.pashonokk.dvdrental.integration.payment;
+package com.pashonokk.dvdrental.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pashonokk.dvdrental.dto.*;
-import com.pashonokk.dvdrental.endpoint.BaseResponse;
-import com.pashonokk.dvdrental.util.*;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.net.URI;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class PaymentRestControllerTest {
-    @Autowired
-    private TestRestTemplate testRestTemplate;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @LocalServerPort
-    private int port;
-    @Value("${dvd.oneday.price}")
-    private BigDecimal price;
-
+@Component
+@RequiredArgsConstructor
+@Getter
+public class PaymentTestHelper {
+    private final TestRestTemplate testRestTemplate;
     private Long savedFilmId;
     private Long savedStoreId;
     private Long savedCustomerId;
+    private PaymentDto savedPayment;
 
-    HttpHeaders init() {
+    public HttpHeaders preparePaymentSaving() {
         HttpHeaders headersWithToken = constructAdminHttpHeaders();
         StoreSavingDto store = StoreBuilder.constructStore();
         savedStoreId = saveStore(store, headersWithToken);
@@ -59,90 +43,25 @@ class PaymentRestControllerTest {
         return constructStaffHttpHeaders(staff);
     }
 
-
-    @Test
-    @DisplayName("Create Payment when everything is correct then save")
-    void createPaymentWhenCorrectThenSave() {
-        HttpHeaders staffTokenHeaders = init();
+    public HttpHeaders savePayment() {
+        HttpHeaders staffTokenHeaders = preparePaymentSaving();
         PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
-        ResponseEntity<PaymentDto> savedPaymentResponse = testRestTemplate.exchange(
-                "/payments",
-                HttpMethod.POST,
-                requestEntity,
-                PaymentDto.class
-        );
-        String location = String.format("http://localhost:%s/payments/%s", port,
-                Objects.requireNonNull(savedPaymentResponse.getBody()).getId());
-
-
-        assertEquals(HttpStatus.CREATED, savedPaymentResponse.getStatusCode());
-        assertNotNull(savedPaymentResponse.getBody().getId());
-        assertFalse(savedPaymentResponse.getBody().getIsClosed());
-        assertNotNull(savedPaymentResponse.getBody().getPaymentDate());
-        assertEquals(price.multiply(BigDecimal.valueOf(payment.getRentalDays())), savedPaymentResponse.getBody().getAmount());
-        assertEquals(URI.create(location), savedPaymentResponse.getHeaders().getLocation());
+        savedPayment = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, PaymentDto.class).getBody();
+        return staffTokenHeaders;
     }
 
-
-    @Test
-    @DisplayName("Create Payment when unauthorized then 403")
-    void createPaymentWhenUnauthorizedThenFail() {
+    public HttpHeaders saveExpiredPayment() {
+        HttpHeaders staffTokenHeaders = preparePaymentSaving();
         PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
-        HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment);
-
-        ResponseEntity<PaymentDto> savedPaymentResponse = testRestTemplate.exchange(
-                "/payments",
-                HttpMethod.POST,
-                requestEntity,
-                PaymentDto.class
-        );
-
-        assertEquals(HttpStatus.FORBIDDEN, savedPaymentResponse.getStatusCode());
-
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Create Payment when customer doesnt exist then return 400")
-    void createPaymentWhenCustomerDoesntExistThenFail() {
-        HttpHeaders staffTokenHeaders = init();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId+1);
+        payment.setRentalDays(-10);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
-        ResponseEntity<String> savedPaymentResponse = testRestTemplate.exchange(
-                "/payments",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
-
-        BaseResponse failureResponse = objectMapper.readValue(savedPaymentResponse.getBody(), BaseResponse.class);
-        assertEquals(HttpStatus.BAD_REQUEST, savedPaymentResponse.getStatusCode());
-        assertEquals(String.format("Customer with id %s doesn't exist", savedCustomerId+1), failureResponse.getMessage());
+        savedPayment = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, PaymentDto.class).getBody();
+        return staffTokenHeaders;
     }
 
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Create Payment when inventory doesnt exist then return 400")
-    void createPaymentWhenInventoryDoesntExistThenFail() {
-        HttpHeaders staffTokenHeaders = init();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId+1, savedCustomerId);
-        HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
-
-        ResponseEntity<String> savedPaymentResponse = testRestTemplate.exchange(
-                "/payments",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
-
-        BaseResponse failureResponse = objectMapper.readValue(savedPaymentResponse.getBody(), BaseResponse.class);
-        assertEquals(HttpStatus.BAD_REQUEST, savedPaymentResponse.getStatusCode());
-        assertEquals(String.format("Inventory with film id %s and store id %s doesn't exist", savedFilmId+1, savedStoreId), failureResponse.getMessage());
-    }
     private HttpHeaders constructAdminHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + authorizeAsAdminAndGetToken());

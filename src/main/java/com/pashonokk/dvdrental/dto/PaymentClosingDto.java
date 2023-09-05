@@ -9,7 +9,6 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class PaymentClosingDto {
     @NotNull(message = "Customer id can`t be empty or null")
     @Min(value = 0, message = "Id can`t be negative")

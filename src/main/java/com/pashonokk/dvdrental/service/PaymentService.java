@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.Period;
+import java.time.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -125,7 +123,7 @@ public class PaymentService {
     private ClosedPaymentResponse buildClosedPaymentResponse(Payment payment, BigDecimal totalAmount, Inventory inventory, Rental rental) {
         long extraDays = 0;
         if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){
-            extraDays = Period.between(payment.getPaymentDate().toLocalDate(), LocalDate.now()).getDays();
+            extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
         }
         return ClosedPaymentResponse.builder()
                 .customerId(payment.getCustomer().getId())
@@ -140,14 +138,14 @@ public class PaymentService {
     }
 
     private BigDecimal countTotalAmountWithFine(Payment payment) {
-        int extraDays = Period.between(payment.getPaymentDate().toLocalDate(), LocalDate.now()).getDays();
+        long extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
         return payment.getAmount().add(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)));
     }
 
     @Transactional
     public void deletePayment(Long id) {
         Payment payment = paymentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(PAYMENT_ERROR_MESSAGE, id))); // todo can be deleted
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PAYMENT_ERROR_MESSAGE, id)));
         payment.setIsClosed(true);
     }
 
