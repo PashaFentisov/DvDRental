@@ -6,7 +6,7 @@ on:
       - develop # adjust with the name of your target branch if it's not "main"
   push:
     branches:
-      - develop, main
+      - develop, master
 jobs:
   build:
     runs-on: ubuntu-latest
