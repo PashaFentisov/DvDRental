@@ -6,8 +6,7 @@ import com.pashonokk.dvdrental.dto.PaymentDto;
 import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.*;
-import com.pashonokk.dvdrental.mapper.PageMapper;
-import com.pashonokk.dvdrental.mapper.PaymentMapper;
+import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.CustomerRepository;
 import com.pashonokk.dvdrental.repository.InventoryRepository;
 import com.pashonokk.dvdrental.repository.PaymentRepository;
@@ -20,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,9 @@ public class PaymentService {
     private static final String CUSTOMER_ERROR_MESSAGE = "Customer with id %s doesn't exist";
     private static final String PAYMENT_ERROR_MESSAGE = "Payment with id %s doesn't exist";
     private final PaymentProperties paymentProperties;
+    private final CustomerMapper customerMapper;
+    private final FilmMapper filmMapper;
+    private final StoreMapper storeMapper;
 
 
     @Transactional(readOnly = true)
@@ -126,11 +130,11 @@ public class PaymentService {
             extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
         }
         return ClosedPaymentResponse.builder()
-                .customerId(payment.getCustomer().getId())
-                .filmId(inventory.getFilm().getId())
+                .customer(customerMapper.toDto(payment.getCustomer()))
+                .film(filmMapper.toDto(inventory.getFilm()))
                 .extraDays(extraDays)
                 .fineAmount(totalAmount.subtract(payment.getAmount()))
-                .storeId(inventory.getStore().getId())
+                .store(storeMapper.toDto(inventory.getStore()))
                 .totalAmount(totalAmount)
                 .rentalDate(rental.getRentalDate())
                 .returnDate(OffsetDateTime.now())

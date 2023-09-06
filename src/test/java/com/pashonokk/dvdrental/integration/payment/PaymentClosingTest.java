@@ -48,9 +48,9 @@ class PaymentClosingTest {
         );
 
         assertEquals(HttpStatus.OK, closedPaymentResponse.getStatusCode());
-        assertEquals(paymentTestHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomerId());
-        assertEquals(paymentTestHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStoreId());
-        assertEquals(paymentTestHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilmId());
+        assertEquals(paymentTestHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
+        assertEquals(paymentTestHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
+        assertEquals(paymentTestHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
         assertEquals(0, closedPaymentResponse.getBody().getExtraDays());
         assertEquals(paymentTestHelper.getSavedPayment().getAmount(), closedPaymentResponse.getBody().getTotalAmount());
         assertEquals(BigDecimal.ZERO, closedPaymentResponse.getBody().getFineAmount());
@@ -91,9 +91,9 @@ class PaymentClosingTest {
                 ClosedPaymentResponse.class
         );
         assertEquals(HttpStatus.OK, closedPaymentResponse.getStatusCode());
-        assertEquals(paymentTestHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomerId());
-        assertEquals(paymentTestHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStoreId());
-        assertEquals(paymentTestHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilmId());
+        assertEquals(paymentTestHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
+        assertEquals(paymentTestHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
+        assertEquals(paymentTestHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
         assertEquals(extraDays, closedPaymentResponse.getBody().getExtraDays());
         assertEquals(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)), closedPaymentResponse.getBody().getFineAmount());
         assertNotNull(closedPaymentResponse.getBody().getReturnDate());
