@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS film
     rating           DOUBLE PRECISION,
     last_update      timestamp,
     is_deleted boolean,
-    UNIQUE (title, description)
+    UNIQUE (description)
 );
 
 CREATE TABLE IF NOT EXISTS film_category
