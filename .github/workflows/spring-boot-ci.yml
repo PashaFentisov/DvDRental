@@ -53,7 +53,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Check for critical vulnerabilities
         run: |
-          critical_count=$(jq '.vulnerabilities | map(select(.severity == "critical")) | length' snyk-result.json)
+          critical_count=$(jq '.vulnerabilities // [] | map(select(.severity == "critical")) | length' snyk-result.json)
           if [ "$critical_count" -gt "0" ]; then
             echo "Critical vulnerabilities found: $critical_count"
             exit 1
