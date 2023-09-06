@@ -12,9 +12,9 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Builder
 public class ClosedPaymentResponse {
-    private Long customerId;
-    private Long storeId;
-    private Long filmId;
+    private CustomerDto customer;
+    private StoreDto store;
+    private FilmDto film;
     private BigDecimal totalAmount;
     private Long extraDays;
     private OffsetDateTime rentalDate;
