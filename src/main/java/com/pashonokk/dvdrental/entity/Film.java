@@ -20,7 +20,6 @@ public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false, updatable = false)
     private String title;
     @Column(unique = true, nullable = false, updatable = false)
     private String description;
@@ -96,11 +95,11 @@ public class Film {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Film film = (Film) o;
-        return title.equals(film.title) && description.equals(film.description);
+        return description.equals(film.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description);
+        return Objects.hash(description);
     }
 }
