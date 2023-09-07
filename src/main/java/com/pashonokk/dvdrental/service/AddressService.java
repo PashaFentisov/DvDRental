@@ -1,8 +1,12 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.AddressDto;
+import com.pashonokk.dvdrental.dto.PhoneDto;
+import com.pashonokk.dvdrental.dto.PhoneSavingDto;
 import com.pashonokk.dvdrental.entity.Address;
+import com.pashonokk.dvdrental.entity.Phone;
 import com.pashonokk.dvdrental.mapper.AddressMapper;
+import com.pashonokk.dvdrental.mapper.PhoneMapper;
 import com.pashonokk.dvdrental.repository.AddressRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,7 @@ import java.util.Optional;
 public class AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
+    private final PhoneMapper phoneMapper;
     private static final String ADDRESS_ERROR_MESSAGE = "Address with id %s doesn't exist";
 
 
@@ -36,5 +41,18 @@ public class AddressService {
             address.setHouseNumber(addressDto.getHouseNumber());
         }
         return addressMapper.toDto(address);
+    }
+
+    @Transactional
+    public PhoneDto addPhoneToAddress(Long id, PhoneSavingDto phoneSavingDto) {
+        Phone phone = Phone.builder()
+                .isDeleted(false)
+                .isMain(false)
+                .number(phoneSavingDto.getNumber())
+                .build();
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADDRESS_ERROR_MESSAGE, id)));
+        phone.addAddress(address);
+        return phoneMapper.toDto(phone);
     }
 }

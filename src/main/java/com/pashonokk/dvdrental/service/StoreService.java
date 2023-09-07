@@ -6,6 +6,7 @@ import com.pashonokk.dvdrental.dto.StoreDto;
 import com.pashonokk.dvdrental.dto.StoreSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
+import com.pashonokk.dvdrental.entity.Phone;
 import com.pashonokk.dvdrental.entity.Store;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.CityRepository;
@@ -58,6 +59,11 @@ public class StoreService {
 
     @Transactional
     public StoreDto addStore(StoreSavingDto storeSavingDto) {
+        Phone phone = Phone.builder()
+                .number(storeSavingDto.getAddressSavingDto().getNumber())
+                .isMain(true)
+                .isDeleted(false)
+                .build();
         Store store = storeSavingMapper.toEntity(storeSavingDto);
         store.setLastUpdate(OffsetDateTime.now());
         store.setIsDeleted(false);
@@ -65,6 +71,7 @@ public class StoreService {
         address.setLastUpdate(OffsetDateTime.now());
         address.setIsDeleted(false);
         store.addAddress(address);
+        phone.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(storeSavingDto.getAddressSavingDto().getCityId()).ifPresent(city->city.addAddress(address));
         Store savedStore = storeRepository.save(store);
         return storeMapper.toDto(savedStore);

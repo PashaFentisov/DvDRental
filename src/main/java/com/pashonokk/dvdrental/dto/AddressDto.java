@@ -3,6 +3,7 @@ package com.pashonokk.dvdrental.dto;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,8 +17,7 @@ public class AddressDto {
     private String district;
     private int postalCode;
     private OffsetDateTime lastUpdate;
-    private String phone;
     private CityDto city;
     private Boolean isDeleted;
-
+    private Set<PhoneDto> phones;
 }

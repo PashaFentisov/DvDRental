@@ -5,6 +5,7 @@ import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
 import com.pashonokk.dvdrental.entity.Customer;
+import com.pashonokk.dvdrental.entity.Phone;
 import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
 import com.pashonokk.dvdrental.mapper.CustomerMapper;
 import com.pashonokk.dvdrental.mapper.PageMapper;
@@ -43,6 +44,11 @@ public class CustomerService {
 
     @Transactional
     public Customer constructCustomer(AddressSavingDto addressSavingDto) {
+        Phone phone = Phone.builder()
+                .number(addressSavingDto.getNumber())
+                .isMain(true)
+                .isDeleted(false)
+                .build();
         Customer customer = new Customer();
         customer.setLastUpdate(OffsetDateTime.now());
         customer.setCreateDate(OffsetDateTime.now());
@@ -51,6 +57,7 @@ public class CustomerService {
         address.setLastUpdate(OffsetDateTime.now());
         address.setIsDeleted(false);
         customer.addAddress(address);
+        phone.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));
         return customer;
     }

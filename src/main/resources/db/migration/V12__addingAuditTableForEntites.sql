@@ -34,8 +34,8 @@ CREATE TABLE address_aud
     house_number BIGINT,
     postal_code  INT,
     street       VARCHAR(300),
+    phone       VARCHAR(300),
     district     VARCHAR(300),
-    phone        VARCHAR(300),
     last_update  timestamp,
     is_deleted   boolean,
     PRIMARY KEY (id, rev),
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS staff_aud
     revtype     smallint,
     address_id  BIGINT,
     store_id    BIGINT,
-    user_id    BIGINT,
+    user_id     BIGINT,
     picture_url VARCHAR(5000),
     last_update timestamp,
     is_deleted  boolean,
@@ -181,13 +181,13 @@ CREATE TABLE IF NOT EXISTS staff_aud
 
 CREATE TABLE IF NOT EXISTS inventory_aud
 (
-    rev         integer NOT NULL,
-    revtype     smallint,
-    id          BIGINT,
-    store_id    BIGINT,
-    film_id     BIGINT,
-    last_update timestamp,
-    is_deleted  boolean,
+    rev          integer NOT NULL,
+    revtype      smallint,
+    id           BIGINT,
+    store_id     BIGINT,
+    film_id      BIGINT,
+    last_update  timestamp,
+    is_deleted   boolean,
     is_available boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS payment_aud
     rental_id    BIGINT,
     staff_id     BIGINT,
     customer_id  BIGINT,
-    is_closed   boolean,
+    is_closed    boolean,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS users_aud
     password    VARCHAR(256),
     role_id     BIGINT,
     is_verified BOOLEAN,
-    is_active BOOLEAN,
+    is_active   BOOLEAN,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
@@ -284,5 +284,16 @@ CREATE TABLE IF NOT EXISTS token_aud
     PRIMARY KEY (user_id, rev)
 );
 
-
+CREATE TABLE IF NOT EXISTS phone_aud
+(
+    rev        integer      NOT NULL,
+    revtype    smallint,
+    id         BIGINT,
+    address_id BIGINT,
+    number     VARCHAR(100) NOT NULL,
+    is_main    BOOLEAN,
+    is_deleted BOOLEAN,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);
 

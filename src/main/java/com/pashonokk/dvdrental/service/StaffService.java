@@ -4,6 +4,7 @@ import com.pashonokk.dvdrental.dto.StaffDto;
 import com.pashonokk.dvdrental.dto.UserStaffSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
+import com.pashonokk.dvdrental.entity.Phone;
 import com.pashonokk.dvdrental.entity.Staff;
 import com.pashonokk.dvdrental.entity.Store;
 import com.pashonokk.dvdrental.mapper.AddressSavingMapper;
@@ -47,6 +48,11 @@ public class StaffService {
 
     @Transactional
     public Staff constructStaff(UserStaffSavingDto userDto) {
+        Phone phone = Phone.builder()
+                .number(userDto.getAddress().getNumber())
+                .isMain(true)
+                .isDeleted(false)
+                .build();
         Staff staff = new Staff(userDto.getPictureUrl(), OffsetDateTime.now(), false);
         Address address = addressSavingMapper.toEntity(userDto.getAddress());
         address.setLastUpdate(OffsetDateTime.now());
@@ -55,6 +61,7 @@ public class StaffService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, userDto.getStoreId())));
         staff.addStore(store);
         staff.addAddress(address);
+        phone.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(userDto.getAddress().getCityId()).ifPresent(city->city.addAddress(address));
         return staff;
     }
