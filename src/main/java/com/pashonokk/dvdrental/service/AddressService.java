@@ -8,6 +8,7 @@ import com.pashonokk.dvdrental.entity.Phone;
 import com.pashonokk.dvdrental.mapper.AddressMapper;
 import com.pashonokk.dvdrental.mapper.PhoneMapper;
 import com.pashonokk.dvdrental.repository.AddressRepository;
+import com.pashonokk.dvdrental.repository.PhoneRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AddressService {
     private final AddressRepository addressRepository;
+    private final PhoneRepository phoneRepository;
     private final AddressMapper addressMapper;
     private final PhoneMapper phoneMapper;
     private static final String ADDRESS_ERROR_MESSAGE = "Address with id %s doesn't exist";
@@ -53,6 +55,7 @@ public class AddressService {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ADDRESS_ERROR_MESSAGE, id)));
         phone.addAddress(address);
-        return phoneMapper.toDto(phone);
+        Phone savedPhone = phoneRepository.save(phone);
+        return phoneMapper.toDto(savedPhone);
     }
 }

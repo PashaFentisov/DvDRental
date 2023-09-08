@@ -16,6 +16,13 @@ public class PhoneService {
     private final PhoneMapper phoneMapper;
     private static final String ERROR_MESSAGE = "Phone with id %s doesn't exist";
 
+    @Transactional(readOnly = true)
+    public PhoneDto getPhoneById(Long id) {
+        Phone phone = phoneRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
+        return phoneMapper.toDto(phone);
+    }
+
     @Transactional
     public PhoneDto setNewPhoneAsMain(Long addressId, Long newId) {
         Phone phone = phoneRepository.findById(newId)

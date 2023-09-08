@@ -94,7 +94,7 @@ public class PaymentService {
                 .rentalDate(OffsetDateTime.now())
                 .returnDate(OffsetDateTime.now().plusDays(paymentSavingDto.getRentalDays()))
                 .lastUpdate(OffsetDateTime.now())
-                .isDeleted(false)
+                .isClosed(false)
                 .inventory(inventory)
                 .customer(customer)
                 .staff(staff)
@@ -114,7 +114,7 @@ public class PaymentService {
 
         inventory.setIsAvailable(true);
         payment.setIsClosed(true);
-        rental.setIsDeleted(true);
+        rental.setIsClosed(true);
 
         BigDecimal totalAmount = payment.getAmount();
         if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){

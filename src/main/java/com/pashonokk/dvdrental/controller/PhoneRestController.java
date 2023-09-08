@@ -13,7 +13,13 @@ import org.springframework.web.bind.annotation.*;
 public class PhoneRestController {
     private final PhoneService phoneService;
 
-    @PatchMapping("/{addressId}/newMain/{newId}")
+    @GetMapping("/{id}")
+    public ResponseEntity<PhoneDto> getPhoneById(@PathVariable Long id) {
+        PhoneDto phone = phoneService.getPhoneById(id);
+        return ResponseEntity.ok(phone);
+    }
+
+    @PutMapping("/{addressId}/newMain/{newId}")
     public ResponseEntity<PhoneDto> setNewPhoneAsMain(@PathVariable Long addressId, @PathVariable Long newId) {
         PhoneDto newMainPhone = phoneService.setNewPhoneAsMain(addressId, newId);
         return ResponseEntity.ok(newMainPhone);

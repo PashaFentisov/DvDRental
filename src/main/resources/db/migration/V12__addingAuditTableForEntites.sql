@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS rental_aud
     rental_date  timestamp,
     return_date  timestamp,
     last_update  timestamp,
-    is_deleted   boolean,
+    is_closed   boolean,
 
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
