@@ -5,7 +5,7 @@ import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
 import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.endpoint.BaseResponse;
 import com.pashonokk.dvdrental.util.PaymentProperties;
-import com.pashonokk.dvdrental.util.PaymentTestHelper;
+import com.pashonokk.dvdrental.util.TestHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,15 +29,15 @@ class PaymentClosingTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private PaymentTestHelper paymentTestHelper;
+    private TestHelper testHelper;
     @Autowired
     private PaymentProperties paymentProperties;
 
     @Test
     @DisplayName("Close Payment when everything is correct then ok")
     void closePaymentWhenCorrectThenOk() {
-        HttpHeaders staffTokenHeaders = paymentTestHelper.savePayment();
-        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(paymentTestHelper.getSavedCustomerId(), paymentTestHelper.getSavedFilmId());
+        HttpHeaders staffTokenHeaders = testHelper.savePayment();
+        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
         HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
 
         ResponseEntity<ClosedPaymentResponse> closedPaymentResponse = testRestTemplate.exchange(
@@ -48,11 +48,11 @@ class PaymentClosingTest {
         );
 
         assertEquals(HttpStatus.OK, closedPaymentResponse.getStatusCode());
-        assertEquals(paymentTestHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
-        assertEquals(paymentTestHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
-        assertEquals(paymentTestHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
+        assertEquals(testHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
+        assertEquals(testHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
+        assertEquals(testHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
         assertEquals(0, closedPaymentResponse.getBody().getExtraDays());
-        assertEquals(paymentTestHelper.getSavedPayment().getAmount(), closedPaymentResponse.getBody().getTotalAmount());
+        assertEquals(testHelper.getSavedPayment().getAmount(), closedPaymentResponse.getBody().getTotalAmount());
         assertEquals(BigDecimal.ZERO, closedPaymentResponse.getBody().getFineAmount());
         assertNotNull(closedPaymentResponse.getBody().getReturnDate());
         assertNotNull(closedPaymentResponse.getBody().getRentalDate());
@@ -62,7 +62,7 @@ class PaymentClosingTest {
     @Test
     @DisplayName("Close Payment when unauthorized then 403")
     void closePaymentWhenUnauthorizedThenFail() {
-        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(paymentTestHelper.getSavedCustomerId(), paymentTestHelper.getSavedFilmId());
+        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
         HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto);
 
         ResponseEntity<ClosedPaymentResponse> closedPaymentResponse = testRestTemplate.exchange(
@@ -79,10 +79,10 @@ class PaymentClosingTest {
     @Test
     @DisplayName("Close Payment with delay then price includes fine")
     void closePaymentWhenWithDelayThenPriceWithFine() {
-        HttpHeaders staffTokenHeaders = paymentTestHelper.saveExpiredPayment();
-        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(paymentTestHelper.getSavedCustomerId(), paymentTestHelper.getSavedFilmId());
+        HttpHeaders staffTokenHeaders = testHelper.saveExpiredPayment();
+        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
         HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
-        long extraDays = Duration.between(paymentTestHelper.getSavedPayment().getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
+        long extraDays = Duration.between(testHelper.getSavedPayment().getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
 
         ResponseEntity<ClosedPaymentResponse> closedPaymentResponse = testRestTemplate.exchange(
                 "/payments/close",
@@ -91,9 +91,9 @@ class PaymentClosingTest {
                 ClosedPaymentResponse.class
         );
         assertEquals(HttpStatus.OK, closedPaymentResponse.getStatusCode());
-        assertEquals(paymentTestHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
-        assertEquals(paymentTestHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
-        assertEquals(paymentTestHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
+        assertEquals(testHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
+        assertEquals(testHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
+        assertEquals(testHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
         assertEquals(extraDays, closedPaymentResponse.getBody().getExtraDays());
         assertEquals(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)), closedPaymentResponse.getBody().getFineAmount());
         assertNotNull(closedPaymentResponse.getBody().getReturnDate());
@@ -105,8 +105,8 @@ class PaymentClosingTest {
     @Test
     @DisplayName("Close Payment when film is incorrect then return 400")
     void closePaymentWhenFilmIsIncorrectThenFail() {
-        HttpHeaders staffTokenHeaders = paymentTestHelper.savePayment();
-        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(paymentTestHelper.getSavedCustomerId(), 0L);
+        HttpHeaders staffTokenHeaders = testHelper.savePayment();
+        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), 0L);
         HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
 
         ResponseEntity<String> closedPaymentResponse = testRestTemplate.exchange(

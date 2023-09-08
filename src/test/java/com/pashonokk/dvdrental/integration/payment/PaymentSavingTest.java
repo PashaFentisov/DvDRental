@@ -6,7 +6,7 @@ import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.BaseResponse;
 import com.pashonokk.dvdrental.util.PaymentBuilder;
 import com.pashonokk.dvdrental.util.PaymentProperties;
-import com.pashonokk.dvdrental.util.PaymentTestHelper;
+import com.pashonokk.dvdrental.util.TestHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class PaymentSavingTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private PaymentTestHelper paymentTestHelper;
+    private TestHelper testHelper;
     @LocalServerPort
     private int port;
     @Autowired
@@ -38,8 +38,8 @@ class PaymentSavingTest {
     @Test
     @DisplayName("Create Payment when everything is correct then save")
     void createPaymentWhenCorrectThenSave() {
-        HttpHeaders staffTokenHeaders = paymentTestHelper.preparePaymentSaving();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(paymentTestHelper.getSavedFilmId(), paymentTestHelper.getSavedCustomerId());
+        HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
+        PaymentSavingDto payment = PaymentBuilder.constructPayment(testHelper.getSavedFilmId(), testHelper.getSavedCustomerId());
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         ResponseEntity<PaymentDto> savedPaymentResponse = testRestTemplate.exchange(
@@ -64,7 +64,7 @@ class PaymentSavingTest {
     @Test
     @DisplayName("Create Payment when unauthorized then 403")
     void createPaymentWhenUnauthorizedThenFail() {
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(paymentTestHelper.getSavedFilmId(), paymentTestHelper.getSavedCustomerId());
+        PaymentSavingDto payment = PaymentBuilder.constructPayment(testHelper.getSavedFilmId(), testHelper.getSavedCustomerId());
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment);
 
         ResponseEntity<PaymentDto> savedPaymentResponse = testRestTemplate.exchange(
@@ -82,9 +82,9 @@ class PaymentSavingTest {
     @Test
     @DisplayName("Create Payment when customer doesnt exist then return 400")
     void createPaymentWhenCustomerDoesntExistThenFail() {
-        HttpHeaders staffTokenHeaders = paymentTestHelper.preparePaymentSaving();
+        HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
         PaymentSavingDto payment = PaymentBuilder.constructPayment(
-                paymentTestHelper.getSavedFilmId(), paymentTestHelper.getSavedCustomerId() + 1);
+                testHelper.getSavedFilmId(), testHelper.getSavedCustomerId() + 1);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         ResponseEntity<String> savedPaymentResponse = testRestTemplate.exchange(
@@ -96,7 +96,7 @@ class PaymentSavingTest {
 
         BaseResponse failureResponse = objectMapper.readValue(savedPaymentResponse.getBody(), BaseResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST, savedPaymentResponse.getStatusCode());
-        assertEquals(String.format("Customer with id %s doesn't exist", paymentTestHelper.getSavedCustomerId() + 1), failureResponse.getMessage());
+        assertEquals(String.format("Customer with id %s doesn't exist", testHelper.getSavedCustomerId() + 1), failureResponse.getMessage());
     }
 
 
@@ -104,9 +104,9 @@ class PaymentSavingTest {
     @Test
     @DisplayName("Create Payment when inventory doesnt exist then return 400")
     void createPaymentWhenInventoryDoesntExistThenFail() {
-        HttpHeaders staffTokenHeaders = paymentTestHelper.preparePaymentSaving();
+        HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
         PaymentSavingDto payment = PaymentBuilder.constructPayment(0L,
-                paymentTestHelper.getSavedCustomerId());
+                testHelper.getSavedCustomerId());
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         ResponseEntity<String> savedPaymentResponse = testRestTemplate.exchange(
@@ -118,7 +118,7 @@ class PaymentSavingTest {
 
         BaseResponse failureResponse = objectMapper.readValue(savedPaymentResponse.getBody(), BaseResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST, savedPaymentResponse.getStatusCode());
-        assertEquals(String.format("Inventory with film id %s and store id %s doesn't exist", 0, paymentTestHelper.getSavedStoreId()), failureResponse.getMessage());
+        assertEquals(String.format("Inventory with film id %s and store id %s doesn't exist", 0, testHelper.getSavedStoreId()), failureResponse.getMessage());
     }
 
 }

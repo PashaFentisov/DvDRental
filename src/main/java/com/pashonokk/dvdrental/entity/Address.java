@@ -2,14 +2,13 @@ package com.pashonokk.dvdrental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -27,8 +26,6 @@ public class Address {
     @Column(unique = true, nullable = false, updatable = false)
     private int postalCode;
     private OffsetDateTime lastUpdate;
-    @Column(unique = true, nullable = false, updatable = false)
-    private String phone;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
     @JsonIgnore
     private Customer customer;
@@ -41,17 +38,20 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id")
     private City city;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "address")
+    @Setter(AccessLevel.PRIVATE)
+    private Set<Phone> phones = new HashSet<>();
     private Boolean isDeleted;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Address address = (Address) o;
-        return postalCode == address.postalCode && phone.equals(address.phone);
+        return postalCode == address.postalCode;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(postalCode, phone);
+        return Objects.hash(postalCode);
     }
 }

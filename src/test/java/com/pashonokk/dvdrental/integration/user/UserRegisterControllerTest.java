@@ -44,6 +44,8 @@ class UserRegisterControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody().getId());
         assertNotNull(response.getBody().getAddress().getId());
+        assertNotNull(response.getBody().getAddress().getPhones());
+        assertEquals(1, response.getBody().getAddress().getPhones().size());
         assertFalse(response.getBody().getIsDeleted());
         assertNotNull(response.getBody().getLastUpdate());
         assertEquals(URI.create(location), response.getHeaders().getLocation());
@@ -87,6 +89,8 @@ class UserRegisterControllerTest {
         assertEquals(HttpStatus.CREATED, createdStaffResponse.getStatusCode());
         assertNotNull(createdStaffResponse.getBody().getId());
         assertNotNull(createdStaffResponse.getBody().getAddress().getId());
+        assertNotNull(createdStaffResponse.getBody().getAddress().getPhones());
+        assertEquals(1, createdStaffResponse.getBody().getAddress().getPhones().size());
         assertFalse(createdStaffResponse.getBody().getIsDeleted());
         assertNotNull(createdStaffResponse.getBody().getLastUpdate());
         assertEquals(URI.create(location), createdStaffResponse.getHeaders().getLocation());

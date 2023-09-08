@@ -13,7 +13,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 @Getter
-public class PaymentTestHelper {
+public class TestHelper {
     private final TestRestTemplate testRestTemplate;
     private Long savedFilmId;
     private Long savedStoreId;
@@ -23,7 +23,7 @@ public class PaymentTestHelper {
     public HttpHeaders preparePaymentSaving() {
         HttpHeaders headersWithToken = constructAdminHttpHeaders();
         StoreSavingDto store = StoreBuilder.constructStore();
-        savedStoreId = saveStore(store, headersWithToken);
+        savedStoreId = saveStore(store, headersWithToken).getId();
 
         LanguageDto language = FilmBuilder.constructLanguage();
         Long savedLanguageId = saveLanguage(language, headersWithToken);
@@ -62,40 +62,40 @@ public class PaymentTestHelper {
         return staffTokenHeaders;
     }
 
-    private HttpHeaders constructAdminHttpHeaders() {
+    public HttpHeaders constructAdminHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + authorizeAsAdminAndGetToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
 
-    private HttpHeaders constructStaffHttpHeaders(UserStaffSavingDto staff) {
+    public HttpHeaders constructStaffHttpHeaders(UserStaffSavingDto staff) {
         HttpHeaders staffTokenHeaders = new HttpHeaders();
         staffTokenHeaders.set("Authorization", "Bearer " + authorizeAsStaffAndGetToken(staff.getEmail(), staff.getPassword()));
         staffTokenHeaders.setContentType(MediaType.APPLICATION_JSON);
         return staffTokenHeaders;
     }
 
-    private String authorizeAsAdminAndGetToken() {
+    public String authorizeAsAdminAndGetToken() {
         UserAuthorizationDto userAuthorizationDto = new UserAuthorizationDto("pasha.ua@gmail.com", "pashafentisov");
         ResponseEntity<JwtAuthorizationResponse> authorizationResponse = testRestTemplate
                 .postForEntity("/authorization", userAuthorizationDto, JwtAuthorizationResponse.class);
         return Objects.requireNonNull(authorizationResponse.getBody()).getAuthorizationToken().getToken();
     }
 
-    private String authorizeAsStaffAndGetToken(String email, String password) {
+    public String authorizeAsStaffAndGetToken(String email, String password) {
         UserAuthorizationDto userAuthorizationDto = new UserAuthorizationDto(email, password);
         ResponseEntity<JwtAuthorizationResponse> authorizationResponse = testRestTemplate
                 .postForEntity("/authorization", userAuthorizationDto, JwtAuthorizationResponse.class);
         return Objects.requireNonNull(authorizationResponse.getBody()).getAuthorizationToken().getToken();
     }
 
-    private Long saveCustomer(UserCustomerSavingDto customer) {
+    public Long saveCustomer(UserCustomerSavingDto customer) {
         ResponseEntity<CustomerDto> response = testRestTemplate.postForEntity("/users/register/customer", customer, CustomerDto.class);
         return Objects.requireNonNull(response.getBody()).getId();
     }
 
-    private void saveStaff(UserStaffSavingDto staff, HttpHeaders headers) {
+    public void saveStaff(UserStaffSavingDto staff, HttpHeaders headers) {
         HttpEntity<UserStaffSavingDto> requestEntity = new HttpEntity<>(staff, headers);
         testRestTemplate.exchange(
                 "/users/register/staff",
@@ -104,7 +104,7 @@ public class PaymentTestHelper {
                 StaffDto.class);
     }
 
-    private Long saveFilm(FilmSavingDto film, HttpHeaders headers) {
+    public Long saveFilm(FilmSavingDto film, HttpHeaders headers) {
         HttpEntity<FilmSavingDto> requestEntity = new HttpEntity<>(film, headers);
         ResponseEntity<FilmDto> createdFilmResponse = testRestTemplate.exchange(
                 "/films",
@@ -115,7 +115,7 @@ public class PaymentTestHelper {
         return Objects.requireNonNull(createdFilmResponse.getBody()).getId();
     }
 
-    private Long saveLanguage(LanguageDto language, HttpHeaders headers) {
+    public Long saveLanguage(LanguageDto language, HttpHeaders headers) {
         HttpEntity<LanguageDto> requestEntity = new HttpEntity<>(language, headers);
         ResponseEntity<LanguageDto> createdLanguageResponse = testRestTemplate.exchange(
                 "/languages",
@@ -126,7 +126,7 @@ public class PaymentTestHelper {
         return Objects.requireNonNull(createdLanguageResponse.getBody()).getId();
     }
 
-    private Long saveStore(StoreSavingDto store, HttpHeaders headers) {
+    public StoreDto saveStore(StoreSavingDto store, HttpHeaders headers) {
         HttpEntity<StoreSavingDto> requestEntity = new HttpEntity<>(store, headers);
         ResponseEntity<StoreDto> createdStoreResponse = testRestTemplate.exchange(
                 "/stores",
@@ -134,6 +134,6 @@ public class PaymentTestHelper {
                 requestEntity,
                 StoreDto.class
         );
-        return Objects.requireNonNull(createdStoreResponse.getBody()).getId();
+        return createdStoreResponse.getBody();
     }
 }

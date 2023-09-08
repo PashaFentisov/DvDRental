@@ -45,7 +45,7 @@ public class UserBuilder {
     public static AddressSavingDto constructAddress() {
         return AddressSavingDto
                 .builder()
-                .phone(FAKER.phoneNumber().cellPhone())
+                .number(FAKER.phoneNumber().cellPhone())
                 .district(FAKER.address().state())
                 .street(FAKER.address().streetAddress())
                 .houseNumber(Integer.parseInt(FAKER.address().buildingNumber()))

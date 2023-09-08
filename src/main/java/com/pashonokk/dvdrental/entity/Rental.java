@@ -36,6 +36,6 @@ public class Rental {
     @OneToOne(mappedBy = "rental", fetch = FetchType.LAZY)
     private Payment payment;
 
-    private Boolean isDeleted;
+    private Boolean isClosed;
 
 }
