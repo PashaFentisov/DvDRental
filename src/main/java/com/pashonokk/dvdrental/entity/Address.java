@@ -2,10 +2,7 @@ package com.pashonokk.dvdrental.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
@@ -42,6 +39,7 @@ public class Address {
     @JoinColumn(name = "city_id")
     private City city;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "address")
+    @Setter(AccessLevel.PRIVATE)
     private Set<Phone> phones = new HashSet<>();
     private Boolean isDeleted;
     @Override
