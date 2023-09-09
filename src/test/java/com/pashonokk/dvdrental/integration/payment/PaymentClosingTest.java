@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
 import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.endpoint.BaseResponse;
+import com.pashonokk.dvdrental.util.HolidayBuilder;
 import com.pashonokk.dvdrental.util.PaymentProperties;
 import com.pashonokk.dvdrental.util.TestHelper;
 import lombok.SneakyThrows;
@@ -82,7 +83,8 @@ class PaymentClosingTest {
         HttpHeaders staffTokenHeaders = testHelper.saveExpiredPayment();
         PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
         HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
-        long extraDays = Duration.between(testHelper.getSavedPayment().getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
+        testHelper.saveHolidays(HolidayBuilder.constructHoliday());
+        long extraDays = Duration.between(testHelper.getSavedPayment().getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays()-1;
 
         ResponseEntity<ClosedPaymentResponse> closedPaymentResponse = testRestTemplate.exchange(
                 "/payments/close",

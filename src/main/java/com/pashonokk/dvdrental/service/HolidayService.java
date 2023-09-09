@@ -3,7 +3,7 @@ package com.pashonokk.dvdrental.service;
 import com.pashonokk.dvdrental.dto.HolidayDto;
 import com.pashonokk.dvdrental.dto.HolidaySavingDto;
 import com.pashonokk.dvdrental.entity.Holiday;
-import com.pashonokk.dvdrental.enumeration.Month;
+import com.pashonokk.dvdrental.dto.Month;
 import com.pashonokk.dvdrental.exception.GenericDisplayableException;
 import com.pashonokk.dvdrental.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
