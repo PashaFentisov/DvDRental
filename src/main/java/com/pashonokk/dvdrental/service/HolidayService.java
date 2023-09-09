@@ -31,7 +31,7 @@ public class HolidayService {
                 try{
                    holidayDate = LocalDate.of(year, month.getNumber(), month.getDays().get(j));
                 }catch (Exception e){
-                    throw new GenericDisplayableException(HttpStatus.BAD_REQUEST, "You entered bad day value"); //todo повернутись і чекнути
+                    throw new GenericDisplayableException(HttpStatus.BAD_REQUEST, "You entered bad day value");
                 }
                 holiday = new Holiday(OffsetDateTime.of(holidayDate, LocalTime.MIDNIGHT, offset));
                 holidays.add(holiday);
