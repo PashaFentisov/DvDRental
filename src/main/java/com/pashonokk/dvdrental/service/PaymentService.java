@@ -120,7 +120,6 @@ public class PaymentService {
         if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){
             totalAmount = countTotalAmountWithFine(payment);
         }
-
         return buildClosedPaymentResponse(payment, totalAmount, inventory, rental);
     }
 

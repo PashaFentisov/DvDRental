@@ -34,7 +34,7 @@ CREATE TABLE address_aud
     house_number BIGINT,
     postal_code  INT,
     street       VARCHAR(300),
-    phone       VARCHAR(300),
+    phone        VARCHAR(300),
     district     VARCHAR(300),
     last_update  timestamp,
     is_deleted   boolean,
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS rental_aud
     rental_date  timestamp,
     return_date  timestamp,
     last_update  timestamp,
-    is_closed   boolean,
+    is_closed    boolean,
 
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
@@ -293,6 +293,16 @@ CREATE TABLE IF NOT EXISTS phone_aud
     number     VARCHAR(100) NOT NULL,
     is_main    BOOLEAN,
     is_deleted BOOLEAN,
+    FOREIGN KEY (rev) REFERENCES revinfo (rev),
+    PRIMARY KEY (id, rev)
+);
+
+CREATE TABLE IF NOT EXISTS holiday_aud
+(
+    rev     integer NOT NULL,
+    revtype smallint,
+    id      BIGINT,
+    date    timestamp,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );
