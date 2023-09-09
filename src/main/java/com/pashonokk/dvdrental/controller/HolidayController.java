@@ -33,11 +33,4 @@ public class HolidayController {
         HolidayDto savedHolidays = holidayService.saveHolidays(holidaySavingDto);
         return ResponseEntity.status(201).body(savedHolidays);
     }
-
-//    @GetMapping("/byYear/{year}")
-//    public ResponseEntity<ActorDto> getActorById(@PathVariable int year) { //todo realize later
-//        ActorDto actorDto = actorService.getActorById(id);
-//        return ResponseEntity.ok(actorDto);
-//    }
-
 }
