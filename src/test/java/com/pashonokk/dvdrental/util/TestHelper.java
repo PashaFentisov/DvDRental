@@ -4,9 +4,11 @@ import com.pashonokk.dvdrental.dto.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,21 +20,16 @@ public class TestHelper {
     private Long savedFilmId;
     private Long savedStoreId;
     private Long savedCustomerId;
-    private PaymentDto savedPayment;
+    private List<PaymentDto> savedPayments;
     public static final int RENTAL_DAYS_FOR_EXPIRED_PAYMENT = -10;
+    public static final int RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT = 10;
 
     public HttpHeaders preparePaymentSaving() {
         HttpHeaders headersWithToken = constructAdminHttpHeaders();
         StoreSavingDto store = StoreBuilder.constructStore();
         savedStoreId = saveStore(store, headersWithToken).getId();
 
-        LanguageDto language = FilmBuilder.constructLanguage();
-        Long savedLanguageId = saveLanguage(language, headersWithToken);
-
-        FilmSavingDto film = FilmBuilder.constructFilm();
-        film.setLanguagesIds(Set.of(savedLanguageId));
-        film.setStoreId(savedStoreId);
-        savedFilmId = saveFilm(film, headersWithToken);
+        saveNewLanguageAndFilm(headersWithToken);
 
         UserCustomerSavingDto customer = UserBuilder.constructUserCustomer();
         savedCustomerId = saveCustomer(customer);
@@ -44,22 +41,32 @@ public class TestHelper {
         return constructStaffHttpHeaders(staff);
     }
 
+    public void saveNewLanguageAndFilm(HttpHeaders headersWithToken) {
+        LanguageDto language = FilmBuilder.constructLanguage();
+        Long savedLanguageId = saveLanguage(language, headersWithToken);
+
+        FilmSavingDto film = FilmBuilder.constructFilm();
+        film.setLanguagesIds(Set.of(savedLanguageId));
+        film.setStoreId(savedStoreId);
+        savedFilmId = saveFilm(film, headersWithToken);
+    }
+
     public HttpHeaders savePayment() {
         HttpHeaders staffTokenHeaders = preparePaymentSaving();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
-        HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
-
-        savedPayment = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, PaymentDto.class).getBody();
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId, RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
+        HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
+        ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>(){};
+        savedPayments = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, responseType).getBody();
         return staffTokenHeaders;
     }
 
     public HttpHeaders saveExpiredPayment() {
         HttpHeaders staffTokenHeaders = preparePaymentSaving();
-        PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
-        payment.setRentalDays(RENTAL_DAYS_FOR_EXPIRED_PAYMENT);
-        HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId, RENTAL_DAYS_FOR_EXPIRED_PAYMENT);
+        HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
-        savedPayment = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, PaymentDto.class).getBody();
+        ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>(){};
+        savedPayments = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, responseType).getBody();
         return staffTokenHeaders;
     }
 
