@@ -19,6 +19,7 @@ public class TestHelper {
     private Long savedStoreId;
     private Long savedCustomerId;
     private PaymentDto savedPayment;
+    public static final int RENTAL_DAYS_FOR_EXPIRED_PAYMENT = -10;
 
     public HttpHeaders preparePaymentSaving() {
         HttpHeaders headersWithToken = constructAdminHttpHeaders();
@@ -55,11 +56,20 @@ public class TestHelper {
     public HttpHeaders saveExpiredPayment() {
         HttpHeaders staffTokenHeaders = preparePaymentSaving();
         PaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId);
-        payment.setRentalDays(-10);
+        payment.setRentalDays(RENTAL_DAYS_FOR_EXPIRED_PAYMENT);
         HttpEntity<PaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
 
         savedPayment = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, PaymentDto.class).getBody();
         return staffTokenHeaders;
+    }
+
+    public HolidayDto saveHolidays(HolidaySavingDto holiday) {
+        HttpEntity<HolidaySavingDto> requestEntity = new HttpEntity<>(holiday, constructAdminHttpHeaders());
+        return testRestTemplate.exchange(
+                "/holidays",
+                HttpMethod.POST,
+                requestEntity,
+                HolidayDto.class).getBody();
     }
 
     public HttpHeaders constructAdminHttpHeaders() {

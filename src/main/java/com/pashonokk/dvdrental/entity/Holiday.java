@@ -1,9 +1,13 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
@@ -12,35 +16,27 @@ import java.util.Objects;
 @Setter
 @ToString
 @Audited
-@AllArgsConstructor
-@Builder
-public class Phone {
+public class Holiday {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false, updatable = false)
-    private String number;
-    private boolean isMain = true;
-    private boolean isDeleted;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private OffsetDateTime date;
 
-    public void addAddress(Address address) {
-        this.address = address;
-        address.getPhones().add(this);
+    public Holiday(OffsetDateTime date) {
+        this.date = date;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Phone phone = (Phone) o;
-        return number.equals(phone.number);
+        Holiday that = (Holiday) o;
+        return date.equals(that.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(number);
+        return Objects.hash(date);
     }
 }

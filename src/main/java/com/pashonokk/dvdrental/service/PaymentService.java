@@ -7,10 +7,7 @@ import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.*;
 import com.pashonokk.dvdrental.mapper.*;
-import com.pashonokk.dvdrental.repository.CustomerRepository;
-import com.pashonokk.dvdrental.repository.InventoryRepository;
-import com.pashonokk.dvdrental.repository.PaymentRepository;
-import com.pashonokk.dvdrental.repository.UserRepository;
+import com.pashonokk.dvdrental.repository.*;
 import com.pashonokk.dvdrental.util.PaymentProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +25,7 @@ import java.util.Objects;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final InventoryRepository inventoryRepository;
+    private final HolidayRepository holidayRepository;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final PaymentMapper paymentMapper;
@@ -65,7 +61,10 @@ public class PaymentService {
 
         Rental rental = buildRental(paymentSavingDto, staff, inventory, customer);
         BigDecimal amount = paymentProperties.getPrice().multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
-        Payment payment = new Payment(amount, OffsetDateTime.now().plusDays(paymentSavingDto.getRentalDays()), false);
+
+        ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());
+        LocalDate holidayDate = LocalDate.now().plusDays(paymentSavingDto.getRentalDays());
+        Payment payment = new Payment(amount, OffsetDateTime.of(holidayDate, LocalTime.MIDNIGHT, offset), false);
 
         payment.addCustomer(customer);
         payment.addStaff(staff);
@@ -81,8 +80,8 @@ public class PaymentService {
                 .findByFilmAndStore(paymentSavingDto.getFilmId(), staff.getStore().getId());
         if (inventories.isEmpty()) {
             throw new EntityNotFoundException(String.format(INVENTORY_ERROR_MESSAGE, paymentSavingDto.getFilmId(),
-                                                                                     staff.getStore().getId()));
-        }else{
+                    staff.getStore().getId()));
+        } else {
             inventory = inventories.get(0);
             inventory.setIsAvailable(false);
         }
@@ -116,18 +115,22 @@ public class PaymentService {
         payment.setIsClosed(true);
         rental.setIsClosed(true);
 
-        BigDecimal totalAmount = payment.getAmount();
-        if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){
-            totalAmount = countTotalAmountWithFine(payment);
-        }
+        ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());
+        OffsetDateTime now = OffsetDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT, offset);
 
-        return buildClosedPaymentResponse(payment, totalAmount, inventory, rental);
+        BigDecimal totalAmount = payment.getAmount();
+        if (payment.getPaymentDate().isBefore(now)) {
+            totalAmount = countTotalAmountWithFine(payment, now);
+        }
+        return buildClosedPaymentResponse(payment, totalAmount, inventory, rental, now);
     }
 
-    private ClosedPaymentResponse buildClosedPaymentResponse(Payment payment, BigDecimal totalAmount, Inventory inventory, Rental rental) {
+    private ClosedPaymentResponse buildClosedPaymentResponse(Payment payment, BigDecimal totalAmount,
+                                                             Inventory inventory, Rental rental,
+                                                             OffsetDateTime now) {
         long extraDays = 0;
-        if(payment.getPaymentDate().isBefore(OffsetDateTime.now())){
-            extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
+        if (payment.getPaymentDate().isBefore(now)) {
+             extraDays = countExtraDays(payment, now);
         }
         return ClosedPaymentResponse.builder()
                 .customer(customerMapper.toDto(payment.getCustomer()))
@@ -141,9 +144,19 @@ public class PaymentService {
                 .build();
     }
 
-    private BigDecimal countTotalAmountWithFine(Payment payment) {
-        long extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays();
+    private BigDecimal countTotalAmountWithFine(Payment payment, OffsetDateTime now) {
+        long extraDays = countExtraDays(payment, now);
+        if(extraDays==0){
+            return payment.getAmount();
+        }
         return payment.getAmount().add(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)));
+    }
+
+    private long countExtraDays(Payment payment, OffsetDateTime now){
+        long extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(),
+                LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT)).toDays();
+        int holidays = holidayRepository.countHolidayBetweenDates(payment.getPaymentDate(), now);
+        return (extraDays < holidays) ? 0 : extraDays - holidays;
     }
 
     @Transactional
