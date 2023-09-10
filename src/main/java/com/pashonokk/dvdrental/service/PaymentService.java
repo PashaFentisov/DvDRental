@@ -1,22 +1,22 @@
 package com.pashonokk.dvdrental.service;
 
-import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
-import com.pashonokk.dvdrental.dto.PaymentClosingDto;
-import com.pashonokk.dvdrental.dto.PaymentDto;
-import com.pashonokk.dvdrental.dto.PaymentSavingDto;
+import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.*;
+import com.pashonokk.dvdrental.exception.GenericDisplayableException;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.*;
 import com.pashonokk.dvdrental.util.PaymentProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,7 +52,28 @@ public class PaymentService {
     }
 
     @Transactional
+    public List<PaymentDto> createPayments(MultiplePaymentSavingDto multiplePaymentSavingDto, String email) {
+        List<PaymentDto> createdPayments = new ArrayList<>();
+        PaymentSavingDto paymentSavingDto;
+        for (RentalRequestDto rentalRequestDto: multiplePaymentSavingDto.getRentals()) {
+            paymentSavingDto = PaymentSavingDto.builder()
+                    .filmId(rentalRequestDto.getFilmId())
+                    .rentalDays(rentalRequestDto.getRentalDays())
+                    .customerId(multiplePaymentSavingDto.getCustomerId())
+                    .build();
+            PaymentDto payment = createPayment(paymentSavingDto, email);
+            createdPayments.add(payment);
+        }
+        return createdPayments;
+    }
+
+
+    @Transactional
     public PaymentDto createPayment(PaymentSavingDto paymentSavingDto, String email) {
+        List<Payment> openPaymentsWithSameFilm = paymentRepository.findOpenPaymentsWithSameFilm(paymentSavingDto.getCustomerId(), paymentSavingDto.getFilmId());
+        if(!openPaymentsWithSameFilm.isEmpty()){
+            throw new GenericDisplayableException(HttpStatus.BAD_REQUEST, "You can`t take two same films, return the old one");
+        }
         Staff staff = userRepository.findUserByEmail(email).orElseThrow(EntityNotFoundException::new).getStaff();
         Customer customer = customerRepository.findCustomerById(paymentSavingDto.getCustomerId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(CUSTOMER_ERROR_MESSAGE, paymentSavingDto.getCustomerId())));
