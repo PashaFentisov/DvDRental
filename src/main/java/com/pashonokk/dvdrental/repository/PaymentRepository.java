@@ -12,4 +12,7 @@ import java.util.List;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("Select p from Payment p where p.isClosed=false and p.customer.id=:id")
     List<Payment> findOpenPayments(@Param("id") Long id);
+
+    @Query("Select p from Payment p where p.isClosed=false and p.customer.id=:customerId and p.rental.inventory.film.id=:filmId")
+    List<Payment> findOpenPaymentsWithSameFilm(@Param("customerId") Long customerId, @Param("filmId") Long filmId);
 }

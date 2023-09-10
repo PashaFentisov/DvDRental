@@ -53,7 +53,7 @@ class PaymentClosingTest {
         assertEquals(testHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
         assertEquals(testHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
         assertEquals(0, closedPaymentResponse.getBody().getExtraDays());
-        assertEquals(testHelper.getSavedPayment().getAmount(), closedPaymentResponse.getBody().getTotalAmount());
+        assertEquals(testHelper.getSavedPayments().get(0).getAmount(), closedPaymentResponse.getBody().getTotalAmount());
         assertEquals(BigDecimal.ZERO, closedPaymentResponse.getBody().getFineAmount());
         assertNotNull(closedPaymentResponse.getBody().getReturnDate());
         assertNotNull(closedPaymentResponse.getBody().getRentalDate());
@@ -84,7 +84,7 @@ class PaymentClosingTest {
         PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
         HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
         testHelper.saveHolidays(HolidayBuilder.constructHoliday());
-        long extraDays = Duration.between(testHelper.getSavedPayment().getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays()-1;
+        long extraDays = Duration.between(testHelper.getSavedPayments().get(0).getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays()-1;
 
         ResponseEntity<ClosedPaymentResponse> closedPaymentResponse = testRestTemplate.exchange(
                 "/payments/close",

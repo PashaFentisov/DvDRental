@@ -1,9 +1,9 @@
 package com.pashonokk.dvdrental.controller;
 
 import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
+import com.pashonokk.dvdrental.dto.MultiplePaymentSavingDto;
 import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.dto.PaymentDto;
-import com.pashonokk.dvdrental.dto.PaymentSavingDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.exception.BigSizeException;
 import com.pashonokk.dvdrental.exception.EntityValidationException;
@@ -20,9 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,19 +50,15 @@ public class PaymentRestController {
 
     @PostMapping
     @PreAuthorize("hasAuthority(T(com.pashonokk.dvdrental.enumeration.Permissions).PAYMENT_CREATE_ACCESS)")
-    public ResponseEntity<PaymentDto> createPayment(@RequestBody @Valid PaymentSavingDto paymentSavingDto, Errors errors,
+    public ResponseEntity<List<PaymentDto>> createPayment(@RequestBody @Valid MultiplePaymentSavingDto multiplePaymentSavingDto,
+                                                    Errors errors,
                                                     @AuthenticationPrincipal User user) {
         if(errors.hasErrors()){
             errors.getFieldErrors().forEach(er->logger.error(er.getDefaultMessage()));
             throw new EntityValidationException("Validation failed", errors);
         }
-        PaymentDto savedPayment = paymentService.createPayment(paymentSavingDto, user.getUsername());
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedPayment.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(savedPayment);
+        List<PaymentDto> savedPayments = paymentService.createPayments(multiplePaymentSavingDto, user.getUsername());
+        return ResponseEntity.status(201).body(savedPayments);
     }
 
     @PostMapping("/close")
