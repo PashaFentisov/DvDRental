@@ -58,6 +58,7 @@ public class CustomerService {
         address.setIsDeleted(false);
         customer.addAddress(address);
         phone.addAddress(address);
+        customerRepository.saveAndFlush(customer);
         cityRepository.findByIdWithAddressesAndCountry(addressSavingDto.getCityId()).ifPresent(city->city.addAddress(address));
         return customer;
     }
