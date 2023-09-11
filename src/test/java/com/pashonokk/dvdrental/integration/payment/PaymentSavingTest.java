@@ -1,7 +1,9 @@
 package com.pashonokk.dvdrental.integration.payment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
 import com.pashonokk.dvdrental.dto.MultiplePaymentSavingDto;
+import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.dto.PaymentDto;
 import com.pashonokk.dvdrental.endpoint.BaseResponse;
 import com.pashonokk.dvdrental.util.PaymentBuilder;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +51,7 @@ class PaymentSavingTest {
                 responseType
         );
         List<PaymentDto> savedPayments = savedPaymentResponse.getBody();
+        closeOpenPayment(staffTokenHeaders, testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
 
         assertEquals(HttpStatus.CREATED, savedPaymentResponse.getStatusCode());
         assertEquals(1, Objects.requireNonNull(savedPaymentResponse.getBody()).size());
@@ -68,7 +72,8 @@ class PaymentSavingTest {
         MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(filmIds, testHelper.getSavedCustomerId(),
                 TestHelper.RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
         HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
-        ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>() {
+        };
         ResponseEntity<List<PaymentDto>> savedPaymentResponse = testRestTemplate.exchange(
                 "/payments",
                 HttpMethod.POST,
@@ -76,13 +81,45 @@ class PaymentSavingTest {
                 responseType
         );
         List<PaymentDto> savedPayments = savedPaymentResponse.getBody();
-
+        for (Long filmId : filmIds) {
+            closeOpenPayment(staffTokenHeaders, testHelper.getSavedCustomerId(), filmId);
+        }
         assertEquals(HttpStatus.CREATED, savedPaymentResponse.getStatusCode());
         assertEquals(2, Objects.requireNonNull(savedPaymentResponse.getBody()).size());
         assertFalse(Objects.requireNonNull(savedPayments).get(0).getIsClosed());
         assertFalse(Objects.requireNonNull(savedPayments).get(1).getIsClosed());
         assertNotNull(savedPayments.get(0).getPaymentDate());
         assertNotNull(savedPayments.get(1).getPaymentDate());
+    }
+
+    @Test
+    @DisplayName("Create four Payments when everything is correct then four is free")
+    void createFourPaymentWhenCorrectThenFourIsFree() {
+        List<Long> filmIds = new ArrayList<>();
+        HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
+        filmIds.add(testHelper.getSavedFilmId());
+        for (int i = 0; i < 3; i++) {
+            testHelper.saveNewLanguageAndFilm(staffTokenHeaders);
+            filmIds.add(testHelper.getSavedFilmId());
+        }
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(filmIds, testHelper.getSavedCustomerId(),
+                TestHelper.RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
+        HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
+        ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>() {
+        };
+        ResponseEntity<List<PaymentDto>> savedPaymentResponse = testRestTemplate.exchange(
+                "/payments",
+                HttpMethod.POST,
+                requestEntity,
+                responseType
+        );
+        for (Long filmId : filmIds) {
+            closeOpenPayment(staffTokenHeaders, testHelper.getSavedCustomerId(), filmId);
+        }
+
+        assertEquals(HttpStatus.CREATED, savedPaymentResponse.getStatusCode());
+        assertEquals(4, Objects.requireNonNull(savedPaymentResponse.getBody()).size());
+        assertEquals(BigDecimal.ZERO, savedPaymentResponse.getBody().get(3).getAmount());
     }
 
 
@@ -148,6 +185,18 @@ class PaymentSavingTest {
         BaseResponse failureResponse = objectMapper.readValue(savedPaymentResponse.getBody(), BaseResponse.class);
         assertEquals(HttpStatus.BAD_REQUEST, savedPaymentResponse.getStatusCode());
         assertEquals(String.format("Inventory with film id %s and store id %s doesn't exist", 0, testHelper.getSavedStoreId()), failureResponse.getMessage());
+    }
+
+    private void closeOpenPayment(HttpHeaders staffTokenHeaders, Long customerId, Long filmId) {
+        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(customerId, filmId);
+        HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
+
+        testRestTemplate.exchange(
+                "/payments/close",
+                HttpMethod.POST,
+                requestEntity,
+                ClosedPaymentResponse.class
+        );
     }
 
 }

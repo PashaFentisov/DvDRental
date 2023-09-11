@@ -15,4 +15,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("Select p from Payment p where p.isClosed=false and p.customer.id=:customerId and p.rental.inventory.film.id=:filmId")
     List<Payment> findOpenPaymentsWithSameFilm(@Param("customerId") Long customerId, @Param("filmId") Long filmId);
+    @Query("Select count(p) from Payment p where p.isClosed=false and p.customer.id=:customerId")
+    Long countOpenPaymentsByCustomerId(@Param("customerId") Long customerId);
 }

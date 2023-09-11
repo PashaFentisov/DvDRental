@@ -55,13 +55,19 @@ public class PaymentService {
     public List<PaymentDto> createPayments(MultiplePaymentSavingDto multiplePaymentSavingDto, String email) {
         List<PaymentDto> createdPayments = new ArrayList<>();
         PaymentSavingDto paymentSavingDto;
-        for (RentalRequestDto rentalRequestDto: multiplePaymentSavingDto.getRentals()) {
+        int paymentCount = 0;
+        boolean isFilmFree = false;
+        for (RentalRequestDto rentalRequestDto : multiplePaymentSavingDto.getRentals()) {
+            paymentCount++;
             paymentSavingDto = PaymentSavingDto.builder()
                     .filmId(rentalRequestDto.getFilmId())
                     .rentalDays(rentalRequestDto.getRentalDays())
                     .customerId(multiplePaymentSavingDto.getCustomerId())
                     .build();
-            PaymentDto payment = createPayment(paymentSavingDto, email);
+            if (paymentCount == 4) {
+                isFilmFree = true;
+            }
+            PaymentDto payment = createPayment(paymentSavingDto, email, isFilmFree);
             createdPayments.add(payment);
         }
         return createdPayments;
@@ -69,9 +75,9 @@ public class PaymentService {
 
 
     @Transactional
-    public PaymentDto createPayment(PaymentSavingDto paymentSavingDto, String email) {
+    public PaymentDto createPayment(PaymentSavingDto paymentSavingDto, String email, boolean isFilmFree) {
         List<Payment> openPaymentsWithSameFilm = paymentRepository.findOpenPaymentsWithSameFilm(paymentSavingDto.getCustomerId(), paymentSavingDto.getFilmId());
-        if(!openPaymentsWithSameFilm.isEmpty()){
+        if (!openPaymentsWithSameFilm.isEmpty()) {
             throw new GenericDisplayableException(HttpStatus.BAD_REQUEST, "You can`t take two same films, return the old one");
         }
         Staff staff = userRepository.findUserByEmail(email).orElseThrow(EntityNotFoundException::new).getStaff();
@@ -81,7 +87,7 @@ public class PaymentService {
         Inventory inventory = getInventory(paymentSavingDto, staff);
 
         Rental rental = buildRental(paymentSavingDto, staff, inventory, customer);
-        BigDecimal amount = paymentProperties.getPrice().multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
+        BigDecimal amount = calculatePaymentAmount(paymentSavingDto, isFilmFree);
 
         ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());
         LocalDate holidayDate = LocalDate.now().plusDays(paymentSavingDto.getRentalDays());
@@ -93,6 +99,22 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
         return paymentMapper.toDto(savedPayment);
+    }
+
+    private BigDecimal calculatePaymentAmount(PaymentSavingDto paymentSavingDto, boolean isFilmFree) {
+        if (isFilmFree) {
+            return BigDecimal.ZERO;
+        }
+        Long customersOpenPayments = paymentRepository.countOpenPaymentsByCustomerId(paymentSavingDto.getCustomerId());
+        BigDecimal amountWithoutDiscount = paymentProperties.getPrice().multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
+        if (customersOpenPayments >= 10 && customersOpenPayments < 20) {
+            amountWithoutDiscount = amountWithoutDiscount.subtract(amountWithoutDiscount.multiply(BigDecimal.valueOf(0.05)));
+        } else if (customersOpenPayments >= 20 && customersOpenPayments < 30) {
+            amountWithoutDiscount = amountWithoutDiscount.subtract(amountWithoutDiscount.multiply(BigDecimal.valueOf(0.10)));
+        } else if (customersOpenPayments >= 30) {
+            amountWithoutDiscount = amountWithoutDiscount.subtract(amountWithoutDiscount.multiply(BigDecimal.valueOf(0.15)));
+        }
+        return amountWithoutDiscount;
     }
 
     private Inventory getInventory(PaymentSavingDto paymentSavingDto, Staff staff) {
@@ -151,7 +173,7 @@ public class PaymentService {
                                                              OffsetDateTime now) {
         long extraDays = 0;
         if (payment.getPaymentDate().isBefore(now)) {
-             extraDays = countExtraDays(payment, now);
+            extraDays = countExtraDays(payment, now);
         }
         return ClosedPaymentResponse.builder()
                 .customer(customerMapper.toDto(payment.getCustomer()))
@@ -167,13 +189,13 @@ public class PaymentService {
 
     private BigDecimal countTotalAmountWithFine(Payment payment, OffsetDateTime now) {
         long extraDays = countExtraDays(payment, now);
-        if(extraDays==0){
+        if (extraDays == 0) {
             return payment.getAmount();
         }
         return payment.getAmount().add(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)));
     }
 
-    private long countExtraDays(Payment payment, OffsetDateTime now){
+    private long countExtraDays(Payment payment, OffsetDateTime now) {
         long extraDays = Duration.between(payment.getPaymentDate().toLocalDateTime(),
                 LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT)).toDays();
         int holidays = holidayRepository.countHolidayBetweenDates(payment.getPaymentDate(), now);
