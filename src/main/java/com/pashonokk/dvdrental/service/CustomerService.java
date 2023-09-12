@@ -1,6 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
+import com.pashonokk.dvdrental.dto.CustomerBalanceDto;
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
@@ -71,5 +72,17 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
         customer.setIsDeleted(true);
         customer.getAddress().setIsDeleted(true);
+    }
+
+    @Transactional
+    public CustomerDto topUpCustomerBalance(CustomerBalanceDto customerBalanceDto) {
+        Customer customer = customerRepository.findById(customerBalanceDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerBalanceDto.getId())));
+        if (customer.getBalance() == null) {
+            customer.setBalance(customerBalanceDto.getBalance());
+        } else {
+            customer.setBalance(customer.getBalance().add(customerBalanceDto.getBalance()));
+        }
+        return customerMapper.toDto(customer);
     }
 }
