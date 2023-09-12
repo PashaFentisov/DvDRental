@@ -23,7 +23,6 @@ public class Address {
     private int houseNumber;
     private String street;
     private String district;
-    @Column(unique = true, nullable = false, updatable = false)
     private int postalCode;
     private OffsetDateTime lastUpdate;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "address")
@@ -42,16 +41,17 @@ public class Address {
     @Setter(AccessLevel.PRIVATE)
     private Set<Phone> phones = new HashSet<>();
     private Boolean isDeleted;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Address address = (Address) o;
-        return postalCode == address.postalCode;
+        return phones.equals(address.phones);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(postalCode);
+        return Objects.hash(phones);
     }
 }

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS address
     last_update timestamp,
     is_deleted boolean,
     FOREIGN KEY (city_id) references city (id),
-    UNIQUE(postal_code, phone)
+    UNIQUE (phone)
 );
 
 ALTER TABLE customer
