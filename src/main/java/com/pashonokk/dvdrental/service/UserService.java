@@ -56,7 +56,7 @@ public class UserService{
             throw new UserExistsException(String.format(USER_EXISTS_ERROR_MESSAGE, userDto.getEmail()));
         }
         User user = userCustomerSavingMapper.toEntity(userDto);
-        Customer customer = customerService.constructCustomer(userDto.getAddress());
+        Customer customer = customerService.constructCustomer(userDto.getAddress(), userDto.getBalance());
         customer.addUser(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepository.findRoleByName("ROLE_CUSTOMER");

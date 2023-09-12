@@ -20,6 +20,7 @@ CREATE TABLE customer_aud
     last_update timestamp,
     create_date timestamp,
     is_active   boolean,
+    balance     numeric,
     is_deleted  boolean,
     PRIMARY KEY (address_id, rev),
     FOREIGN KEY (rev) REFERENCES revinfo (rev)

@@ -2,6 +2,7 @@ package com.pashonokk.dvdrental.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -16,4 +17,5 @@ public class CustomerDto {
     private AddressDto address;
     private Boolean isDeleted;
     private UserDto user;
+    private BigDecimal balance;
 }

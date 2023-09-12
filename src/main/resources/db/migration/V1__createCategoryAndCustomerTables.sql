@@ -1,10 +1,11 @@
-CREATE TABLE IF NOT EXISTS customer (
-address_id  BIGINT,
-user_id BIGINT,
-last_update date,
-createDate date,
-is_deleted boolean,
-PRIMARY KEY (address_id)
+CREATE TABLE IF NOT EXISTS customer(
+                                       address_id  BIGINT,
+                                       user_id     BIGINT,
+                                       last_update date,
+                                       createDate  date,
+                                       is_deleted  boolean,
+                                       balance     numeric,
+                                       PRIMARY KEY (address_id)
 );
 
 CREATE TABLE IF NOT EXISTS category (

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Service
@@ -43,16 +44,18 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer constructCustomer(AddressSavingDto addressSavingDto) {
+    public Customer constructCustomer(AddressSavingDto addressSavingDto, BigDecimal balance) {
         Phone phone = Phone.builder()
                 .number(addressSavingDto.getNumber())
                 .isMain(true)
                 .isDeleted(false)
                 .build();
-        Customer customer = new Customer();
-        customer.setLastUpdate(OffsetDateTime.now());
-        customer.setCreateDate(OffsetDateTime.now());
-        customer.setIsDeleted(false);
+        Customer customer = Customer.builder()
+                .balance(balance)
+                .createDate(OffsetDateTime.now())
+                .lastUpdate(OffsetDateTime.now())
+                .isDeleted(false)
+                .build();
         Address address = addressSavingMapper.toEntity(addressSavingDto);
         address.setLastUpdate(OffsetDateTime.now());
         address.setIsDeleted(false);
