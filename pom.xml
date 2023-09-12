@@ -26,6 +26,9 @@
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
         <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
         <jjwt.version>0.9.1</jjwt.version>
+
+        <junit.jupiter.version>5.8.1</junit.jupiter.version>
+        <junit.platform.version>1.8.1</junit.platform.version>
     </properties>
     <dependencies>
         <dependency>
@@ -120,6 +123,31 @@
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit.platform.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

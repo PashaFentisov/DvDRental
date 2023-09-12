@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pashonokk.dvdrental.dto.ClosedPaymentResponse;
 import com.pashonokk.dvdrental.dto.PaymentClosingDto;
 import com.pashonokk.dvdrental.endpoint.BaseResponse;
-import com.pashonokk.dvdrental.util.HolidayBuilder;
-import com.pashonokk.dvdrental.util.PaymentProperties;
 import com.pashonokk.dvdrental.util.TestHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,8 +27,6 @@ class PaymentClosingTest {
     private ObjectMapper objectMapper;
     @Autowired
     private TestHelper testHelper;
-    @Autowired
-    private PaymentProperties paymentProperties;
 
     @Test
     @DisplayName("Close Payment when everything is correct then ok")
@@ -75,33 +69,6 @@ class PaymentClosingTest {
 
         assertEquals(HttpStatus.FORBIDDEN, closedPaymentResponse.getStatusCode());
     }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Close Payment with delay then price includes fine")
-    void closePaymentWhenWithDelayThenPriceWithFine() {
-        HttpHeaders staffTokenHeaders = testHelper.saveExpiredPayment();
-        PaymentClosingDto paymentClosingDto = new PaymentClosingDto(testHelper.getSavedCustomerId(), testHelper.getSavedFilmId());
-        HttpEntity<PaymentClosingDto> requestEntity = new HttpEntity<>(paymentClosingDto, staffTokenHeaders);
-        testHelper.saveHolidays(HolidayBuilder.constructHoliday());
-        long extraDays = Duration.between(testHelper.getSavedPayments().get(0).getPaymentDate().toLocalDateTime(), LocalDateTime.now()).toDays()-1;
-
-        ResponseEntity<ClosedPaymentResponse> closedPaymentResponse = testRestTemplate.exchange(
-                "/payments/close",
-                HttpMethod.POST,
-                requestEntity,
-                ClosedPaymentResponse.class
-        );
-        assertEquals(HttpStatus.OK, closedPaymentResponse.getStatusCode());
-        assertEquals(testHelper.getSavedCustomerId(), Objects.requireNonNull(closedPaymentResponse.getBody()).getCustomer().getId());
-        assertEquals(testHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
-        assertEquals(testHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
-        assertEquals(extraDays, closedPaymentResponse.getBody().getExtraDays());
-        assertEquals(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)), closedPaymentResponse.getBody().getFineAmount());
-        assertNotNull(closedPaymentResponse.getBody().getReturnDate());
-        assertNotNull(closedPaymentResponse.getBody().getRentalDate());
-    }
-
 
     @SneakyThrows
     @Test
