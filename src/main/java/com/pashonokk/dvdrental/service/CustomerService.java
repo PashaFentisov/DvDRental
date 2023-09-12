@@ -1,6 +1,7 @@
 package com.pashonokk.dvdrental.service;
 
 import com.pashonokk.dvdrental.dto.AddressSavingDto;
+import com.pashonokk.dvdrental.dto.CustomerBalanceDto;
 import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.Address;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Service
@@ -43,16 +45,18 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer constructCustomer(AddressSavingDto addressSavingDto) {
+    public Customer constructCustomer(AddressSavingDto addressSavingDto, BigDecimal balance) {
         Phone phone = Phone.builder()
                 .number(addressSavingDto.getNumber())
                 .isMain(true)
                 .isDeleted(false)
                 .build();
-        Customer customer = new Customer();
-        customer.setLastUpdate(OffsetDateTime.now());
-        customer.setCreateDate(OffsetDateTime.now());
-        customer.setIsDeleted(false);
+        Customer customer = Customer.builder()
+                .balance(balance)
+                .createDate(OffsetDateTime.now())
+                .lastUpdate(OffsetDateTime.now())
+                .isDeleted(false)
+                .build();
         Address address = addressSavingMapper.toEntity(addressSavingDto);
         address.setLastUpdate(OffsetDateTime.now());
         address.setIsDeleted(false);
@@ -68,5 +72,17 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, id)));
         customer.setIsDeleted(true);
         customer.getAddress().setIsDeleted(true);
+    }
+
+    @Transactional
+    public CustomerDto topUpCustomerBalance(CustomerBalanceDto customerBalanceDto) {
+        Customer customer = customerRepository.findById(customerBalanceDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerBalanceDto.getId())));
+        if (customer.getBalance() == null) {
+            customer.setBalance(customerBalanceDto.getBalance());
+        } else {
+            customer.setBalance(customer.getBalance().add(customerBalanceDto.getBalance()));
+        }
+        return customerMapper.toDto(customer);
     }
 }

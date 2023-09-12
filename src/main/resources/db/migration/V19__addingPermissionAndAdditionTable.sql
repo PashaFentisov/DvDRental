@@ -15,17 +15,36 @@ CREATE TABLE IF NOT EXISTS role_permission
     PRIMARY KEY (role_id, permission_id)
 );
 
-insert into permission (name, is_deleted)values ('DELETE_ACCESS', false);
-insert into permission (name, is_deleted)values ('SAVE_STAFF_ACCESS', false);
-insert into permission (name, is_deleted)values ('PAYMENT_CREATE_ACCESS', false);
-insert into permission (name, is_deleted)values ('PAYMENT_CLOSE_ACCESS', false);
-insert into permission (name, is_deleted)values ('SAVE_HOLIDAYS', false);
-insert into role_permission(role_id, permission_id)values (1, 1);
-insert into role_permission(role_id, permission_id)values (1, 2);
-insert into role_permission(role_id, permission_id)values (1, 3);
-insert into role_permission(role_id, permission_id)values (1, 4);
-insert into role_permission(role_id, permission_id)values (1, 5);
-insert into role_permission(role_id, permission_id)values (2, 1);
-insert into role_permission(role_id, permission_id)values (2, 3);
-insert into role_permission(role_id, permission_id)values (2, 4);
+insert into permission (name, is_deleted)
+values ('DELETE_ACCESS', false);
+insert into permission (name, is_deleted)
+values ('SAVE_STAFF_ACCESS', false);
+insert into permission (name, is_deleted)
+values ('PAYMENT_CREATE_ACCESS', false);
+insert into permission (name, is_deleted)
+values ('PAYMENT_CLOSE_ACCESS', false);
+insert into permission (name, is_deleted)
+values ('SAVE_HOLIDAYS', false);
+insert into permission (name, is_deleted)
+values ('TOP_UP_CUSTOMER_BALANCE_ACCESS', false);
+insert into role_permission(role_id, permission_id)
+values (1, 1);
+insert into role_permission(role_id, permission_id)
+values (1, 2);
+insert into role_permission(role_id, permission_id)
+values (1, 3);
+insert into role_permission(role_id, permission_id)
+values (1, 4);
+insert into role_permission(role_id, permission_id)
+values (1, 5);
+insert into role_permission(role_id, permission_id)
+values (1, 6);
+insert into role_permission(role_id, permission_id)
+values (2, 1);
+insert into role_permission(role_id, permission_id)
+values (2, 3);
+insert into role_permission(role_id, permission_id)
+values (2, 4);
+insert into role_permission(role_id, permission_id)
+values (2, 6);
 

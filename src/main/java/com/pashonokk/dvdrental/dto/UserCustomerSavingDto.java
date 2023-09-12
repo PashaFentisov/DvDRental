@@ -1,11 +1,10 @@
 package com.pashonokk.dvdrental.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -25,4 +24,6 @@ public class UserCustomerSavingDto {
     @Valid
     @NotNull(message = "Contact info can`t be null")
     private ContactInfoDto contactInfo;
+    @DecimalMin(value = "0.00", message = "Balance should be more than 0.00")
+    private BigDecimal balance;
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 @Setter
 @ToString(exclude = {"rentals", "payments"})
 @Audited
+@AllArgsConstructor
+@Builder
 public class Customer {
     @Id
     private Long id;
@@ -34,6 +37,8 @@ public class Customer {
     @Setter(AccessLevel.PRIVATE)
     private List<Payment> payments = new ArrayList<>();
     private Boolean isDeleted;
+
+    private BigDecimal balance;
 
     public void addAddress(Address address) {
         address.setCustomer(this);
