@@ -21,7 +21,6 @@ public class TestHelper {
     private Long savedStoreId;
     private Long savedCustomerId;
     private List<PaymentDto> savedPayments;
-    public static final int RENTAL_DAYS_FOR_EXPIRED_PAYMENT = -10;
     public static final int RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT = 10;
 
     public HttpHeaders preparePaymentSaving() {
@@ -53,30 +52,20 @@ public class TestHelper {
 
     public HttpHeaders savePayment() {
         HttpHeaders staffTokenHeaders = preparePaymentSaving();
-        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId, RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(List.of(savedFilmId), savedCustomerId, RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
         HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
         ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>(){};
         savedPayments = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, responseType).getBody();
         return staffTokenHeaders;
     }
 
-    public HttpHeaders saveExpiredPayment() {
-        HttpHeaders staffTokenHeaders = preparePaymentSaving();
-        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(savedFilmId, savedCustomerId, RENTAL_DAYS_FOR_EXPIRED_PAYMENT);
-        HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
-
-        ParameterizedTypeReference<List<PaymentDto>> responseType = new ParameterizedTypeReference<>(){};
-        savedPayments = testRestTemplate.exchange("/payments", HttpMethod.POST, requestEntity, responseType).getBody();
-        return staffTokenHeaders;
-    }
-
-    public HolidayDto saveHolidays(HolidaySavingDto holiday) {
+    public void saveHolidays(HolidaySavingDto holiday) {
         HttpEntity<HolidaySavingDto> requestEntity = new HttpEntity<>(holiday, constructAdminHttpHeaders());
-        return testRestTemplate.exchange(
+        testRestTemplate.exchange(
                 "/holidays",
                 HttpMethod.POST,
                 requestEntity,
-                HolidayDto.class).getBody();
+                HolidayDto.class);
     }
 
     public HttpHeaders constructAdminHttpHeaders() {

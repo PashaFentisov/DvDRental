@@ -37,7 +37,7 @@ class PaymentSavingTest {
     @DisplayName("Create Payment when everything is correct then save")
     void createPaymentWhenCorrectThenSave() {
         HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
-        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(testHelper.getSavedFilmId(),
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(List.of(testHelper.getSavedFilmId()),
                 testHelper.getSavedCustomerId(),
                 TestHelper.RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
         HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
@@ -126,7 +126,7 @@ class PaymentSavingTest {
     @Test
     @DisplayName("Create Payment when unauthorized then 403")
     void createPaymentWhenUnauthorizedThenFail() {
-        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(testHelper.getSavedFilmId(),
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(List.of(testHelper.getSavedFilmId()),
                 testHelper.getSavedCustomerId(),
                 TestHelper.RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
         HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment);
@@ -147,7 +147,7 @@ class PaymentSavingTest {
     @DisplayName("Create Payment when customer doesnt exist then return 400")
     void createPaymentWhenCustomerDoesntExistThenFail() {
         HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
-        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(testHelper.getSavedFilmId(),
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(List.of(testHelper.getSavedFilmId()),
                 0L,
                 TestHelper.RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
         HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);
@@ -170,7 +170,7 @@ class PaymentSavingTest {
     @DisplayName("Create Payment when inventory doesnt exist then return 400")
     void createPaymentWhenInventoryDoesntExistThenFail() {
         HttpHeaders staffTokenHeaders = testHelper.preparePaymentSaving();
-        MultiplePaymentSavingDto payment = PaymentBuilder.constructPayment(0L,
+        MultiplePaymentSavingDto payment = PaymentBuilder.constructManyPayments(List.of(0L),
                 testHelper.getSavedCustomerId(),
                 TestHelper.RENTAL_DAYS_FOR_NOT_EXPIRED_PAYMENT);
         HttpEntity<MultiplePaymentSavingDto> requestEntity = new HttpEntity<>(payment, staffTokenHeaders);

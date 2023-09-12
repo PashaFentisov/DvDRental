@@ -163,7 +163,7 @@ public class PaymentService {
 
         BigDecimal totalAmount = payment.getAmount();
         if (payment.getPaymentDate().isBefore(now)) {
-            totalAmount = countTotalAmountWithFine(payment, now);
+            totalAmount = calculateTotalAmountWithFine(payment, now);
         }
         return buildClosedPaymentResponse(payment, totalAmount, inventory, rental, now);
     }
@@ -187,7 +187,7 @@ public class PaymentService {
                 .build();
     }
 
-    private BigDecimal countTotalAmountWithFine(Payment payment, OffsetDateTime now) {
+    private BigDecimal calculateTotalAmountWithFine(Payment payment, OffsetDateTime now) {
         long extraDays = countExtraDays(payment, now);
         if (extraDays == 0) {
             return payment.getAmount();

@@ -1,11 +1,13 @@
 package com.pashonokk.dvdrental;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ComponentScan
+@Suite
+@SelectPackages("com.pashonokk.dvdrental.integration")
 class DvDRentalApplicationTests {
 
     @Test

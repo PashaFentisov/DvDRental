@@ -39,6 +39,7 @@ class PhoneRestControllerTest {
         HttpHeaders headersWithToken = testHelper.constructAdminHttpHeaders();
         StoreSavingDto store = StoreBuilder.constructStore();
         StoreDto storeDto = testHelper.saveStore(store, headersWithToken);
+        Long firstPhoneId = storeDto.getAddress().getPhones().stream().findFirst().map(PhoneDto::getId).get();
 
         ResponseEntity<PhoneDto> addPhoneToAddressResponse = addPhoneToAddress(storeDto.getAddress().getId(),
                 createHttpEntityWithPhoneSavingDto(headersWithToken));
@@ -53,7 +54,7 @@ class PhoneRestControllerTest {
                 storeDto.getAddress().getId(), Objects.requireNonNull(addPhoneToAddressResponse.getBody()).getId()
         );
 
-        ResponseEntity<PhoneDto> getPhoneResponse = getOldMainPhone(storeDto, entityWithHeaders);
+        ResponseEntity<PhoneDto> getPhoneResponse = getOldMainPhone(firstPhoneId, entityWithHeaders);
 
         assertEquals(HttpStatus.OK, newMainPhoneResponse.getStatusCode());
         assertTrue(Objects.requireNonNull(newMainPhoneResponse.getBody()).isMain());
@@ -87,13 +88,13 @@ class PhoneRestControllerTest {
         assertEquals(String.format("Phone with id %s doesn't exist", 0L), failureResponse.getMessage());
     }
 
-    private ResponseEntity<PhoneDto> getOldMainPhone(StoreDto storeDto, HttpEntity<Object> entityWithHeaders) {
+    private ResponseEntity<PhoneDto> getOldMainPhone(Long firstPhoneId, HttpEntity<Object> entityWithHeaders) {
         return testRestTemplate.exchange(
                 "/phones/{id}",
                 HttpMethod.GET,
                 entityWithHeaders,
                 PhoneDto.class,
-                storeDto.getAddress().getId()
+                firstPhoneId
         );
     }
 
