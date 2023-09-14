@@ -15,5 +15,5 @@ public class PaymentDto {
     private BigDecimal amount;
     private OffsetDateTime paymentDate;
     private Boolean isClosed;
-
+    private BigDecimal discount;
 }
