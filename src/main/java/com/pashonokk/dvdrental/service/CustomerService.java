@@ -51,6 +51,9 @@ public class CustomerService {
                 .isMain(true)
                 .isDeleted(false)
                 .build();
+        if (balance == null) {
+            balance = BigDecimal.ZERO;
+        }
         Customer customer = Customer.builder()
                 .balance(balance)
                 .createDate(OffsetDateTime.now())
@@ -78,11 +81,7 @@ public class CustomerService {
     public CustomerDto topUpCustomerBalance(CustomerBalanceDto customerBalanceDto) {
         Customer customer = customerRepository.findById(customerBalanceDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ERROR_MESSAGE, customerBalanceDto.getId())));
-        if (customer.getBalance() == null) {
-            customer.setBalance(customerBalanceDto.getBalance());
-        } else {
-            customer.setBalance(customer.getBalance().add(customerBalanceDto.getBalance()));
-        }
+        customer.setBalance(customer.getBalance().add(customerBalanceDto.getBalance()));
         return customerMapper.toDto(customer);
     }
 }
