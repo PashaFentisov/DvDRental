@@ -13,7 +13,7 @@
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>D:\idea project\DvDRental\src\main\resources\logs.log</file>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{ISO8601} %-5level [%t] %X{requestId} %C: %msg%n%throwable</pattern>
         </encoder>
     </appender>
 
