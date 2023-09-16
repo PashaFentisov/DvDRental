@@ -217,6 +217,7 @@ CREATE TABLE IF NOT EXISTS payment_aud
     staff_id     BIGINT,
     customer_id  BIGINT,
     is_closed    boolean,
+    discount     numeric,
     FOREIGN KEY (rev) REFERENCES revinfo (rev),
     PRIMARY KEY (id, rev)
 );

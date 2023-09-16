@@ -4,6 +4,7 @@ import com.pashonokk.dvdrental.dto.*;
 import com.pashonokk.dvdrental.endpoint.PageResponse;
 import com.pashonokk.dvdrental.entity.*;
 import com.pashonokk.dvdrental.exception.GenericDisplayableException;
+import com.pashonokk.dvdrental.exception.LowBalanceException;
 import com.pashonokk.dvdrental.mapper.*;
 import com.pashonokk.dvdrental.repository.*;
 import com.pashonokk.dvdrental.util.PaymentProperties;
@@ -87,11 +88,14 @@ public class PaymentService {
         Inventory inventory = getInventory(paymentSavingDto, staff);
 
         Rental rental = buildRental(paymentSavingDto, staff, inventory, customer);
-        BigDecimal amount = calculatePaymentAmount(paymentSavingDto, isFilmFree);
+        BigDecimal discount = calculateDiscount(paymentSavingDto);
+        BigDecimal amount = calculatePaymentAmount(paymentSavingDto, isFilmFree, discount);
+
+        payForFilm(customer, amount);
 
         ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());
         LocalDate holidayDate = LocalDate.now().plusDays(paymentSavingDto.getRentalDays());
-        Payment payment = new Payment(amount, OffsetDateTime.of(holidayDate, LocalTime.MIDNIGHT, offset), false);
+        Payment payment = new Payment(amount, OffsetDateTime.of(holidayDate, LocalTime.MIDNIGHT, offset), false, discount);
 
         payment.addCustomer(customer);
         payment.addStaff(staff);
@@ -101,20 +105,37 @@ public class PaymentService {
         return paymentMapper.toDto(savedPayment);
     }
 
-    private BigDecimal calculatePaymentAmount(PaymentSavingDto paymentSavingDto, boolean isFilmFree) {
+    private static void payForFilm(Customer customer, BigDecimal amount) {
+        if (customer.getBalance().compareTo(amount) < 0) {
+            throw new LowBalanceException(
+                    String.format("Your don`t have enough money on your balance, your balance is %s", customer.getBalance()));
+        } else {
+            customer.setBalance(customer.getBalance().subtract(amount));
+        }
+    }
+
+    private BigDecimal calculatePaymentAmount(PaymentSavingDto paymentSavingDto, boolean isFilmFree, BigDecimal discount) {
         if (isFilmFree) {
             return BigDecimal.ZERO;
         }
-        Long customersOpenPayments = paymentRepository.countOpenPaymentsByCustomerId(paymentSavingDto.getCustomerId());
-        BigDecimal amountWithoutDiscount = paymentProperties.getPrice().multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
-        if (customersOpenPayments >= 10 && customersOpenPayments < 20) {
-            amountWithoutDiscount = amountWithoutDiscount.subtract(amountWithoutDiscount.multiply(BigDecimal.valueOf(0.05)));
-        } else if (customersOpenPayments >= 20 && customersOpenPayments < 30) {
-            amountWithoutDiscount = amountWithoutDiscount.subtract(amountWithoutDiscount.multiply(BigDecimal.valueOf(0.10)));
-        } else if (customersOpenPayments >= 30) {
-            amountWithoutDiscount = amountWithoutDiscount.subtract(amountWithoutDiscount.multiply(BigDecimal.valueOf(0.15)));
+        BigDecimal amount = paymentProperties.getPrice().multiply(BigDecimal.valueOf(paymentSavingDto.getRentalDays()));
+        if (!Objects.equals(discount, BigDecimal.ZERO)) {
+            amount = amount.subtract(amount.multiply(discount));
         }
-        return amountWithoutDiscount;
+        return amount;
+    }
+
+    private BigDecimal calculateDiscount(PaymentSavingDto paymentSavingDto) {
+        Long customersOpenPayments = paymentRepository.countOpenPaymentsByCustomerId(paymentSavingDto.getCustomerId());
+        BigDecimal discount = BigDecimal.ZERO;
+        if (customersOpenPayments >= 10 && customersOpenPayments < 20) {
+            discount = BigDecimal.valueOf(0.05);
+        } else if (customersOpenPayments >= 20 && customersOpenPayments < 30) {
+            discount = BigDecimal.valueOf(0.10);
+        } else if (customersOpenPayments >= 30) {
+            discount = BigDecimal.valueOf(0.15);
+        }
+        return discount;
     }
 
     private Inventory getInventory(PaymentSavingDto paymentSavingDto, Staff staff) {
@@ -150,7 +171,7 @@ public class PaymentService {
                 .filter(p -> Objects.equals(p.getRental().getInventory().getFilm().getId(), paymentClosingDto.getFilmId()))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Payment doesn`t exists, something is wrong"));
-
+        Customer customer = payment.getCustomer();
         Rental rental = payment.getRental();
         Inventory inventory = rental.getInventory();
 
@@ -163,7 +184,11 @@ public class PaymentService {
 
         BigDecimal totalAmount = payment.getAmount();
         if (payment.getPaymentDate().isBefore(now)) {
-            totalAmount = calculateTotalAmountWithFine(payment, now);
+            BigDecimal fine = chargeFineFromBalance(payment, now, customer);
+            totalAmount = totalAmount.add(fine);
+        } else if (payment.getPaymentDate().isAfter(now)) {
+            BigDecimal change = returnUnusedMoneyToBalance(payment, customer);
+            totalAmount = totalAmount.subtract(change);
         }
         return buildClosedPaymentResponse(payment, totalAmount, inventory, rental, now);
     }
@@ -172,6 +197,12 @@ public class PaymentService {
                                                              Inventory inventory, Rental rental,
                                                              OffsetDateTime now) {
         long extraDays = 0;
+        BigDecimal fine;
+        if (totalAmount.compareTo(payment.getAmount()) <= 0) {
+            fine = BigDecimal.ZERO;
+        } else {
+            fine = totalAmount.subtract(payment.getAmount());
+        }
         if (payment.getPaymentDate().isBefore(now)) {
             extraDays = countExtraDays(payment, now);
         }
@@ -179,20 +210,39 @@ public class PaymentService {
                 .customer(customerMapper.toDto(payment.getCustomer()))
                 .film(filmMapper.toDto(inventory.getFilm()))
                 .extraDays(extraDays)
-                .fineAmount(totalAmount.subtract(payment.getAmount()))
+                .fineAmount(fine)
                 .store(storeMapper.toDto(inventory.getStore()))
                 .totalAmount(totalAmount)
                 .rentalDate(rental.getRentalDate())
                 .returnDate(OffsetDateTime.now())
+                .discount(payment.getDiscount())
                 .build();
     }
 
-    private BigDecimal calculateTotalAmountWithFine(Payment payment, OffsetDateTime now) {
+    @Transactional
+    public BigDecimal chargeFineFromBalance(Payment payment, OffsetDateTime now, Customer customer) {
         long extraDays = countExtraDays(payment, now);
-        if (extraDays == 0) {
-            return payment.getAmount();
+        BigDecimal fine = paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays));
+        if (customer.getBalance().compareTo(fine) < 0) {
+            throw new LowBalanceException(
+                    String.format("Your don`t have enough money on your balance, your balance is %s", customer.getBalance()));
+        } else {
+            customer.setBalance(customer.getBalance().subtract(fine));
         }
-        return payment.getAmount().add(paymentProperties.getFine().multiply(BigDecimal.valueOf(extraDays)));
+        payment.setAmount(payment.getAmount().add(fine));
+        return fine;
+    }
+
+    @Transactional
+    public BigDecimal returnUnusedMoneyToBalance(Payment payment, Customer customer) {
+        long unusedDays = countUnusedDays(payment);
+        BigDecimal change = paymentProperties.getPrice().multiply(BigDecimal.valueOf(unusedDays));
+        if (!Objects.equals(payment.getDiscount(), BigDecimal.ZERO)) {
+            change = change.subtract(change.multiply(payment.getDiscount()));
+        }
+        payment.setAmount(payment.getAmount().subtract(change));
+        customer.setBalance(customer.getBalance().add(change));
+        return change;
     }
 
     private long countExtraDays(Payment payment, OffsetDateTime now) {
@@ -200,6 +250,11 @@ public class PaymentService {
                 LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT)).toDays();
         int holidays = holidayRepository.countHolidayBetweenDates(payment.getPaymentDate(), now);
         return (extraDays < holidays) ? 0 : extraDays - holidays;
+    }
+
+    private long countUnusedDays(Payment payment) {
+        return Duration.between(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT),
+                payment.getPaymentDate().toLocalDateTime()).toDays();
     }
 
     @Transactional

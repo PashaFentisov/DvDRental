@@ -20,4 +20,5 @@ public class ClosedPaymentResponse {
     private OffsetDateTime rentalDate;
     private OffsetDateTime returnDate;
     private BigDecimal fineAmount;
+    private BigDecimal discount;
 }

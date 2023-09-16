@@ -47,7 +47,7 @@ class PaymentClosingTest {
         assertEquals(testHelper.getSavedStoreId(), closedPaymentResponse.getBody().getStore().getId());
         assertEquals(testHelper.getSavedFilmId(), closedPaymentResponse.getBody().getFilm().getId());
         assertEquals(0, closedPaymentResponse.getBody().getExtraDays());
-        assertEquals(testHelper.getSavedPayments().get(0).getAmount(), closedPaymentResponse.getBody().getTotalAmount());
+        assertEquals(BigDecimal.ZERO, closedPaymentResponse.getBody().getTotalAmount());
         assertEquals(BigDecimal.ZERO, closedPaymentResponse.getBody().getFineAmount());
         assertNotNull(closedPaymentResponse.getBody().getReturnDate());
         assertNotNull(closedPaymentResponse.getBody().getRentalDate());

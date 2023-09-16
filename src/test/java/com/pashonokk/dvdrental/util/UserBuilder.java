@@ -6,6 +6,7 @@ import com.pashonokk.dvdrental.dto.ContactInfoDto;
 import com.pashonokk.dvdrental.dto.UserCustomerSavingDto;
 import com.pashonokk.dvdrental.dto.UserStaffSavingDto;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Random;
@@ -20,6 +21,7 @@ public class UserBuilder {
                 .password(UUID.randomUUID().toString().substring(24))
                 .contactInfo(constructContactInfo())
                 .address(constructAddress())
+                .balance(BigDecimal.valueOf(5000L))
                 .build();
     }
 

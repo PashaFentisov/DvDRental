@@ -35,11 +35,13 @@ public class Payment {
     @JoinColumn(name = "rental_id")
     private Rental rental;
     private Boolean isClosed;
+    private BigDecimal discount;
 
-    public Payment(BigDecimal amount, OffsetDateTime paymentDate, Boolean isClosed) {
+    public Payment(BigDecimal amount, OffsetDateTime paymentDate, Boolean isClosed, BigDecimal discount) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.isClosed = isClosed;
+        this.discount = discount;
     }
 
     public void addCustomer(Customer customer) {
