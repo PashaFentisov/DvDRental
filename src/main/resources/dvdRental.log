@@ -3659,3 +3659,55 @@ io.jsonwebtoken.ExpiredJwtException: JWT expired at 2023-09-16T22:19:47Z. Curren
 2023-09-17 00:51:45,645 INFO  [SpringApplicationShutdownHook]  org.springframework.orm.jpa.AbstractEntityManagerFactoryBean: Closing JPA EntityManagerFactory for persistence unit 'default'
 2023-09-17 00:51:45,646 INFO  [SpringApplicationShutdownHook]  com.zaxxer.hikari.HikariDataSource: HikariPool-1 - Shutdown initiated...
 2023-09-17 00:51:45,649 INFO  [SpringApplicationShutdownHook]  com.zaxxer.hikari.HikariDataSource: HikariPool-1 - Shutdown completed.
+2023-09-17 13:47:54,519 INFO  [background-preinit]  org.hibernate.validator.internal.util.Version: HV000001: Hibernate Validator 8.0.0.Final
+2023-09-17 13:47:54,556 INFO  [main]  org.springframework.boot.StartupInfoLogger: Starting DvDRentalApplication using Java 17.0.6 with PID 14472 (D:\idea project\DvDRental\target\classes started by user in D:\idea project\DvDRental)
+2023-09-17 13:47:54,557 INFO  [main]  org.springframework.boot.SpringApplication: No active profile set, falling back to 1 default profile: "default"
+2023-09-17 13:47:55,190 INFO  [main]  org.springframework.data.repository.config.RepositoryConfigurationDelegate: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-17 13:47:55,299 INFO  [main]  org.springframework.data.repository.config.RepositoryConfigurationDelegate: Finished Spring Data repository scanning in 95 ms. Found 19 JPA repository interfaces.
+2023-09-17 13:47:55,807 INFO  [main]  org.springframework.boot.web.embedded.tomcat.TomcatWebServer: Tomcat initialized with port(s): 10000 (http)
+2023-09-17 13:47:55,815 INFO  [main]  org.apache.juli.logging.DirectJDKLog: Initializing ProtocolHandler ["http-nio-10000"]
+2023-09-17 13:47:55,815 INFO  [main]  org.apache.juli.logging.DirectJDKLog: Starting service [Tomcat]
+2023-09-17 13:47:55,816 INFO  [main]  org.apache.juli.logging.DirectJDKLog: Starting Servlet engine: [Apache Tomcat/10.1.8]
+2023-09-17 13:47:55,898 INFO  [main]  org.apache.juli.logging.DirectJDKLog: Initializing Spring embedded WebApplicationContext
+2023-09-17 13:47:55,898 INFO  [main]  org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext: Root WebApplicationContext: initialization completed in 1302 ms
+2023-09-17 13:47:56,106 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: Flyway Community Edition 9.5.1 by Redgate
+2023-09-17 13:47:56,107 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: See what's new here: https://flywaydb.org/documentation/learnmore/releaseNotes#9.5.1
+2023-09-17 13:47:56,107 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: 
+2023-09-17 13:47:56,115 INFO  [main]  com.zaxxer.hikari.HikariDataSource: HikariPool-1 - Starting...
+2023-09-17 13:47:56,351 INFO  [main]  com.zaxxer.hikari.pool.HikariPool: HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3360283
+2023-09-17 13:47:56,353 INFO  [main]  com.zaxxer.hikari.HikariDataSource: HikariPool-1 - Start completed.
+2023-09-17 13:47:56,367 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: Database: jdbc:postgresql://localhost:5432/dvdrental (PostgreSQL 15.2)
+2023-09-17 13:47:56,414 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: Successfully validated 21 migrations (execution time 00:00.033s)
+2023-09-17 13:47:56,481 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: Current version of schema "public": 21
+2023-09-17 13:47:56,483 INFO  [main]  org.flywaydb.core.internal.logging.slf4j.Slf4jLog: Schema "public" is up to date. No migration necessary.
+2023-09-17 13:47:56,548 INFO  [main]  org.hibernate.jpa.internal.util.LogHelper: HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-17 13:47:56,603 INFO  [main]  org.hibernate.Version: HHH000412: Hibernate ORM core version 6.1.7.Final
+2023-09-17 13:47:56,891 INFO  [main]  org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl: HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2023-09-17 13:47:57,210 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.User
+2023-09-17 13:47:57,213 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Permission
+2023-09-17 13:47:57,214 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Actor
+2023-09-17 13:47:57,215 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Role
+2023-09-17 13:47:57,215 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Country
+2023-09-17 13:47:57,215 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Phone
+2023-09-17 13:47:57,216 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Address
+2023-09-17 13:47:57,216 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Store
+2023-09-17 13:47:57,217 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Staff
+2023-09-17 13:47:57,217 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Film
+2023-09-17 13:47:57,218 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Category
+2023-09-17 13:47:57,219 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Token
+2023-09-17 13:47:57,219 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Customer
+2023-09-17 13:47:57,219 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Inventory
+2023-09-17 13:47:57,219 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Holiday
+2023-09-17 13:47:57,220 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Language
+2023-09-17 13:47:57,220 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.City
+2023-09-17 13:47:57,220 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Payment
+2023-09-17 13:47:57,221 INFO  [main]  org.hibernate.envers.configuration.internal.metadata.AuditMetadataGenerator: Adding properties for entity: com.pashonokk.dvdrental.entity.Rental
+2023-09-17 13:47:59,120 INFO  [main]  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-17 13:47:59,131 INFO  [main]  org.springframework.orm.jpa.AbstractEntityManagerFactoryBean: Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-17 13:48:00,685 INFO  [main]  org.springframework.security.web.DefaultSecurityFilterChain: Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@127350d8, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@198ad9e0, org.springframework.security.web.context.SecurityContextHolderFilter@38dfbd6e, org.springframework.security.web.header.HeaderWriterFilter@7af66b8a, org.springframework.web.filter.CorsFilter@1a958d2a, org.springframework.security.web.authentication.logout.LogoutFilter@5b0d8236, com.pashonokk.dvdrental.filter.JwtAuthenticationFilter@7988978a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3330bdd1, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1a343d3e, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@15c8bb25, org.springframework.security.web.session.SessionManagementFilter@5dd7f921, org.springframework.security.web.access.ExceptionTranslationFilter@5c7eeeb2, org.springframework.security.web.access.intercept.AuthorizationFilter@5f7a911f]
+2023-09-17 13:48:00,879 INFO  [main]  org.apache.juli.logging.DirectJDKLog: Starting ProtocolHandler ["http-nio-10000"]
+2023-09-17 13:48:00,903 INFO  [main]  org.springframework.boot.web.embedded.tomcat.TomcatWebServer: Tomcat started on port(s): 10000 (http) with context path ''
+2023-09-17 13:48:00,910 INFO  [main]  org.springframework.boot.StartupInfoLogger: Started DvDRentalApplication in 6.749 seconds (process running for 7.292)
+2023-09-17 13:48:34,545 INFO  [SpringApplicationShutdownHook]  org.springframework.orm.jpa.AbstractEntityManagerFactoryBean: Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-09-17 13:48:34,547 INFO  [SpringApplicationShutdownHook]  com.zaxxer.hikari.HikariDataSource: HikariPool-1 - Shutdown initiated...
+2023-09-17 13:48:34,550 INFO  [SpringApplicationShutdownHook]  com.zaxxer.hikari.HikariDataSource: HikariPool-1 - Shutdown completed.
