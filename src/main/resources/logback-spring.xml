@@ -11,7 +11,7 @@
     </root>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>src\main\resources\dvdRental.log</file>
+        <file>dvdRental.log</file>
         <encoder>
             <pattern>%d{ISO8601} %-5level [%t] %X{requestId} %C: %msg%n%throwable</pattern>
         </encoder>
