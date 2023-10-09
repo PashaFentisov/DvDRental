@@ -12,6 +12,11 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
 
 server:
   port: 10000
@@ -29,3 +34,8 @@ dvd:
   oneday:
     price: 2
     fine: 3
+
+
+app:
+  initializer:
+    version: 1

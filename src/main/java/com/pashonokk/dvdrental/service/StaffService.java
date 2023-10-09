@@ -60,7 +60,7 @@ public class StaffService {
         Store store = storeRepository.findById(userDto.getStoreId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(STORE_ERROR_MESSAGE, userDto.getStoreId())));
         staff.addStore(store);
-        staff.addAddress(address);
+        staff.setAddress(address);
         phone.addAddress(address);
         cityRepository.findByIdWithAddressesAndCountry(userDto.getAddress().getCityId()).ifPresent(city->city.addAddress(address));
         return staff;
