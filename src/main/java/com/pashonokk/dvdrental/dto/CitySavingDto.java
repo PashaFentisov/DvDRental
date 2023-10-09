@@ -24,4 +24,9 @@ public class CitySavingDto {
     private Long countryId;
     @AssertFalse(message = "You can`t set isDeleted as true")
     private Boolean isDeleted;
+
+    public CitySavingDto(String name, Long countryId) {
+        this.name = name;
+        this.countryId = countryId;
+    }
 }
