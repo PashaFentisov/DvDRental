@@ -19,15 +19,17 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Value("${app.initializer.version}")
     private Long initializerVersion;
     private final BatchInitRepository batchInitRepository;
+
     @Override
     public void run(String... args) throws Exception {
         Long lastVersion = batchInitRepository.findLastVersion();
-        if(Objects.equals(lastVersion, initializerVersion)){
+        if (Objects.equals(lastVersion,
+                           initializerVersion)) {
             return;
         }
         Job job;
-        if(lastVersion==null){
-          lastVersion=0L;
+        if (lastVersion == null) {
+            lastVersion = 0L;
         }
         for (long i = ++lastVersion; i <= initializerVersion; i++) {
             job = applicationContext.getBean(String.valueOf(i), Job.class);
