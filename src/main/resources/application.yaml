@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/dvdrental
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+
+server:
+  port: 10000
+
+token:
+  valid:
+    duration: 86400000
+
+sendgrid:
+  key: ${SENDGRID_API_KEY}
+  emailFrom: ${EMAIL_FROM}
+
+logging:
+  level:
+    org:
+      hibernate:
+        envers:
+          boot: OFF
+  file:
+    name: dvdRental.log
+
+jwt:
+  signing: ${JWT_SIGNING:secret}
+  expiration: 6000000
+
+dvd:
+  oneday:
+    price: 2
+    fine: 3
+
+app:
+  initializer:
+    version: 1

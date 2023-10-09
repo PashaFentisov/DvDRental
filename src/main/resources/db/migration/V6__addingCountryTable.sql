@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS country(
     id          SERIAL PRIMARY KEY,
-    name     VARCHAR(50) NOT NULL,
-    last_update DATE
+    name     VARCHAR(50) NOT NULL UNIQUE,
+    last_update timestamp,
+    is_deleted boolean
 );

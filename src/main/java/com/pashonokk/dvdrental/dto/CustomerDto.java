@@ -1,20 +1,21 @@
 package com.pashonokk.dvdrental.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDto {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private LocalDate lastUpdate;
-    private LocalDate createDate;
-    private boolean active;
+    private OffsetDateTime lastUpdate;
+    private OffsetDateTime createDate;
+    private AddressDto address;
+    private Boolean isDeleted;
+    private UserDto user;
+    private BigDecimal balance;
 }
