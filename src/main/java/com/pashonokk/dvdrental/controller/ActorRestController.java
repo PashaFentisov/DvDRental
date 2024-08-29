@@ -28,6 +28,9 @@ public class ActorRestController {
     private final ActorService actorService;
     private final Logger logger = LoggerFactory.getLogger(ActorRestController.class);
 
+    //Variable added to check SonarCloud Integration
+    private String unUsedVariable = "This is an unused variable";
+
     @GetMapping
     public ResponseEntity<PageResponse<ActorDto>> getActors(@RequestParam(required = false, defaultValue = "0") int page,
                                                             @RequestParam(required = false, defaultValue = "10") int size,
