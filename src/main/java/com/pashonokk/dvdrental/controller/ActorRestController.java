@@ -27,6 +27,12 @@ import java.util.List;
 public class ActorRestController {
     private final ActorService actorService;
     private final Logger logger = LoggerFactory.getLogger(ActorRestController.class);
+    public static int f = 0;
+
+
+    public void unusedMethod(String k) {
+
+    }
 
     @GetMapping
     public ResponseEntity<PageResponse<ActorDto>> getActors(@RequestParam(required = false, defaultValue = "0") int page,
