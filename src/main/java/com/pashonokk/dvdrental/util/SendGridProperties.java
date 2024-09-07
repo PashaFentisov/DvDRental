@@ -12,4 +12,5 @@ public class SendGridProperties {
      * api key for SendGrid
      */
     private String key;
+    private String emailFrom;
 }

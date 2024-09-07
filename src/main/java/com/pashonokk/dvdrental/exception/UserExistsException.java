@@ -1,7 +1,9 @@
 package com.pashonokk.dvdrental.exception;
 
-public class UserExistsException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class UserExistsException extends GenericDisplayableException {
     public UserExistsException(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }

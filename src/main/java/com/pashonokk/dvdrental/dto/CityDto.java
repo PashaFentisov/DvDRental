@@ -1,17 +1,23 @@
 package com.pashonokk.dvdrental.dto;
 
-import com.pashonokk.dvdrental.entity.Country;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDate;
-@Data
+import java.time.OffsetDateTime;
+
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CityDto {
     private Long id;
     private String name;
-    private LocalDate lastUpdate;
-    private Country country;
+    private OffsetDateTime lastUpdate;
+    private CountryDto country;
+    private Boolean isDeleted;
+
+    public CityDto(String name, OffsetDateTime lastUpdate) {
+        this.name = name;
+        this.lastUpdate = lastUpdate;
+    }
 }

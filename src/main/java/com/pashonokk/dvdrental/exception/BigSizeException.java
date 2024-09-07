@@ -1,7 +1,9 @@
 package com.pashonokk.dvdrental.exception;
 
-public class BigSizeException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class BigSizeException extends GenericDisplayableException {
     public BigSizeException(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }

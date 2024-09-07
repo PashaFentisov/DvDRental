@@ -4,7 +4,7 @@ import com.pashonokk.dvdrental.dto.CustomerDto;
 import com.pashonokk.dvdrental.entity.Customer;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "Spring")
+@Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface CustomerMapper {
     Customer toEntity(CustomerDto customerDto);
     CustomerDto toDto(Customer customer);

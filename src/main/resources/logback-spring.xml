@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %highlight(%-5level) [%blue(%t)] %green(%X{requestId}) %yellow(%C): %msg%n%throwable
+            </pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>dvdRental.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level [%t] %X{requestId} %C: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+

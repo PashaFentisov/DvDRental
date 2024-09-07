@@ -1,24 +1,52 @@
 package com.pashonokk.dvdrental.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString(exclude = {"rentals", "payments"})
+@Audited
 @AllArgsConstructor
+@Builder
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private LocalDate lastUpdate;
-    private LocalDate createDate;
-    private boolean active;
+    private OffsetDateTime lastUpdate;
+    private OffsetDateTime createDate;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
+    @MapsId
+    @JoinColumn(name = "address_id")
+    private Address address;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+    @OneToMany(mappedBy = "customer")
+    @Setter(AccessLevel.PRIVATE)
+    private List<Rental> rentals = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer")
+    @Setter(AccessLevel.PRIVATE)
+    private List<Payment> payments = new ArrayList<>();
+    private Boolean isDeleted;
+
+    private BigDecimal balance;
+
+    public void addAddress(Address address) {
+        address.setCustomer(this);
+        this.setAddress(address);
+    }
+
+    public void addUser(User user) {
+        user.setCustomer(this);
+        this.setUser(user);
+    }
 }
